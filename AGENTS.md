@@ -55,8 +55,9 @@ For joint work on an app and the kit: `npm link ../maker-kit` in the app.
   strictest tsconfig of any app (`noUncheckedIndexedAccess` included) — the
   kit's `tsconfig.json` is that one, `consumer/` proves it on every push.
 - The kit owns no dictionary and no current language: everything it draws
-  takes a `Translate<K>`; its own strings are `kit.*` keys in `src/i18n/`,
-  which apps spread into their dictionaries.
+  takes the app's translate function as `Translate<NoInfer<K> | KitKey>`
+  (K: the app's keys, inferred from what it draws); its own strings are
+  `kit.*` keys in `src/i18n/`, which apps spread into their dictionaries.
 - Time, randomness, storage and browser APIs are parameters, so tests fake
   them.
 - No `as` casts in sources (`typescript/no-unsafe-type-assertion`); tests
@@ -77,8 +78,9 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
   `format`, `history`, `storage`, `projectFile`, `presets` (`docs/core.md`).
 - `src/i18n/` — the kit's own strings, `kit.*` keys, en ru uk he; `en.ts`
   defines `KitKey`.
-- `src/ui/` — DOM, no three: `files` (download, the file dialog); more with
-  K2 and K4.
+- `src/ui/` — DOM, no three: `controls` (the panel), `stepper` (−/+ held),
+  `dom`, `timers`, `files` (download, the file dialog); more with K4
+  (`docs/ui.md`).
 - `src/3d/`, `src/worker/`, `src/styles/` — filled by K3–K5.
 - `showcase/` — a Vite page with every component (the root of
   `vite.config.ts`); deployed to Pages.

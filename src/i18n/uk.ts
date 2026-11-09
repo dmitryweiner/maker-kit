@@ -1,6 +1,8 @@
 import type { KitMessages } from './en';
 
 export const kitUk: KitMessages = {
+  'kit.control.decrease': 'Зменшити: {label}',
+  'kit.control.increase': 'Збільшити: {label}',
   'kit.file.broken': 'Цей файл не читається як проєкт.',
   'kit.file.foreign': 'Цей файл — не проєкт цього застосунку.',
   'kit.file.newer': 'Проєкт зроблено в новішій версії застосунку. Перезавантажте сторінку, щоб отримати її.',

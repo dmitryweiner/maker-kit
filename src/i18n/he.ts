@@ -1,6 +1,8 @@
 import type { KitMessages } from './en';
 
 export const kitHe: KitMessages = {
+  'kit.control.decrease': 'הקטנה: {label}',
+  'kit.control.increase': 'הגדלה: {label}',
   'kit.file.broken': 'הקובץ הזה אינו פרויקט קריא.',
   'kit.file.foreign': 'הקובץ הזה אינו פרויקט של האפליקציה הזו.',
   'kit.file.newer': 'הפרויקט נוצר בגרסה חדשה יותר של האפליקציה. טענו מחדש את הדף כדי לקבל אותה.',

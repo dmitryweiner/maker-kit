@@ -5,11 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>maker-kit showcase</title>
     <meta name="description" content="Every component of maker-kit in every state: the living design code of the 3D-printing tools." />
+    <style>
+      /* until K3's kit.css: just enough to keep a phone from scrolling sideways */
+      /* a display rule must never beat [hidden]: `when` hides rows by it */
+      [hidden] {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        font:
+          14px/1.4 system-ui,
+          sans-serif;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 8px;
+        margin-block: 6px;
+      }
+      .row input[type='range'] {
+        flex: 1 1 120px;
+        min-width: 0;
+      }
+      .row .exact {
+        width: 5em;
+      }
+      .row textarea,
+      .row input[type='text'] {
+        flex: 1 1 160px;
+        min-width: 0;
+      }
+      [aria-pressed='true'] {
+        font-weight: bold;
+      }
+      .disabled {
+        opacity: 0.5;
+      }
+      #status {
+        overflow-wrap: anywhere;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+    </style>
   </head>
   <body>
     <main>
       <h1>maker-kit</h1>
-      <p id="status"></p>
+      <section aria-labelledby="controls-h">
+        <h2 id="controls-h">Controls</h2>
+        <p><button id="undo" type="button">↶ Undo</button> <button id="redo" type="button">↷ Redo</button></p>
+        <div id="panel"></div>
+        <p id="status"></p>
+      </section>
     </main>
     <script type="module" src="./main.ts"></script>
   </body>
