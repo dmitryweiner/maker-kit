@@ -48,6 +48,22 @@ the user are at the top; deviations go to the end as they happen.
 
 None at the moment.
 
+## Status (2026-11-09)
+
+| Milestone | State |
+|---|---|
+| K0 — repository | done, on `main`, tag `v0.1.0` |
+| K1 — core | done (PR #2) |
+| K2 — controls | done (PR #3) |
+| K3 — design | done, screenshots approved (PR #4) |
+| K4 — ui | done (PR #5) |
+| K5 — 3d and worker | done (PR #6); after merging, tag `v0.2.0` (`package.json` says 0.2.0) |
+| K6 — harness | next |
+| M1, M2, K7, C1, M3 | not started |
+
+Where a module's API below differs from what was built, the deviation at
+the end of this file and `docs/` are right.
+
 ## What the three apps have
 
 | Piece | Case Constructor | Plate Builder | Cast Builder | Taken from |

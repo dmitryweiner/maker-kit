@@ -1,4 +1,4 @@
-// A stand-in for the 3D view until K5's viewer: the bed's grid and a box on
+// The 3D view's stand-in where there is no WebGL: the bed's grid and a box on
 // it, drawn in SVG in the projection the camera chips pick. Z is up, as in
 // printing; the box follows the panel's width and height.
 

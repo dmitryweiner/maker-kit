@@ -104,6 +104,12 @@ presetStatus(ref, state, find, signature);      // 'none' | 'same' | 'changed'
 - 📄 New opens the app's blank preset, `{ id: 'blank', listed: false }`, as
   one undo step; its name (`preset.blank.name`) becomes the project's.
 
+## core/progress
+
+`JobProgress<C> = { step, total, label?: Message<C> }`: what a running job
+says about itself. The worker sends it (`worker/serve`), the bar shows it
+(`ui/progress`).
+
 ## i18n — the kit's strings
 
 `maker-kit/i18n/index`: `kitEn`, `kitRu`, `kitUk`, `kitHe`, `KitKey`,
@@ -113,4 +119,8 @@ presetStatus(ref, state, find, signature);      // 'none' | 'same' | 'changed'
 export const en = { ...kitEn, 'app.title': 'Plate Builder', … };
 ```
 
-Components of the kit take `Translate<K>` with `K extends KitKey`.
+Key groups: `kit.control.*` (−/+), `kit.file.*` (project file refusals),
+`kit.storage.*` (the banner), `kit.topbar.*`, `kit.sheet.*`,
+`kit.modal.close`, `kit.preset.*` (the presets dialog),
+`kit.progress.building`, `kit.mesh.*` (the export gate). Components take
+the app's translate function, whose keys include the kit's (`docs/ui.md`).

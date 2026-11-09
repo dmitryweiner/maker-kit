@@ -59,7 +59,7 @@ does nothing) and `disabled` (shown, greyed); choices take
 field; `_dec` / `_inc`; `_v<value>` a value button; `_<value>` a segment or
 toggle; `_note`; `_label` the name of a segmented or toggles group.
 
-**Classes** (styled by `kit.css`, K3): `row` with `range-row`, `check-row`,
+**Classes** (styled by `kit.css`): `row` with `range-row`, `check-row`,
 `text-row`, `segmented-row`; `row-name`, `row-note`, `adj-btn`, `exact`,
 `unit`, `values`, `value-btn`, `segmented`, `seg-btn` (`active`),
 `row-btn`; `disabled` on a greyed row.
@@ -100,8 +100,12 @@ screen it does nothing.
 ```ts
 const progress = createProgress(viewProgress, { t });
 progress.track(client.run(job));                                         // a preview: after 300 ms, no text
-progress.track((onProgress) => client.run(job, onProgress), { label: 'export.stl', delayMs: 0 });   // an export
+progress.track((onProgress) => client.run(job, (p) => onProgress(stage(p))), { label: 'export.stl', delayMs: 0 });   // an export
 progress.refresh();   // after a language switch
+
+/** A worker's stage codes are strings: the app keeps those that are its keys. */
+const stage = (p: JobProgress): JobProgress<Key> =>
+  p.label && isKey(p.label.code) ? { ...p, label: { code: p.label.code, params: p.label.params } } : { step: p.step, total: p.total };
 ```
 
 One bar for any number of jobs: up while any runs (once up, the jobs under

@@ -9,6 +9,14 @@ import { createViewer } from 'maker-kit/3d/viewer';
 import { moduleWorker, WorkerClient } from 'maker-kit/worker/client';
 import { isWorkerOut } from 'maker-kit/worker/protocol';
 import { serveJobs } from 'maker-kit/worker/serve';
+import type { JobProgress } from 'maker-kit/core/progress';
+import { createProgress } from 'maker-kit/ui/progress';
+import { en, t, type Key } from './use';
+
+const isKey = (code: string): code is Key => Object.hasOwn(en, code);
+/** A worker's stage codes are strings: the app keeps those that are its keys (docs/ui.md). */
+const stage = (p: JobProgress): JobProgress<Key> =>
+  p.label && isKey(p.label.code) ? { ...p, label: { code: p.label.code, params: p.label.params } } : { step: p.step, total: p.total };
 
 export function roundTripStl(): { file: string; triangles: number; blockers: number } {
   const box = boxMesh(20, 10, 5);
@@ -25,7 +33,10 @@ export function startView(canvas: HTMLCanvasElement): void {
     moduleWorker(() => new Worker(new URL('./model.ts', import.meta.url), { type: 'module' })),
     { lane: () => 'mesh', kept: () => false },
   );
-  void client.run({ size: 10 }).then((done) => done && viewer?.setMeshes([{ mesh: done.result }]));
+  const progress = createProgress(document.createElement('div'), { t });
+  void progress
+    .track((onProgress) => client.run({ size: 10 }, (p) => onProgress(stage(p))), { label: 'hello', delayMs: 0 })
+    .then((done) => done && viewer?.setMeshes([{ mesh: done.result }]));
 }
 
 export const reply = isWorkerOut;

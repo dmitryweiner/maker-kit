@@ -1,8 +1,9 @@
 // Browser smoke of the showcase: at phone and desktop width, in each accent
 // and language (Hebrew mirrored), no horizontal scroll and no console
-// errors; the sheet, the dialog and the bar over the view in their states;
-// the panel's −/+ and undo in a real browser. With --shots it saves a
-// screenshot of every state for a design review.
+// errors; the sheet, the dialog, the banner and the bar over the view in
+// their states; the worker's mesh in the viewer and the STL export; the
+// panel's −/+, undo keys, the presets flow in a real browser. With --shots
+// it saves a screenshot of every state for a design review.
 //
 //   npm run smoke               # dev server
 //   npm run smoke -- --preview  # a fresh production build

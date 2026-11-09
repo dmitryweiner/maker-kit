@@ -7,7 +7,8 @@ const client = new WorkerClient<Job, Result>(
   moduleWorker(() => new Worker(new URL('./csg.worker.ts', import.meta.url), { type: 'module' })),
   { lane: (job) => job.kind, kept: (job) => job.quality === 'export', transfer: (job) => [job.image.buffer] },
 );
-const done = await progress.track((onProgress) => client.run(job, onProgress));   // ui/progress
+// ui/progress; `stage` keeps the stage codes that are the app's keys (docs/ui.md)
+const done = await progress.track((onProgress) => client.run(job, (p) => onProgress(stage(p))));
 if (done) show(done.result, done.ms);   // null: a fresher job replaced this one
 ```
 
