@@ -5,6 +5,7 @@ import { kitEn, kitHe, kitRu, kitUk } from '../src/i18n/index';
 
 export const en = {
   ...kitEn,
+  'demo.stage.box': 'Building the box…',
   'demo.preset.blank': 'New box',
   'demo.preset.auto': 'Box {n}',
   'demo.showcase': 'Showcase',
@@ -70,6 +71,7 @@ type Dict = Readonly<Record<Key, string>>;
 
 export const ru: Dict = {
   ...kitRu,
+  'demo.stage.box': 'Строю коробку…',
   'demo.preset.blank': 'Новая коробка',
   'demo.preset.auto': 'Коробка {n}',
   'demo.showcase': 'Витрина',
@@ -132,6 +134,7 @@ export const ru: Dict = {
 
 export const uk: Dict = {
   ...kitUk,
+  'demo.stage.box': 'Будую коробку…',
   'demo.preset.blank': 'Нова коробка',
   'demo.preset.auto': 'Коробка {n}',
   'demo.showcase': 'Вітрина',
@@ -194,6 +197,7 @@ export const uk: Dict = {
 
 export const he: Dict = {
   ...kitHe,
+  'demo.stage.box': 'בונה את הקופסה…',
   'demo.preset.blank': 'קופסה חדשה',
   'demo.preset.auto': 'קופסה {n}',
   'demo.showcase': 'תצוגה',

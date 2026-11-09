@@ -60,6 +60,10 @@ For joint work on an app and the kit: `npm link ../maker-kit` in the app.
   `kit.*` keys in `src/i18n/`, which apps spread into their dictionaries.
 - Time, randomness, storage and browser APIs are parameters, so tests fake
   them.
+- Typed arrays in geometry loops are read as `a[i]!`: the indices come from
+  the loop's bounds or a checked mesh (`3d/mesh.ts` says so at its top).
+- `3d/viewer` is the only module vitest does not load; the showcase's smoke
+  drives it (and the showcase's module worker) in Chromium.
 - No `as` casts in sources (`typescript/no-unsafe-type-assertion`); tests
   may cast test doubles.
 - An option is added to a module only when two apps need it; otherwise the
@@ -85,9 +89,13 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `src/styles/` — `tokens.css` (palette, accents, density) and `kit.css`
   (everything in `@layer kit`, imports the tokens); the rules CSS cannot
   say are in `docs/design.md`.
-- `src/3d/`, `src/worker/` — filled by K5.
+- `src/3d/` — `mesh`, `validate`, `stl` (no three, workers use them) and
+  `viewer` (three) (`docs/3d.md`).
+- `src/worker/` — `protocol`, `client` (`WorkerClient`, `moduleWorker`),
+  `serve` (`serveJobs`) (`docs/worker.md`).
 - `showcase/` — a Vite page with every component, laid out as an app on the
-  kit (the root of `vite.config.ts`); deployed to Pages. `?accent=…&lang=…&
+  kit, its box built by a module worker (`box.worker.ts`) and shown by the
+  viewer (the root of `vite.config.ts`); deployed to Pages. `?accent=…&lang=…&
   sheet=open&modal=presets&progress=running|label&banner=1&frame=phone`
   open a state directly (the smoke's screenshots use them).
 - `consumer/` — a fixture app that gets the packed kit in its `node_modules`.

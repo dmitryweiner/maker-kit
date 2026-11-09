@@ -27,7 +27,8 @@
 
     <div class="workspace">
       <main id="view" class="view">
-        <div id="scene" class="view-placeholder"></div>
+        <canvas id="viewCanvas"></canvas>
+        <div id="scene" class="view-placeholder" hidden></div>
         <div class="chips">
           <button class="chip" type="button" data-view="iso" aria-pressed="true">Iso</button>
           <button class="chip" type="button" data-view="top" aria-pressed="false">Top</button>
@@ -82,7 +83,7 @@
 
         <section class="card">
           <h2 data-i18n="demo.buttons"></h2>
-          <p><button class="btn primary wide" type="button" data-i18n="demo.download"></button></p>
+          <p><button id="downloadStl" class="btn primary wide" type="button" data-i18n="demo.download"></button></p>
           <p class="segmented">
             <button class="btn" type="button" data-i18n="demo.secondary"></button>
             <button class="btn" type="button" disabled data-i18n="demo.disabled"></button>

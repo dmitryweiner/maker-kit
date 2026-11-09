@@ -2,6 +2,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   base: './',
+  // three is half a megabyte of the bundle: known, not news
+  build: { chunkSizeWarningLimit: 700 },
+  worker: { format: 'es' },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],

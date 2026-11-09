@@ -6,4 +6,6 @@ export default defineConfig({
   // Relative base lets the build work both on GitHub Pages (/<repo>/) and from any static folder.
   base: './',
   build: { outDir: '../dist', emptyOutDir: true },
+  // the showcase's job worker is a module worker, as an app's CSG worker is
+  worker: { format: 'es' },
 });

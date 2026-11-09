@@ -717,3 +717,24 @@ the apps, then extended).
   `dispose()`; `isTextEntry` does not count contenteditable (no app uses
   it, jsdom does not know it); `renderPresetList` draws nothing for the same
   list, so a name being typed keeps its focus.
+- **K5 — `moduleWorker(create)`, not `moduleWorker(url)`** (2026-11-09): Vite
+  finds and bundles a worker only by `new Worker(new URL('./x.worker.ts',
+  import.meta.url), { type: 'module' })` in the app's own code, so the app
+  passes a function that makes it.
+- **K5 — `serveJobs({ isJob, handle, scope?, now? })`** (2026-11-09): the
+  worker checks what came through `postMessage` with the app's guard; the
+  scope and the clock are parameters for tests. `WorkerClient` also has
+  `dispose()`. Progress labels are `Message`s; an app maps their codes to
+  its keys when it hands them to the bar.
+- **K5 — the viewer** (2026-11-09): parts take an `IndexedMesh` (normals are
+  creased anew); the model stands on the bed, centred, and `model` moves with
+  it, so an app's own objects stay in place; `recolor()` reads the colour
+  tokens again after an accent change; the camera fits the part of the view
+  the sheet leaves free, with room around the model (1.7 × its bounding
+  sphere; Plate Builder had 1.1 and the model filled the view). Camera
+  presets are the kit's frame: `top`, `front`, `side`, `bottom`, `iso`;
+  Plate Builder's "front" of a flat plate is the kit's `top`.
+- **K5 — `assessExport` returns `{ blockers, warnings }`** (Cast Builder's
+  names were `blocking`); Case Constructor's largest-part check stays in the
+  app (one app needs it). `boxMesh` is in `3d/mesh`: the showcase's model,
+  the tests' solid.

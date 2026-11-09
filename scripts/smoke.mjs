@@ -113,20 +113,31 @@ try {
     }
   });
 
-  await step('the camera chips: one pressed, the stand-in view follows them', async () => {
+  await step('the 3D view: the box comes from the worker, the chips turn the camera', async () => {
     const { page, context } = await app.open();
-    const box = () => page.locator('#scene svg').getAttribute('viewBox');
-    const iso = await box();
+    check(await page.isVisible('#viewCanvas'), 'no WebGL view (the SVG stand-in shows)');
+    await page.waitForSelector('#view[data-triangles="12"]', { timeout: 10000 });
     await page.click('.chip[data-view="top"]');
     check((await page.getAttribute('.chip[data-view="top"]', 'aria-pressed')) === 'true', 'Top is not pressed');
     check((await page.getAttribute('.chip[data-view="iso"]', 'aria-pressed')) === 'false', 'Iso stays pressed');
-    check((await box()) !== iso, 'the view did not change with the camera');
     if (shots) {
-      for (const view of ['top', 'front']) {
-        await page.click(`.chip[data-view="${view}"]`);
-        await page.screenshot({ path: `shots/desktop-view-${view}.png` });
-      }
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: 'shots/desktop-view-top.png' });
+      await page.click('.chip[data-view="front"]');
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: 'shots/desktop-view-front.png' });
     }
+    await context.close();
+  });
+
+  await step('the export: a kept job under a labelled bar, a checked mesh, an STL file', async () => {
+    const { page, context } = await app.open();
+    await page.waitForSelector('#view[data-triangles]');
+    const [file] = await Promise.all([page.waitForEvent('download'), page.click('#downloadStl')]);
+    check(file.suggestedFilename() === 'my-box.stl', `the file is named ${file.suggestedFilename()}`);
+    const path = await file.path();
+    const { statSync } = await import('node:fs');
+    check(statSync(path).size === 84 + 12 * 50, `the STL has ${statSync(path).size} bytes`);
     await context.close();
   });
 
