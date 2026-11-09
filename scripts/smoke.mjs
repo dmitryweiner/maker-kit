@@ -39,6 +39,42 @@ try {
       await context.close();
     });
   }
+  await step('− and + step by a click and repeat while held, each one undo step', async () => {
+    const { page, context } = await app.open();
+    const width = () => page.inputValue('#demo_width_n');
+    await page.click('#demo_width_inc');
+    check((await width()) === '60.5', `a click stepped to ${await width()}`);
+    const plus = page.locator('#demo_width_inc');
+    const box = await plus.boundingBox();
+    check(box, 'no + button');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(1000);
+    await page.mouse.up();
+    const held = Number(await width());
+    check(held >= 62.5, `a hold of 1 s stepped only to ${held}`);
+    await page.click('#undo');
+    check((await width()) === '60.5', `undo after a hold went to ${await width()}, not to before it`);
+    await page.click('#undo');
+    check((await width()) === '60', `undo after a click went to ${await width()}`);
+    await context.close();
+  });
+
+  await step('a slider drag and a typed value are one step each; hidden and disabled rows', async () => {
+    const { page, context } = await app.open();
+    await page.fill('#demo_width_n', '1000');
+    await page.press('#demo_width_n', 'Enter');
+    check((await page.inputValue('#demo_width')) === '200', 'a typed value is not clamped');
+    await page.click('#demo_shape_cylinder');
+    check(await page.locator('#demo_height').isHidden(), 'the height of a cylinder is shown');
+    check(await page.locator('#demo_walls_left').isDisabled(), 'a cylinder has a left wall');
+    await page.check('#demo_locked');
+    check(await page.locator('#demo_width_inc').isDisabled(), 'a locked width can be stepped');
+    await page.click('#demo_spin_v90');
+    check((await page.inputValue('#demo_spin_n')) === '90', 'a value button did not set the value');
+    await context.close();
+  });
+
   check(app.errors.length === 0, `console errors:\n${app.errors.join('\n')}`);
   console.log('smoke passed');
 } catch (error) {

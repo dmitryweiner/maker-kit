@@ -17,7 +17,7 @@ export const ru: Record<Key, string> = { ...kitRu, hello: 'Привет, {name}'
 export const t: Translate<Key> = (key, params) => format(en[key], params, 'en');
 
 /** A component of the kit takes the app's translate function: its keys include the kit's. */
-const kitText = <K extends KitKey>(translate: Translate<K>, key: K): string => translate(key);
+const kitText = (translate: Translate<KitKey>, key: KitKey): string => translate(key);
 
 export function greet(value: unknown): string {
   return isMessage(value) && value.code === 'hello' ? messageText({ code: 'hello', params: value.params }, t) : '';

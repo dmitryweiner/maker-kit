@@ -1,6 +1,8 @@
 import type { KitMessages } from './en';
 
 export const kitRu: KitMessages = {
+  'kit.control.decrease': 'Уменьшить: {label}',
+  'kit.control.increase': 'Увеличить: {label}',
   'kit.file.broken': 'Этот файл не читается как проект.',
   'kit.file.foreign': 'Этот файл — не проект этого приложения.',
   'kit.file.newer': 'Проект сделан в более новой версии приложения. Перезагрузите страницу, чтобы получить её.',

@@ -667,3 +667,21 @@ the apps, then extended).
 - **K1 — `kit.file.foreign` names no app** (2026-11-09): "This file is not a
   project of this app." An app name in the sentence would need its own
   grammatical case in Russian and Ukrainian.
+- **K2 — `Translate<NoInfer<K> | KitKey>`, not `K extends KitKey`**
+  (2026-11-09): `K extends KitKey` would make the app's keys a subset of the
+  kit's. A component takes the app's keys `K` (inferred from its rows only)
+  and a translate function that also takes every kit key; an app whose
+  dictionary misses the kit's strings does not compile.
+- **K2 — −/+: a pause before the repeat** (2026-11-09): held, they repeat
+  every 150 ms after 400 ms (Case Constructor and Cast Builder repeated from
+  the first 150 ms, so a slow click stepped twice). A press is a live change
+  and the release the final one: a click is a live step plus a final change
+  (Plate Builder had one final change), still one undo step.
+- **K2 — names** (2026-11-09): value buttons have ids `<prefix>_<key>_v<value>`
+  and class `value-btn` (Cast Builder's `preset-btn`: "preset" means a whole
+  project in the kit); a segmented group is labelled by `<id>_label`; the
+  row's name is `row-name` (Plate Builder's, Case Constructor had
+  `row-label`). Timers are `ui/timers` (`window.setTimeout` is the page's).
+- **K2 — for K3** (2026-11-09): `when` hides rows by `hidden`; `kit.css`
+  must keep `[hidden] { display: none !important }`, or a row's
+  `display: grid` shows a hidden row (the showcase smoke caught it).

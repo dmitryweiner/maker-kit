@@ -4,6 +4,9 @@
 // every language" test covers them too. Templates: core/format.
 
 export const kitEn = {
+  // − and + beside a slider (ui/controls): their aria-label names the row
+  'kit.control.decrease': 'Decrease {label}',
+  'kit.control.increase': 'Increase {label}',
   // a project file that cannot be opened (core/projectFile)
   'kit.file.broken': 'This file is not a readable project.',
   'kit.file.foreign': 'This file is not a project of this app.',
