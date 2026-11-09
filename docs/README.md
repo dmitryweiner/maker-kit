@@ -10,6 +10,7 @@
   keys, the language picker, files.
 - `3d.md` — meshes, the export gate, STL, the 3D viewer.
 - `worker.md` — the job worker: client, serveJobs, protocol.
-- `harness.md` — the smoke harness (K6).
+- `harness.md` — the smoke harness: the server, pages, steps and the run,
+  downloads, STL files, CPU throttling.
 
 The plan, its decisions and deviations: `../plans/PLAN.md`.

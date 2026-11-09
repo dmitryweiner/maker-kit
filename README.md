@@ -47,7 +47,7 @@ The app's toolchain compiles the kit's sources:
 | `worker` | `protocol`, `client`, `serve` | [docs/worker.md](docs/worker.md) |
 | `i18n` | the kit's strings in en, ru, uk, he | [docs/core.md](docs/core.md#i18n--the-kits-strings) |
 | `styles` | `tokens.css`, `kit.css` | [docs/design.md](docs/design.md) |
-| `harness` | the Playwright plumbing of an app's smoke | `scripts/harness.d.mts` |
+| `harness` | the Playwright plumbing of an app's smoke | [docs/harness.md](docs/harness.md) |
 
 ## Develop
 

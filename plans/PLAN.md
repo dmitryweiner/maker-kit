@@ -57,9 +57,10 @@ None at the moment.
 | K2 — controls | done (PR #3) |
 | K3 — design | done, screenshots approved (PR #4) |
 | K4 — ui | done (PR #5) |
-| K5 — 3d and worker | done (PR #6); after merging, tag `v0.2.0` (`package.json` says 0.2.0) |
-| K6 — harness | next |
-| M1, M2, K7, C1, M3 | not started |
+| K5 — 3d and worker | done (PR #6), tag `v0.2.0` |
+| K6 — harness | done (PR #7); after merging, tag `v0.3.0` (`package.json` says 0.3.0) |
+| M1 — Plate Builder on the kit | next |
+| M2, K7, C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -754,3 +755,22 @@ the apps, then extended).
   names were `blocking`); Case Constructor's largest-part check stays in the
   app (one app needs it). `boxMesh` is in `3d/mesh`: the showcase's model,
   the tests' solid.
+- **K6 — steps and the run in the harness** (2026-11-09): all three apps and
+  the kit wrote the same `step(name, fn)` and the same try / catch / finally
+  around their steps: `app.step` and `app.run(body, done)` do it (a step
+  prints its time, as Cast Builder's did). `createSteps` is that part apart
+  from the browser, for the unit tests.
+- **K6 — helpers** (2026-11-09): `download(page, selector)` gives
+  `{ name, bytes, path }` (the apps wrote `Promise.all([waitForEvent,
+  click])` five times); `binaryStl(bytes)` checks an STL's size against its
+  count; `settled(page)` (the kit's and Plate Builder's wait for the sheet);
+  `throttle(page, rate)` is a function, not a method of Case Constructor's
+  one-page app; `parseArgs` takes Case Constructor's repeatable flags.
+- **K6 — the offline check stays in the apps** (2026-11-09): Plate Builder
+  and Cast Builder both do it, but the showcase has no service worker, so
+  the kit could not test a helper for it. It can come with K7 if the
+  showcase gets one.
+- **K6 — the harness is tested** (2026-11-09): `scripts/harness.test.ts`
+  (vitest, node) covers the flags, the STL check and the run; the showcase's
+  smoke uses every helper and checks that throttling slows the page;
+  `consumer/` imports `maker-kit/harness` with its types.
