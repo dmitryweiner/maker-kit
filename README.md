@@ -31,6 +31,10 @@ The app's toolchain compiles the kit's sources:
   kit passes the strictest options any app uses.
 - Vitest: `test.server.deps.inline: ['maker-kit']` in `vite.config.ts`, so
   the kit is transformed like the app's own files.
+- Vite's dev server: `optimizeDeps: { exclude: ['maker-kit'] }`. Its
+  dependency pre-bundling reads the kit's TypeScript as JavaScript and the
+  server dies (a worker's import of `maker-kit/3d/mesh` showed it); excluded,
+  the kit is served like the app's own files. `vite build` does not need it.
 - A job worker: `worker: { format: 'es' }` in `vite.config.ts`.
 - `three` is a peer dependency; `playwright` too, optional, for
   `maker-kit/harness`.

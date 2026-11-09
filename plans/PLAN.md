@@ -48,7 +48,7 @@ the user are at the top; deviations go to the end as they happen.
 
 None at the moment.
 
-## Status (2026-11-09)
+## Status (2026-11-10)
 
 | Milestone | State |
 |---|---|
@@ -58,8 +58,8 @@ None at the moment.
 | K3 — design | done, screenshots approved (PR #4) |
 | K4 — ui | done (PR #5) |
 | K5 — 3d and worker | done (PR #6), tag `v0.2.0` |
-| K6 — harness | done (PR #7); after merging, tag `v0.3.0` (`package.json` says 0.3.0) |
-| M1 — Plate Builder on the kit | next |
+| K6 — harness | done (PR #7), tag `v0.3.0` |
+| M1 — Plate Builder on the kit | in review: plate-builder PRs #16 core, #17 controls + styles, #18 ui, #19 3d + worker, harness next (stacked, merged in that order); the kit's fixes it found in PR #8 → `v0.3.1` |
 | M2, K7, C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
@@ -774,3 +774,23 @@ the apps, then extended).
   (vitest, node) covers the flags, the STL check and the run; the showcase's
   smoke uses every helper and checks that throttling slows the page;
   `consumer/` imports `maker-kit/harness` with its types.
+- **M1 — the dev server skips the kit in pre-bundling** (2026-11-10): Vite's
+  dependency optimizer read the kit's TypeScript as JavaScript and the dev
+  server died (Plate Builder's worker importing `maker-kit/3d/mesh`); K0's
+  consumer ran only `vite build`. Apps set `optimizeDeps: { exclude:
+  ['maker-kit'] }`; `npm run consumer` now loads the consumer's page on a
+  dev server in Chromium (CI installs Chromium before it). `v0.3.1`.
+- **M1 — `parseArgs` overloads** (2026-11-10): without repeatable flags its
+  values are `string`; a type-aware lint of an app's script tripped on
+  `string | string[]` in template literals.
+- **M1 — what Plate Builder shows differently** (2026-11-10), beyond −/+
+  held: the kit's presets dialog (its user presets first, groups, ↗ open,
+  two-tap delete), the storage banner under the top bar in the kit's words
+  (blocked in red, full in the warn colour; its save button gone), the
+  export gate's sentences (`kit.mesh.*`), the 3D view's 1.7 × fit and
+  token colours, the check row's 18 px box, a foreign file "not a project
+  of this app". Its density stays its own by tokens (14 px text, 36 px
+  controls on a phone, 88 px names); whether to take the kit's 16 px and
+  40 px is the user's call. Built-in preset names moved into the
+  dictionaries (`preset.<id>.name`); a preset's state keeps its English
+  project name, as before.
