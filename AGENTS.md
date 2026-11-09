@@ -74,9 +74,12 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 ## Layout
 
 - `src/core/` — no DOM: `message` (the i18n contract's types, `Message`),
-  more with K1.
-- `src/ui/`, `src/3d/`, `src/worker/`, `src/i18n/`, `src/styles/` — filled by
-  K1–K6.
+  `format`, `history`, `storage`, `projectFile`, `presets` (`docs/core.md`).
+- `src/i18n/` — the kit's own strings, `kit.*` keys, en ru uk he; `en.ts`
+  defines `KitKey`.
+- `src/ui/` — DOM, no three: `files` (download, the file dialog); more with
+  K2 and K4.
+- `src/3d/`, `src/worker/`, `src/styles/` — filled by K3–K5.
 - `showcase/` — a Vite page with every component (the root of
   `vite.config.ts`); deployed to Pages.
 - `consumer/` — a fixture app that gets the packed kit in its `node_modules`.
