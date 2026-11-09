@@ -7,6 +7,10 @@
 //   ?accent=emerald&lang=he&view=top&sheet=open&modal=presets&progress=running|label&banner=full|blocked&frame=phone
 
 import '../src/styles/kit.css';
+import type { SurfaceMesh } from '../src/3d/mesh';
+import { encodeSTL, stlFileName } from '../src/3d/stl';
+import { assessExport, validateMesh } from '../src/3d/validate';
+import { createViewer } from '../src/3d/viewer';
 import './showcase.css';
 import { format } from '../src/core/format';
 import { History } from '../src/core/history';
@@ -35,6 +39,8 @@ import { createModal } from '../src/ui/modal';
 import { renderPresetList } from '../src/ui/presetList';
 import { createProgress } from '../src/ui/progress';
 import { setupSheet } from '../src/ui/sheet';
+import { WorkerClient, moduleWorker } from '../src/worker/client';
+import type { BoxJob } from './boxJob';
 import { dictionaries, isLocale, LOCALES, type Key, type Locale } from './i18n';
 import { drawScene, isView, type View } from './scene';
 
@@ -305,7 +311,18 @@ function start(): void {
     canUndo: () => history.canUndo,
     canRedo: () => history.canRedo,
   });
+  // ---- the 3D view: the kit's viewer, the box built in a worker; the SVG stand-in without WebGL ----
+  const viewer = createViewer(el('viewCanvas', HTMLCanvasElement));
+  el('scene', HTMLElement).hidden = viewer !== null;
+  el('viewCanvas', HTMLCanvasElement).hidden = viewer === null;
+  const client = new WorkerClient<BoxJob, SurfaceMesh>(
+    moduleWorker(() => new Worker(new URL('./box.worker.ts', import.meta.url), { type: 'module' })),
+    { lane: () => 'box', kept: (job) => job.export },
+  );
+  let built = '';
+
   setupSheet({
+    onInset: (px) => viewer?.setInset(px),
     panel: el('panel', HTMLElement),
     button: el('sheetOpen', HTMLButtonElement),
     close: el('sheetClose', HTMLButtonElement),
@@ -340,6 +357,29 @@ function start(): void {
     else history.live(next);
     show();
   };
+  /** A worker job under the bar; its stages come back as messages, checked against the dictionary. */
+  const run = (job: BoxJob, label?: Key) =>
+    progress.track(
+      (onProgress) =>
+        client.run(job, (p) => {
+          const stage = p.label && isKey(p.label.code) ? { code: p.label.code, params: p.label.params } : undefined;
+          onProgress({ step: p.step, total: p.total, label: stage });
+        }),
+      label ? { label, delayMs: 0 } : {},
+    );
+  /** Builds the box again when its size changes; a fresher request replaces a waiting one. */
+  function build(state: Demo): void {
+    const key = `${state.width}x${state.height}`;
+    if (key === built) return;
+    built = key;
+    void run({ width: state.width, depth: 40, height: state.height, export: false }).then((done) => {
+      if (!done) return;
+      viewer?.setMeshes([{ mesh: done.result }]);
+      // for the smoke: what the view shows now
+      el('view', HTMLElement).dataset.triangles = String(done.result.indices.length / 3);
+    });
+  }
+
   const changeShowcase = (next: ShowcaseState): void => {
     if (next.frame) {
       location.search = new URLSearchParams({ accent: next.accent, lang: locale, frame: 'phone' }).toString();
@@ -348,6 +388,7 @@ function start(): void {
     if (next.banner !== showcase.banner) storage = { project: next.banner ? 'full' : 'ok', preset: null };
     showcase = next;
     show();
+    viewer?.recolor();
   };
   /** what a preset action's write gave: the showcase keeps nothing, the banner shows the switch's failure */
   const presetWrite = (action: 'save' | 'delete'): void => {
@@ -414,7 +455,8 @@ function start(): void {
       },
     });
     el('viewStatus', HTMLElement).textContent = fileNote || `${state.width} × ${state.height} mm`;
-    drawScene(el('scene', HTMLElement), view, state);
+    if (viewer) build(state);
+    else drawScene(el('scene', HTMLElement), view, state);
     for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip'))
       chip.setAttribute('aria-pressed', String(chip.dataset.view === view));
     renderPresetList(el('presetList', HTMLElement), {
@@ -473,9 +515,22 @@ function start(): void {
   for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip')) {
     chip.addEventListener('click', () => {
       if (isView(chip.dataset.view)) view = chip.dataset.view;
+      viewer?.camera(view);
       show();
     });
   }
+
+  // ---- the export: a kept job, its mesh checked before the file is made ----
+  el('downloadStl', HTMLButtonElement).addEventListener('click', () => {
+    const { name, width, height } = history.state;
+    void run({ width, depth: 40, height, export: true }, 'demo.jobs.exporting').then((done) => {
+      if (!done) return;
+      const { blockers } = assessExport(validateMesh(done.result), true);
+      fileNote = blockers.map((message) => t(message.code, message.params)).join(' ');
+      if (blockers.length === 0) download(stlFileName(name, 'box'), encodeSTL(done.result, { brand: 'maker-kit', name }), 'model/stl');
+      show();
+    });
+  });
 
   // ---- the bar over the view: one bar for any number of jobs, after 300 ms ----
   el('jobsTwo', HTMLButtonElement).addEventListener('click', () => {
@@ -504,6 +559,9 @@ function start(): void {
   if (params.get('progress') === 'label') void progress.track(forever, { label: 'demo.jobs.exporting', delayMs: 0 });
 
   render();
+  // the accent is on <html> only now: the view takes its colours again
+  viewer?.recolor();
+  if (view !== 'iso') viewer?.camera(view);
   if (params.get('modal') === 'presets') presetsDialog.open(presetsOpen);
 }
 

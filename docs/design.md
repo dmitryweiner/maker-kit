@@ -62,7 +62,10 @@ import 'maker-kit/styles/kit.css';   // tokens included
   on a 360 px screen; from 760 px everything is one line, tools 40 px, gap
   6 px.
 - Tools are icons; each has its name as `title` and `aria-label`
-  (`kit.topbar.*`). Undo and redo are disabled when there is nothing to do.
+  (`kit.topbar.*`). Undo and redo are disabled when there is nothing to do
+  (`ui/historyKeys`).
+- The language picker is `ui/languagePicker`, appended at the end of
+  `.topbar`; the CSS orders it.
 
 ## Cards
 
@@ -100,6 +103,15 @@ Width   [−] ━━━━●━━━━ [+] [ 60.5 ] mm
 - A line mixing numbers and words in an RTL page keeps its order with
   `unicode-bidi: plaintext` (the view's status) or `dir="auto"` (text fields).
 
+## The 3D view
+
+The model in a warm white plastic over a grid of 1 cm cells, lit low from
+one side; the background is `--bg`, the grid `--line` with its centre
+lines towards `--muted`, so an accent with its own neutrals (burgundy)
+tints the view too. Camera chips over the view's top end corner. The model
+fits with room around it; on a phone, in the part the open sheet leaves
+free. Without WebGL the app goes on without its view.
+
 ## Severity
 
 | | colour | used for |
@@ -136,7 +148,9 @@ phone it sits above the settings button, on a desktop above the status.
 
 One scheme, used by every app's smoke: `<prefix>_<key>` the input; `_n` a
 range's exact field; `_dec` / `_inc`; `_v<value>` a value button; `_<value>`
-a segment or toggle; `_note`; `_label` a group's name.
+a segment or toggle; `_note`; `_label` a group's name. A folding card is
+`card_<id>`, its body `card_<id>_body`; a preset's row carries
+`data-ref="b:<id>"` or `"u:<id>"`.
 
 ## RTL
 

@@ -3,6 +3,13 @@ import type { KitMessages } from './en';
 export const kitHe: KitMessages = {
   'kit.control.decrease': 'הקטנה: {label}',
   'kit.control.increase': 'הגדלה: {label}',
+  'kit.mesh.nonFinite': 'ברשת יש קואורדינטות לא תקינות.',
+  'kit.mesh.badIndices': 'אינדקסי המשולשים ברשת פגומים.',
+  'kit.mesh.empty': 'החלק ריק.',
+  'kit.mesh.flat': 'החלק שטוח.',
+  'kit.mesh.open': 'הרשת אינה סגורה — תוכנת ההדפסה לא תדפיס אותה.',
+  'kit.mesh.inverted': 'הרשת הפוכה.',
+  'kit.mesh.degenerate': '{count} משולשים מנוונים ({pct} %).',
   'kit.topbar.presets': 'תבניות',
   'kit.topbar.new': 'פרויקט חדש',
   'kit.topbar.savePreset': 'שמירה כתבנית',

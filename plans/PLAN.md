@@ -48,6 +48,22 @@ the user are at the top; deviations go to the end as they happen.
 
 None at the moment.
 
+## Status (2026-11-09)
+
+| Milestone | State |
+|---|---|
+| K0 — repository | done, on `main`, tag `v0.1.0` |
+| K1 — core | done (PR #2) |
+| K2 — controls | done (PR #3) |
+| K3 — design | done, screenshots approved (PR #4) |
+| K4 — ui | done (PR #5) |
+| K5 — 3d and worker | done (PR #6); after merging, tag `v0.2.0` (`package.json` says 0.2.0) |
+| K6 — harness | next |
+| M1, M2, K7, C1, M3 | not started |
+
+Where a module's API below differs from what was built, the deviation at
+the end of this file and `docs/` are right.
+
 ## What the three apps have
 
 | Piece | Case Constructor | Plate Builder | Cast Builder | Taken from |
@@ -717,3 +733,24 @@ the apps, then extended).
   `dispose()`; `isTextEntry` does not count contenteditable (no app uses
   it, jsdom does not know it); `renderPresetList` draws nothing for the same
   list, so a name being typed keeps its focus.
+- **K5 — `moduleWorker(create)`, not `moduleWorker(url)`** (2026-11-09): Vite
+  finds and bundles a worker only by `new Worker(new URL('./x.worker.ts',
+  import.meta.url), { type: 'module' })` in the app's own code, so the app
+  passes a function that makes it.
+- **K5 — `serveJobs({ isJob, handle, scope?, now? })`** (2026-11-09): the
+  worker checks what came through `postMessage` with the app's guard; the
+  scope and the clock are parameters for tests. `WorkerClient` also has
+  `dispose()`. Progress labels are `Message`s; an app maps their codes to
+  its keys when it hands them to the bar.
+- **K5 — the viewer** (2026-11-09): parts take an `IndexedMesh` (normals are
+  creased anew); the model stands on the bed, centred, and `model` moves with
+  it, so an app's own objects stay in place; `recolor()` reads the colour
+  tokens again after an accent change; the camera fits the part of the view
+  the sheet leaves free, with room around the model (1.7 × its bounding
+  sphere; Plate Builder had 1.1 and the model filled the view). Camera
+  presets are the kit's frame: `top`, `front`, `side`, `bottom`, `iso`;
+  Plate Builder's "front" of a flat plate is the kit's `top`.
+- **K5 — `assessExport` returns `{ blockers, warnings }`** (Cast Builder's
+  names were `blocking`); Case Constructor's largest-part check stays in the
+  app (one app needs it). `boxMesh` is in `3d/mesh`: the showcase's model,
+  the tests' solid.

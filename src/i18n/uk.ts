@@ -3,6 +3,13 @@ import type { KitMessages } from './en';
 export const kitUk: KitMessages = {
   'kit.control.decrease': 'Зменшити: {label}',
   'kit.control.increase': 'Збільшити: {label}',
+  'kit.mesh.nonFinite': 'У меші є нечислові координати.',
+  'kit.mesh.badIndices': 'У меші зіпсовано індекси трикутників.',
+  'kit.mesh.empty': 'Деталь порожня.',
+  'kit.mesh.flat': 'Деталь пласка.',
+  'kit.mesh.open': 'Меш не замкнено — слайсер його не надрукує.',
+  'kit.mesh.inverted': 'Меш вивернуто навиворіт.',
+  'kit.mesh.degenerate': 'Вироджених трикутників: {count} ({pct} %).',
   'kit.topbar.presets': 'Пресети',
   'kit.topbar.new': 'Новий проєкт',
   'kit.topbar.savePreset': 'Зберегти як пресет',

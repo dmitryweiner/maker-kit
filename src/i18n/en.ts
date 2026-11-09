@@ -7,6 +7,14 @@ export const kitEn = {
   // − and + beside a slider (ui/controls): their aria-label names the row
   'kit.control.decrease': 'Decrease {label}',
   'kit.control.increase': 'Increase {label}',
+  // what blocks an export or warns about it (3d/validate)
+  'kit.mesh.nonFinite': 'The mesh has non-finite coordinates.',
+  'kit.mesh.badIndices': 'The mesh has broken triangle indices.',
+  'kit.mesh.empty': 'The part is empty.',
+  'kit.mesh.flat': 'The part is flat.',
+  'kit.mesh.open': 'The mesh is not closed — a slicer would not print it.',
+  'kit.mesh.inverted': 'The mesh is inside out.',
+  'kit.mesh.degenerate': '{count} degenerate triangles ({pct} %).',
   // the top bar: the tools' labels, in its order (docs/design.md)
   'kit.topbar.presets': 'Presets',
   'kit.topbar.new': 'New project',

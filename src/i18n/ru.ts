@@ -3,6 +3,13 @@ import type { KitMessages } from './en';
 export const kitRu: KitMessages = {
   'kit.control.decrease': 'Уменьшить: {label}',
   'kit.control.increase': 'Увеличить: {label}',
+  'kit.mesh.nonFinite': 'В меше есть нечисловые координаты.',
+  'kit.mesh.badIndices': 'В меше испорчены индексы треугольников.',
+  'kit.mesh.empty': 'Деталь пустая.',
+  'kit.mesh.flat': 'Деталь плоская.',
+  'kit.mesh.open': 'Меш не замкнут — слайсер его не напечатает.',
+  'kit.mesh.inverted': 'Меш вывернут наизнанку.',
+  'kit.mesh.degenerate': 'Вырожденных треугольников: {count} ({pct} %).',
   'kit.topbar.presets': 'Пресеты',
   'kit.topbar.new': 'Новый проект',
   'kit.topbar.savePreset': 'Сохранить как пресет',
