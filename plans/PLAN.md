@@ -59,8 +59,9 @@ None at the moment.
 | K4 — ui | done (PR #5) |
 | K5 — 3d and worker | done (PR #6), tag `v0.2.0` |
 | K6 — harness | done (PR #7), tag `v0.3.0` |
-| M1 — Plate Builder on the kit | in review: plate-builder PRs #16 core, #17 controls + styles, #18 ui, #19 3d + worker, harness next (stacked, merged in that order); the kit's fixes it found in PR #8 → `v0.3.1` |
-| M2, K7, C1, M3 | not started |
+| M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
+| M2 — Cast Builder on the kit | next |
+| K7, C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -789,8 +790,14 @@ the apps, then extended).
   (blocked in red, full in the warn colour; its save button gone), the
   export gate's sentences (`kit.mesh.*`), the 3D view's 1.7 × fit and
   token colours, the check row's 18 px box, a foreign file "not a project
-  of this app". Its density stays its own by tokens (14 px text, 36 px
-  controls on a phone, 88 px names); whether to take the kit's 16 px and
-  40 px is the user's call. Built-in preset names moved into the
+  of this app", and the kit's density (16 px text and 40 px controls on a
+  phone, 14 px and 28 px on a desktop): the user's call, 2026-11-10; its
+  own pieces follow the kit's tokens. Built-in preset names moved into the
   dictionaries (`preset.<id>.name`); a preset's state keeps its English
   project name, as before.
+- **M1 — stacked PRs** (2026-11-10): one PR per group, each based on the
+  previous branch. GitHub moves a stacked PR to `main` only when its base
+  branch is deleted; `m1-core` stayed after its merge, so #17–#19 merged
+  into it and a PR of `m1-core` carried them on. M2 and M3: each group's PR
+  waits for the previous one to be merged into `main` and is then based on
+  `main`, or the base branch is deleted at once after its merge.
