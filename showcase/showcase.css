@@ -1,0 +1,74 @@
+/* The showcase's own bits: the stand-in for the 3D view and the phone
+   frame. Everything else is the kit's. */
+
+.view-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 56px 16px 72px;
+}
+
+.scene {
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.scene-grid line {
+  stroke: var(--line);
+  stroke-width: 0.5;
+}
+
+.scene-grid .scene-axis {
+  stroke: var(--muted);
+  stroke-opacity: 0.5;
+}
+
+.scene path {
+  stroke: var(--accent);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+
+/* three shades of the accent: the light comes from above */
+.scene .face-top {
+  fill: color-mix(in srgb, var(--accent) 45%, var(--bg));
+}
+
+.scene .face-front {
+  fill: color-mix(in srgb, var(--accent) 30%, var(--bg));
+}
+
+.scene .face-side {
+  fill: color-mix(in srgb, var(--accent) 18%, var(--bg));
+}
+
+.demo-buttons {
+  margin-block-start: var(--space-2);
+}
+
+.demo-buttons .btn {
+  flex: 1 0 auto;
+}
+
+.demo-footer {
+  color: var(--muted);
+  font-size: var(--font-tiny);
+}
+
+.phone-host {
+  display: grid;
+  place-items: center;
+  min-block-size: 100dvh;
+  padding: var(--space-4);
+}
+
+.phone-frame {
+  inline-size: 390px;
+  block-size: 844px;
+  max-block-size: calc(100dvh - 32px);
+  border: 10px solid #000;
+  border-radius: 36px;
+  background: var(--bg);
+}

@@ -7,6 +7,29 @@ export const kitEn = {
   // − and + beside a slider (ui/controls): their aria-label names the row
   'kit.control.decrease': 'Decrease {label}',
   'kit.control.increase': 'Increase {label}',
+  // the top bar: the tools' labels, in its order (docs/design.md)
+  'kit.topbar.presets': 'Presets',
+  'kit.topbar.new': 'New project',
+  'kit.topbar.savePreset': 'Save as a preset',
+  'kit.topbar.open': 'Open a project file',
+  'kit.topbar.save': 'Save the project to a file',
+  'kit.topbar.undo': 'Undo (Ctrl+Z)',
+  'kit.topbar.redo': 'Redo (Ctrl+Shift+Z)',
+  'kit.topbar.language': 'Language',
+  // the panel as a bottom sheet on a phone (ui/sheet)
+  'kit.sheet.open': 'Settings',
+  'kit.sheet.close': 'Close the settings',
+  'kit.modal.close': 'Close',
+  // the presets dialog (ui/presetList)
+  'kit.preset.mine': 'My presets',
+  'kit.preset.builtIn': 'Built-in',
+  'kit.preset.none': 'No presets of yours yet: save the project as one with 💾.',
+  'kit.preset.changed': 'changed',
+  'kit.preset.rename': 'Name of the preset',
+  'kit.preset.delete': 'Delete “{name}”',
+  'kit.preset.confirm': 'Delete?',
+  // the bar over the view (ui/progress)
+  'kit.progress.building': 'Building…',
   // a project file that cannot be opened (core/projectFile)
   'kit.file.broken': 'This file is not a readable project.',
   'kit.file.foreign': 'This file is not a project of this app.',

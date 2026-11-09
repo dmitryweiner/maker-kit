@@ -81,9 +81,14 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `src/ui/` — DOM, no three: `controls` (the panel), `stepper` (−/+ held),
   `dom`, `timers`, `files` (download, the file dialog); more with K4
   (`docs/ui.md`).
-- `src/3d/`, `src/worker/`, `src/styles/` — filled by K3–K5.
-- `showcase/` — a Vite page with every component (the root of
-  `vite.config.ts`); deployed to Pages.
+- `src/styles/` — `tokens.css` (palette, accents, density) and `kit.css`
+  (everything in `@layer kit`, imports the tokens); the rules CSS cannot
+  say are in `docs/design.md`.
+- `src/3d/`, `src/worker/` — filled by K5.
+- `showcase/` — a Vite page with every component, laid out as an app on the
+  kit (the root of `vite.config.ts`); deployed to Pages. `?accent=…&lang=…&
+  sheet=open&modal=presets&progress=running|label&banner=1&frame=phone`
+  open a state directly (the smoke's screenshots use them).
 - `consumer/` — a fixture app that gets the packed kit in its `node_modules`.
 - `scripts/harness.mjs` + `harness.d.mts` — exported as `maker-kit/harness`.
 - `docs/` — design and module docs.
@@ -91,13 +96,16 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 ## Scripts
 
 - `scripts/consumer.mjs` — `npm run consumer`: the kit as an installed package.
-- `scripts/smoke.mjs` — `npm run smoke`: the showcase in a browser.
+- `scripts/smoke.mjs` — `npm run smoke`: the showcase in every accent and
+  language at phone and desktop width, the sheet, the dialog, the bar, −/+;
+  `--shots` saves 35 screenshots to `shots/` for a design review.
 - `scripts/harness.mjs` — the Playwright plumbing; apps import it as
   `maker-kit/harness`.
 
 ## What costs what
 
-- `npm run check`: ~2 s. `npm run consumer`: ~3 s. `npm run smoke -- --preview`: ~5 s.
+- `npm run check`: ~2 s. `npm run consumer`: ~3 s. `npm run smoke -- --preview`: ~25 s
+  (24 accent × language × width states).
 
 ## Conventions
 
