@@ -1,19 +1,41 @@
 // The showcase: every component of the kit in every state, laid out as an
-// app on the kit is (plans/PLAN.md, "Showcase"). Switches for the accent,
-// the language (Hebrew mirrors the page) and a phone frame. The URL sets
-// them too, so the smoke opens each state directly:
-//   ?accent=emerald&lang=he&sheet=open&modal=presets&progress=label&banner=1&frame=phone
-// The sheet, the dialog and the bar are drawn by hand until K4 brings
-// ui/sheet, ui/modal and ui/progress.
+// app on the kit is (plans/PLAN.md, "Showcase") — and wired as one: undo and
+// its keys, presets with 📄 New and 💾, the project file, the sheet, the
+// dialog, the bar over the view, the banner, folding cards, the language.
+// Switches for the accent, the language (Hebrew mirrors the page) and a
+// phone frame. The URL sets them too, so the smoke opens each state directly:
+//   ?accent=emerald&lang=he&view=top&sheet=open&modal=presets&progress=running|label&banner=full|blocked&frame=phone
 
 import '../src/styles/kit.css';
 import './showcase.css';
 import { format } from '../src/core/format';
 import { History } from '../src/core/history';
 import type { Translate } from '../src/core/message';
+import {
+  addUserPreset,
+  nextPresetName,
+  presetRef,
+  presetStatus,
+  removeUserPreset,
+  renameUserPreset,
+  type BuiltInPreset,
+  type PresetRef,
+  type UserPreset,
+} from '../src/core/presets';
+import { decodeProjectFile, encodeProjectFile, projectFileName } from '../src/core/projectFile';
+import type { StorageWrite } from '../src/core/storage';
+import { renderBanner, type StorageStatus } from '../src/ui/banner';
+import { createCard, restoreCards, snapshotCards } from '../src/ui/card';
 import { renderControls, type Control } from '../src/ui/controls';
 import { el, make } from '../src/ui/dom';
-import { dictionaries, ENDONYMS, isLocale, LOCALES, type Key, type Locale } from './i18n';
+import { download, pickFile } from '../src/ui/files';
+import { bindHistory } from '../src/ui/historyKeys';
+import { createLanguagePicker } from '../src/ui/languagePicker';
+import { createModal } from '../src/ui/modal';
+import { renderPresetList } from '../src/ui/presetList';
+import { createProgress } from '../src/ui/progress';
+import { setupSheet } from '../src/ui/sheet';
+import { dictionaries, isLocale, LOCALES, type Key, type Locale } from './i18n';
 import { drawScene, isView, type View } from './scene';
 
 const params = new URLSearchParams(location.search);
@@ -210,20 +232,49 @@ function start(): void {
   const html = document.documentElement;
   const langParam = params.get('lang');
   const accentParam = params.get('accent');
+  const viewParam = params.get('view');
   let locale: Locale = isLocale(langParam) ? langParam : 'en';
-  let accent: Accent = isAccent(accentParam) ? accentParam : 'cyan';
+  let view: View = isView(viewParam) ? viewParam : 'iso';
   const t: Translate<Key> = (key, values) => format(dictionaries[locale][key], values, locale);
   const history = new History(initial);
-  const viewParam = params.get('view');
-  let view: View = isView(viewParam) ? viewParam : 'iso';
 
-  // ---- the panel, drawn again on a language switch ----
+  // ---- presets: two built-in, the blank one 📄 opens, and the user's (in memory here) ----
+  const builtIn: readonly (BuiltInPreset<Demo> & { label: Key; note?: Key })[] = [
+    {
+      id: 'pi',
+      label: 'demo.preset.pi',
+      note: 'demo.preset.pi.note',
+      build: () => ({ ...initial, name: t('demo.preset.pi'), width: 95, height: 35 }),
+    },
+    {
+      id: 'esp',
+      label: 'demo.preset.esp',
+      note: 'demo.preset.esp.note',
+      build: () => ({ ...initial, name: t('demo.preset.esp'), width: 50, height: 25 }),
+    },
+  ];
+  const blank: BuiltInPreset<Demo> = { id: 'blank', listed: false, build: () => ({ ...initial, name: t('demo.preset.blank') }) };
+  let user: UserPreset<Demo>[] = [{ id: 'u1', name: 'My box', state: initial }];
+  let current: PresetRef = 'u:u1';
+  const find = (ref: PresetRef): Demo | undefined =>
+    ref === 'b:blank'
+      ? blank.build()
+      : (builtIn.find((p) => presetRef('b', p.id) === ref)?.build() ?? user.find((p) => presetRef('u', p.id) === ref)?.state);
+  /** the view and the font do not make another project */
+  const signature = (s: Demo): string => JSON.stringify({ ...s, spin: null, name: null });
+
+  // ---- the showcase's own switches ----
   interface ShowcaseState {
     accent: Accent;
     frame: boolean;
     banner: boolean;
   }
-  let showcase: ShowcaseState = { accent, frame: false, banner: params.get('banner') === '1' };
+  const bannerParam = params.get('banner');
+  let showcase: ShowcaseState = { accent: isAccent(accentParam) ? accentParam : 'cyan', frame: false, banner: bannerParam !== null };
+  let storage: StorageStatus = {
+    project: bannerParam === 'blocked' ? 'blocked' : bannerParam !== null ? 'full' : 'ok',
+    preset: bannerParam === 'blocked' ? { action: 'delete', result: 'blocked' } : null,
+  };
   const showcaseControls: readonly Control<ShowcaseState, Key>[] = [
     {
       kind: 'segmented',
@@ -237,23 +288,71 @@ function start(): void {
     { kind: 'check', key: 'frame', label: 'demo.frame', get: (s) => s.frame, set: (s, frame) => ({ ...s, frame }) },
   ];
 
+  // ---- the kit's pieces ----
+  const presetsOpen = el('presetsOpen', HTMLButtonElement);
+  const presetsDialog = createModal(el('presets', HTMLElement), { close: el('presetsClose', HTMLButtonElement) });
+  const keys = bindHistory({
+    undo: el('undo', HTMLButtonElement),
+    redo: el('redo', HTMLButtonElement),
+    onUndo: () => {
+      history.undo();
+      show();
+    },
+    onRedo: () => {
+      history.redo();
+      show();
+    },
+    canUndo: () => history.canUndo,
+    canRedo: () => history.canRedo,
+  });
+  setupSheet({
+    panel: el('panel', HTMLElement),
+    button: el('sheetOpen', HTMLButtonElement),
+    close: el('sheetClose', HTMLButtonElement),
+    view: el('view', HTMLElement),
+    narrow: window.matchMedia('(max-width: 1023px)'),
+    open: params.get('sheet') === 'open',
+  });
+  const progress = createProgress(el('viewProgress', HTMLElement), { t });
+  const language = createLanguagePicker(document.querySelector<HTMLElement>('.topbar') ?? document.body, {
+    locales: LOCALES,
+    current: locale,
+    t,
+    onChange: (next) => {
+      locale = next;
+      render();
+    },
+  });
+
   const handles: { sync(state: Demo): void }[] = [];
   let showcaseHandle: { sync(state: ShowcaseState): void } | null = null;
+  let cards: { setEnabled(on: boolean): void }[] = [];
+  let fileNote = '';
 
+  /** Opens another project: one undo step, so undo brings the old one back. */
+  const openProject = (state: Demo, ref: PresetRef): void => {
+    history.commit(state);
+    current = ref;
+    show();
+  };
   const changeDemo = (next: Demo, final: boolean): void => {
     if (final) history.commit(next);
     else history.live(next);
     show();
   };
   const changeShowcase = (next: ShowcaseState): void => {
-    showcase = next;
     if (next.frame) {
-      const url = new URLSearchParams({ accent: next.accent, lang: locale, frame: 'phone' });
-      location.search = url.toString();
+      location.search = new URLSearchParams({ accent: next.accent, lang: locale, frame: 'phone' }).toString();
       return;
     }
-    accent = next.accent;
+    if (next.banner !== showcase.banner) storage = { project: next.banner ? 'full' : 'ok', preset: null };
+    showcase = next;
     show();
+  };
+  /** what a preset action's write gave: the showcase keeps nothing, the banner shows the switch's failure */
+  const presetWrite = (action: 'save' | 'delete'): void => {
+    const result: StorageWrite = storage.project;
+    storage = { ...storage, preset: result === 'ok' ? null : { action, result } };
   };
 
   function render(): void {
@@ -265,12 +364,27 @@ function start(): void {
       node.setAttribute('aria-label', text);
       if (node instanceof HTMLButtonElement) node.title = text;
     }
+    language.set(locale);
     const o = { read: () => history.state, change: changeDemo, t };
+    const cardsRoot = el('cards', HTMLElement);
+    const folded = snapshotCards(cardsRoot);
+    cardsRoot.replaceChildren();
+    const lidCard = createCard(cardsRoot, {
+      id: 'lid',
+      title: 'demo.lid',
+      tag: { text: 'M3' },
+      desc: 'demo.lid.desc',
+      enabled: history.state.screws,
+      t,
+    });
+    const ventsCard = createCard(cardsRoot, { id: 'vents', title: 'demo.vents', desc: 'demo.vents.desc', enabled: false, t });
+    restoreCards(cardsRoot, folded);
+    cards = [lidCard, ventsCard];
     handles.length = 0;
     handles.push(
       renderControls(el('controlsPanel', HTMLElement), controls, { ...o, idPrefix: 'demo' }),
       renderControls(el('statesPanel', HTMLElement), states, { ...o, idPrefix: 'state' }),
-      renderControls(el('lidPanel', HTMLElement), lid, { ...o, idPrefix: 'lid' }),
+      renderControls(lidCard.body, lid, { ...o, idPrefix: 'lid' }),
     );
     showcaseHandle = renderControls(el('showcasePanel', HTMLElement), showcaseControls, {
       read: () => showcase,
@@ -279,26 +393,83 @@ function start(): void {
       t,
     });
     show();
+    progress.refresh();
   }
 
-  const undo = el('undo', HTMLButtonElement);
-  const redo = el('redo', HTMLButtonElement);
-  const presetsOpen = el('presetsOpen', HTMLButtonElement);
   function show(): void {
-    html.dataset.accent = accent;
-    for (const handle of handles) handle.sync(history.state);
+    const state = history.state;
+    html.dataset.accent = showcase.accent;
+    for (const handle of handles) handle.sync(state);
     showcaseHandle?.sync(showcase);
-    undo.disabled = !history.canUndo;
-    redo.disabled = !history.canRedo;
-    presetsOpen.textContent = history.state.name || t('demo.name.placeholder');
-    presetsOpen.classList.toggle('changed', history.canUndo);
-    el('banner', HTMLElement).hidden = !showcase.banner;
-    el('viewStatus', HTMLElement).textContent = `${history.state.width} × ${history.state.height} mm`;
-    drawScene(el('scene', HTMLElement), view, history.state);
+    cards[0]?.setEnabled(state.screws);
+    keys.refresh();
+    const status = presetStatus(current, state, find, signature);
+    presetsOpen.textContent = state.name || t('demo.name.placeholder');
+    presetsOpen.classList.toggle('changed', status === 'changed');
+    renderBanner(el('banner', HTMLElement), storage, {
+      t,
+      onDismiss: () => {
+        storage = { ...storage, preset: null };
+        show();
+      },
+    });
+    el('viewStatus', HTMLElement).textContent = fileNote || `${state.width} × ${state.height} mm`;
+    drawScene(el('scene', HTMLElement), view, state);
     for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip'))
       chip.setAttribute('aria-pressed', String(chip.dataset.view === view));
+    renderPresetList(el('presetList', HTMLElement), {
+      builtIn: builtIn.map((p) => ({ id: p.id, label: t(p.label), note: p.note && t(p.note) })),
+      user: user.map((p) => ({ id: p.id, name: p.name })),
+      current,
+      status,
+      t,
+      open: (ref) => {
+        const opened = find(ref);
+        if (opened) openProject(opened, ref);
+        presetsDialog.close();
+      },
+      rename: (id, name) => {
+        user = renameUserPreset(user, id, name);
+        show();
+      },
+      remove: (id) => {
+        user = removeUserPreset(user, id);
+        if (current === presetRef('u', id)) current = '';
+        presetWrite('delete');
+        show();
+      },
+    });
   }
 
+  // ---- the top bar's tools ----
+  presetsOpen.addEventListener('click', () => presetsDialog.open(presetsOpen));
+  el('newProject', HTMLButtonElement).addEventListener('click', () => openProject(blank.build(), 'b:blank'));
+  el('savePreset', HTMLButtonElement).addEventListener('click', () => {
+    const prefixes = LOCALES.map((code) => dictionaries[code]['demo.preset.auto'].replace(/\s*\{n\}\s*/, ''));
+    const name = history.state.name || nextPresetName(user, prefixes, t('demo.preset.auto').replace(/\s*\{n\}\s*/, ''));
+    const added = addUserPreset(user, name, history.state);
+    user = added.list;
+    current = presetRef('u', added.id);
+    presetWrite('save');
+    show();
+  });
+  el('saveFile', HTMLButtonElement).addEventListener('click', () => {
+    const text = encodeProjectFile({ app: 'maker-kit-showcase', version: 1, name: history.state.name, state: history.state });
+    download(projectFileName(history.state.name, 'box.json', 'box'), text, 'application/json');
+  });
+  el('openFile', HTMLButtonElement).addEventListener('click', () => {
+    void pickFile('.json,application/json').then(async (file) => {
+      if (!file) return;
+      const read = decodeProjectFile(await file.text(), {
+        app: 'maker-kit-showcase',
+        version: 1,
+        sanitize: (s) => ({ ...initial, ...(typeof s === 'object' ? s : {}) }),
+      });
+      fileNote = read.ok ? '' : t(`kit.file.${read.reason}`);
+      if (read.ok) openProject(read.state, '');
+      else show();
+    });
+  });
   for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip')) {
     chip.addEventListener('click', () => {
       if (isView(chip.dataset.view)) view = chip.dataset.view;
@@ -306,109 +477,37 @@ function start(): void {
     });
   }
 
-  const lang = el('lang', HTMLSelectElement);
-  for (const code of LOCALES) {
-    const option = make('option', undefined, ENDONYMS[code]);
-    option.value = code;
-    lang.append(option);
-  }
-  lang.value = locale;
-  lang.addEventListener('change', () => {
-    if (isLocale(lang.value)) locale = lang.value;
-    render();
-  });
-
-  undo.addEventListener('click', () => {
-    history.undo();
-    show();
-  });
-  redo.addEventListener('click', () => {
-    history.redo();
-    show();
-  });
-  el('newProject', HTMLButtonElement).addEventListener('click', () => {
-    history.commit({ ...initial, name: '' });
-    show();
-  });
-  el('bannerDismiss', HTMLButtonElement).addEventListener('click', () => changeShowcase({ ...showcase, banner: false }));
-
-  // ---- folding cards: K4's ui/card does this ----
-  for (const head of document.querySelectorAll<HTMLButtonElement>('.fcard-head')) {
-    head.addEventListener('click', () => {
-      const card = head.closest('.fcard');
-      const collapsed = !card?.classList.toggle('collapsed');
-      head.setAttribute('aria-expanded', String(collapsed));
-    });
-  }
-
-  // ---- the sheet on a phone: K4's ui/sheet ----
-  const panel = el('panel', HTMLElement);
-  const sheetOpen = el('sheetOpen', HTMLButtonElement);
-  const setSheet = (open: boolean): void => {
-    panel.classList.toggle('open', open);
-    sheetOpen.hidden = open;
-    sheetOpen.setAttribute('aria-expanded', String(open));
-  };
-  sheetOpen.addEventListener('click', () => setSheet(true));
-  el('sheetClose', HTMLButtonElement).addEventListener('click', () => setSheet(false));
-  setSheet(params.get('sheet') === 'open');
-
-  // ---- the presets dialog: K4's ui/modal and ui/presetList ----
-  const presets = el('presets', HTMLElement);
-  const setPresets = (open: boolean): void => {
-    presets.hidden = !open;
-    presetsOpen.setAttribute('aria-expanded', String(open));
-    if (open) el('presetsClose', HTMLButtonElement).focus();
-  };
-  presetsOpen.addEventListener('click', () => setPresets(true));
-  el('presetsClose', HTMLButtonElement).addEventListener('click', () => setPresets(false));
-  presets.addEventListener('click', (event) => {
-    if (event.target === presets) setPresets(false);
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setPresets(false);
-  });
-  setPresets(params.get('modal') === 'presets');
-
-  // ---- the bar over the view: K4's ui/progress (one bar for any number of jobs, after 300 ms) ----
-  const bar = el('viewProgress', HTMLElement);
-  const label = el('progressLabel', HTMLElement);
-  const track = el('progressTrack', HTMLElement);
-  const fill = el('progressFill', HTMLElement);
-  let running = 0;
-  const job = (ms: number, o: { delay?: number; text?: string; steps?: number } = {}): void => {
-    running++;
-    const reveal = window.setTimeout(() => {
-      bar.hidden = false;
-      label.hidden = !o.text;
-      label.textContent = o.text ?? '';
-    }, o.delay ?? 300);
-    if (o.steps) {
-      const steps = o.steps;
-      track.classList.remove('running');
-      for (let i = 0; i <= steps; i++) window.setTimeout(() => (fill.style.inlineSize = `${(100 * i) / steps}%`), (ms * i) / steps);
-    }
-    window.setTimeout(() => {
-      window.clearTimeout(reveal);
-      if (--running > 0) return;
-      bar.hidden = true;
-      track.classList.add('running');
-      fill.style.inlineSize = '';
-    }, ms);
-  };
+  // ---- the bar over the view: one bar for any number of jobs, after 300 ms ----
   el('jobsTwo', HTMLButtonElement).addEventListener('click', () => {
-    job(1500);
-    window.setTimeout(() => job(1500), 800);
+    void progress.track(sleep(1500));
+    window.setTimeout(() => void progress.track(sleep(1500)), 800);
   });
-  el('jobsQuick', HTMLButtonElement).addEventListener('click', () => job(150));
-  el('jobsExport', HTMLButtonElement).addEventListener('click', () => job(2500, { delay: 0, text: t('demo.jobs.exporting') }));
-  el('jobsSteps', HTMLButtonElement).addEventListener('click', () => job(2500, { delay: 0, steps: 5 }));
-  const progress = params.get('progress');
-  if (progress === 'running') job(60_000, { delay: 0 });
-  if (progress === 'label') job(60_000, { delay: 0, text: t('demo.jobs.exporting') });
+  el('jobsQuick', HTMLButtonElement).addEventListener('click', () => void progress.track(sleep(150)));
+  el('jobsExport', HTMLButtonElement).addEventListener(
+    'click',
+    () => void progress.track(sleep(2500), { label: 'demo.jobs.exporting', delayMs: 0 }),
+  );
+  el('jobsSteps', HTMLButtonElement).addEventListener('click', () => {
+    void progress.track(
+      async (onProgress) => {
+        for (let step = 0; step <= 5; step++) {
+          onProgress({ step, total: 5 });
+          // oxlint-disable-next-line no-await-in-loop -- the steps of a fake job follow one another
+          await sleep(500);
+        }
+      },
+      { delayMs: 0 },
+    );
+  });
+  const forever = new Promise<void>(() => {});
+  if (params.get('progress') === 'running') void progress.track(forever, { delayMs: 0 });
+  if (params.get('progress') === 'label') void progress.track(forever, { label: 'demo.jobs.exporting', delayMs: 0 });
 
   render();
+  if (params.get('modal') === 'presets') presetsDialog.open(presetsOpen);
 }
+
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => window.setTimeout(resolve, ms));
 
 const isKey = (value: string): value is Key => Object.hasOwn(dictionaries.en, value);
 

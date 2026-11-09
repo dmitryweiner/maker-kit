@@ -71,6 +71,93 @@ toggle; `_note`; `_label` the name of a segmented or toggles group.
 (pointerup, cancel, leave, lost capture). A click from the keyboard or a
 screen reader (`detail` 0) is a step and an end.
 
+## ui/card — folding cards
+
+```ts
+const card = createCard(panel, { id: 'lid', title: 'card.lid', tag: { text: 'M3' }, desc: 'card.lid.desc', enabled: state.lid.on, t });
+renderControls(card.body, lidControls, o);
+card.setEnabled(state.lid.on);   // after every change: unfolds when it turns on, never folds
+const folded = snapshotCards(panel);  /* re-render */  restoreCards(panel, folded);
+```
+
+`#card_<id>` with a head button (`aria-expanded`, `aria-controls`) and
+`#card_<id>_body`.
+
+## ui/sheet — the panel as a bottom sheet on a phone
+
+```ts
+const sheet = setupSheet({ panel, button: settings, close: handle, view: canvasWrap,
+  narrow: matchMedia('(max-width: 1023px)'), open: false, onInset: (px) => viewer.setInset(px), onChange });
+```
+
+Opened by the ⚙ button, closed by the handle or a tap on the view (one
+finger, < 300 ms, < 6 px); drags and pinches pass to the view. `onInset`
+says how much of the view it covers; `refresh()` after a resize. On a wide
+screen it does nothing.
+
+## ui/progress — the bar over the view
+
+```ts
+const progress = createProgress(viewProgress, { t });
+progress.track(client.run(job));                                         // a preview: after 300 ms, no text
+progress.track((onProgress) => client.run(job, onProgress), { label: 'export.stl', delayMs: 0 });   // an export
+progress.refresh();   // after a language switch
+```
+
+One bar for any number of jobs: up while any runs (once up, the jobs under
+it keep it up), down when the last ends, never blinking between two in a
+row. A running stripe, or the share done when the job reports
+`{ step, total }`; a labelled job shows its stage (`label: Message`). The
+track is `role="progressbar"`, named by the label or "Building…".
+
+## ui/banner — what storage failed to keep
+
+```ts
+renderBanner(banner, { project: saveResult, preset: failedPresetAction }, { t, onDismiss });
+```
+
+The project's failure stays while it lasts; a preset's can be dismissed.
+Red (`.bad`) when nothing is kept, the warn colour when the storage is full.
+
+## ui/modal — one dialog at a time
+
+```ts
+const dialog = createModal(document.getElementById('presets'), { close: presetsClose });
+dialog.open(presetsButton);   // the focus goes in; on close back to the button
+modalOpen();                  // the app's shortcuts wait while true
+```
+
+Esc (taken before the app's keys) and the backdrop close it; Tab stays
+inside; opening another closes the first. Markup: `.modal[hidden] > .modal-box`.
+
+## ui/presetList — the presets dialog's list
+
+```ts
+renderPresetList(list, { builtIn: [{ id, label, note }], user: [{ id, name }], current, status, t, open, rename, remove });
+```
+
+The user's presets first (a name field renamed on change, ↗ open, 🗑 then
+"Delete?" for 3 s), then the built-in ones; the open one is current and
+"changed" once the project differs. Called with the same list, it draws
+nothing, so a name being typed keeps its focus.
+
+## ui/historyKeys — ↶ ↷ and Ctrl/⌘+Z, Shift+Ctrl/⌘+Z, Ctrl/⌘+Y
+
+```ts
+const keys = bindHistory({ undo, redo, onUndo, onRedo, canUndo, canRedo });
+keys.refresh();   // after every change
+```
+
+Works on any layout (`shortcutLetter`: Cyrillic я, Hebrew ז → z) and right
+after a slider, a check box or a select; a field with typed text
+(`isTextEntry`) keeps its own undo; nothing while a dialog is open.
+
+## ui/languagePicker — 🌐
+
+`createLanguagePicker(topbar, { locales, current, names?, t, onChange })`
+appends `label.lang-field` (🌐 and the languages by their own names);
+`set(locale)` after a switch.
+
 ## ui/dom, ui/timers, ui/files
 
 - `el(id, HTMLButtonElement)` — the element, typed, or a throw;

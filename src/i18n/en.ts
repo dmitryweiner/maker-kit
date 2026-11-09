@@ -25,6 +25,7 @@ export const kitEn = {
   'kit.preset.builtIn': 'Built-in',
   'kit.preset.none': 'No presets of yours yet: save the project as one with 💾.',
   'kit.preset.changed': 'changed',
+  'kit.preset.open': 'Open',
   'kit.preset.rename': 'Name of the preset',
   'kit.preset.delete': 'Delete “{name}”',
   'kit.preset.confirm': 'Delete?',

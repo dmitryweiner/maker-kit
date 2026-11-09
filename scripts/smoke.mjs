@@ -104,8 +104,8 @@ try {
       ['phone', 'sheet=open&lang=he&accent=burgundy', 'phone-sheet-he-burgundy'],
       ['phone', 'modal=presets', 'phone-presets'],
       ['desktop', 'modal=presets&lang=uk&accent=emerald', 'desktop-presets-uk'],
-      ['phone', 'progress=running&banner=1', 'phone-progress-banner'],
-      ['desktop', 'progress=label&banner=1&lang=ru', 'desktop-progress-label-ru'],
+      ['phone', 'progress=running&banner=full', 'phone-progress-banner'],
+      ['desktop', 'progress=label&banner=blocked&lang=ru', 'desktop-progress-label-ru'],
       ['desktop', 'frame=phone&accent=emerald', 'desktop-phone-frame'],
     ]) {
       const { context } = await state(viewport, query, shot);
@@ -177,6 +177,80 @@ try {
     check(await page.locator('#state_computed_dec').isEnabled(), 'an unlocked width cannot be stepped');
     await page.click('#demo_spin_v90');
     check((await page.inputValue('#demo_spin_n')) === '90', 'a value button did not set the value');
+    await context.close();
+  });
+
+  await step('undo: Ctrl+Z right after a slider, not in a text field; one step per drag', async () => {
+    const { page, context } = await app.open();
+    const slider = page.locator('#demo_width');
+    await slider.focus();
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    check((await page.inputValue('#demo_width_n')) === '61', `the arrows moved to ${await page.inputValue('#demo_width_n')}`);
+    await page.keyboard.press('Control+z');
+    check((await page.inputValue('#demo_width_n')) === '60.5', 'Ctrl+Z after a slider did not undo');
+    await page.keyboard.press('Control+Shift+z');
+    check((await page.inputValue('#demo_width_n')) === '61', 'Ctrl+Shift+Z did not redo');
+    await page.keyboard.press('Control+z');
+    await page.click('#demo_name');
+    await page.keyboard.type('!');
+    await page.keyboard.press('Control+z');
+    check((await page.inputValue('#demo_width_n')) === '60.5', 'Ctrl+Z in a text field undid the app');
+    await context.close();
+  });
+
+  await step('presets: 💾 saves, a built-in one opens as one undo step, “changed”, two-tap delete, 📄 new, Esc', async () => {
+    const { page, context } = await app.open();
+    await page.fill('#demo_name', 'Lid test');
+    await page.press('#demo_name', 'Enter');
+    await page.click('#savePreset');
+    await page.click('#presetsOpen');
+    check(await page.isVisible('#presets'), 'the dialog did not open');
+    check((await page.locator('#presetList .preset-row[data-ref^="u:"]').count()) === 2, 'the saved preset is not listed');
+    await page.click('.preset-row[data-ref="b:pi"] .preset-pick');
+    check(await page.isHidden('#presets'), 'opening a preset left the dialog open');
+    check((await page.inputValue('#demo_width_n')) === '95', 'the preset did not open');
+    await page.click('#demo_width_inc');
+    check((await page.locator('#presetsOpen.changed').count()) === 1, 'an edited preset is not marked changed');
+    await page.click('#undo');
+    await page.click('#undo');
+    check((await page.inputValue('#demo_name')) === 'Lid test', 'undo did not bring the project before the preset back');
+    await page.click('#presetsOpen');
+    const remove = page.locator('.preset-row[data-ref="u:u2"] .preset-delete');
+    await remove.click();
+    check((await remove.textContent()) === 'Delete?', 'delete did not ask');
+    await remove.click();
+    check((await page.locator('.preset-row[data-ref="u:u2"]').count()) === 0, 'the second tap did not delete');
+    await page.keyboard.press('Escape');
+    check(await page.isHidden('#presets'), 'Esc did not close the dialog');
+    check(await page.evaluate(() => document.activeElement?.id === 'presetsOpen'), 'the focus did not come back to the opener');
+    await page.click('#newProject');
+    check((await page.locator('#presetsOpen').textContent()) === 'New box', '📄 did not open the blank preset');
+    await context.close();
+  });
+
+  await step('a tap on the view closes the sheet; a drag on it does not', async () => {
+    const { page, context } = await app.open({ viewport: VIEWPORTS.phone, path: '?sheet=open' });
+    await settled(page);
+    await page.mouse.move(195, 200);
+    await page.mouse.down();
+    await page.mouse.move(260, 220, { steps: 5 });
+    await page.mouse.up();
+    check((await page.locator('#panel.open').count()) === 1, 'a drag on the view closed the sheet');
+    await page.mouse.click(195, 200);
+    await settled(page);
+    check((await page.locator('#panel.open').count()) === 0, 'a tap on the view did not close the sheet');
+    await context.close();
+  });
+
+  await step('a language switch keeps the cards folded as they were', async () => {
+    const { page, context } = await app.open();
+    await page.click('#card_lid .fcard-head');
+    await page.click('#card_vents .fcard-head');
+    await page.selectOption('.lang-field select', 'he');
+    check((await page.getAttribute('html', 'dir')) === 'rtl', 'Hebrew is not mirrored');
+    check((await page.locator('#card_lid.collapsed').count()) === 1, 'the lid card unfolded on a language switch');
+    check((await page.locator('#card_vents.collapsed').count()) === 0, 'the vents card folded on a language switch');
     await context.close();
   });
 

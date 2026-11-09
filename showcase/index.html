@@ -21,16 +21,9 @@
         <button id="redo" class="tool-button" type="button" data-i18n-label="kit.topbar.redo">↷</button>
       </div>
       <span class="topbar-break"></span>
-      <label class="lang-field">
-        <span class="lang-globe" aria-hidden="true">🌐</span>
-        <select id="lang" data-i18n-label="kit.topbar.language"></select>
-      </label>
     </header>
 
-    <div id="banner" class="banner bad" role="status" hidden>
-      <span data-i18n="kit.storage.project.full"></span>
-      <button id="bannerDismiss" class="link-button" type="button" data-i18n="kit.storage.dismiss"></button>
-    </div>
+    <div id="banner" class="banner" hidden></div>
 
     <div class="workspace">
       <main id="view" class="view">
@@ -40,12 +33,7 @@
           <button class="chip" type="button" data-view="top" aria-pressed="false">Top</button>
           <button class="chip" type="button" data-view="front" aria-pressed="false">Front</button>
         </div>
-        <div id="viewProgress" class="view-progress" hidden>
-          <div id="progressLabel" class="progress-label" hidden></div>
-          <div id="progressTrack" class="progress-track running" role="progressbar" data-i18n-label="kit.progress.building">
-            <div id="progressFill" class="progress-fill"></div>
-          </div>
-        </div>
+        <div id="viewProgress" class="view-progress" hidden></div>
         <span id="viewStatus" class="view-status">60 × 30 mm · 12 ms</span>
         <button
           id="sheetOpen"
@@ -81,25 +69,7 @@
           <div id="statesPanel"></div>
         </section>
 
-        <section id="card_lid" class="fcard on">
-          <button class="fcard-head" type="button" aria-expanded="true">
-            <span class="fcard-title" data-i18n="demo.lid"></span>
-            <span class="fcard-tag">M3</span>
-            <span class="fcard-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="fcard-body">
-            <p class="fcard-desc" data-i18n="demo.lid.desc"></p>
-            <div id="lidPanel"></div>
-          </div>
-        </section>
-
-        <section id="card_vents" class="fcard collapsed">
-          <button class="fcard-head" type="button" aria-expanded="false">
-            <span class="fcard-title" data-i18n="demo.vents"></span>
-            <span class="fcard-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="fcard-body"><p class="fcard-desc" data-i18n="demo.vents.desc"></p></div>
-        </section>
+        <div id="cards"></div>
 
         <section class="card">
           <h2 data-i18n="demo.messages"></h2>
@@ -131,38 +101,7 @@
       <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="presetsTitle">
         <h2 id="presetsTitle" data-i18n="kit.topbar.presets"></h2>
         <button id="presetsClose" class="icon-button modal-close" type="button" data-i18n-label="kit.modal.close">✕</button>
-        <div class="modal-body">
-          <h3 class="preset-group" data-i18n="kit.preset.mine"></h3>
-          <ul class="preset-list">
-            <li class="preset-row">
-              <input class="field" type="text" value="My box" data-i18n-label="kit.preset.rename" />
-              <button class="icon-button" type="button" aria-label="Open">↗</button>
-              <button class="icon-button" type="button" aria-label="Delete">🗑</button>
-            </li>
-            <li class="preset-row">
-              <input class="field" type="text" value="Box 2" data-i18n-label="kit.preset.rename" />
-              <button class="icon-button" type="button" aria-label="Open">↗</button>
-              <button class="btn danger" type="button" data-i18n="kit.preset.confirm"></button>
-            </li>
-          </ul>
-          <h3 class="preset-group" data-i18n="kit.preset.builtIn"></h3>
-          <ul class="preset-list">
-            <li class="preset-row">
-              <button class="preset-pick" type="button" aria-current="true">
-                <span class="preset-name"
-                  ><span data-i18n="demo.preset.pi"></span> · <span class="preset-changed" data-i18n="kit.preset.changed"></span
-                ></span>
-                <span class="preset-note" data-i18n="demo.preset.pi.note"></span>
-              </button>
-            </li>
-            <li class="preset-row">
-              <button class="preset-pick" type="button">
-                <span class="preset-name" data-i18n="demo.preset.esp"></span>
-                <span class="preset-note" data-i18n="demo.preset.esp.note"></span>
-              </button>
-            </li>
-          </ul>
-        </div>
+        <div class="modal-body"><div id="presetList"></div></div>
       </div>
     </div>
 

@@ -18,6 +18,7 @@ export const kitHe: KitMessages = {
   'kit.preset.builtIn': 'מובנות',
   'kit.preset.none': 'עדיין אין תבניות משלכם: שמרו את הפרויקט כתבנית בכפתור 💾.',
   'kit.preset.changed': 'שונתה',
+  'kit.preset.open': 'פתיחה',
   'kit.preset.rename': 'שם התבנית',
   'kit.preset.delete': 'מחיקת „{name}”',
   'kit.preset.confirm': 'למחוק?',

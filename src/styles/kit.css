@@ -807,11 +807,7 @@
   /* ---- banner: what storage failed to keep ---- */
 
   .banner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
+    padding: 6px var(--space-3);
     border-block-end: 1px solid var(--warn);
     background: rgb(227 179 65 / 12%);
     font-size: var(--font-small);
@@ -822,7 +818,18 @@
     background: rgb(224 108 92 / 14%);
   }
 
-  .banner > span {
+  .banner-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-2);
+  }
+
+  .banner-line + .banner-line {
+    margin-block-start: var(--space-1);
+  }
+
+  .banner-line > span {
     flex: 1;
     min-inline-size: 12em;
   }
@@ -958,6 +965,14 @@
 
   .preset-row .field {
     flex: 1;
+  }
+
+  .preset-row.current .field {
+    border-color: var(--accent);
+  }
+
+  .preset-delete.btn {
+    min-block-size: var(--control-h);
   }
 
   .preset-empty {

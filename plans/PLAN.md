@@ -700,3 +700,20 @@ the apps, then extended).
 - **K3 — text fields `dir="auto"`, the view's status `unicode-bidi: plaintext`**
   (2026-11-09): in Hebrew, "60 × 30 mm" turned into "mm 30 × 60" and a Latin
   text ran right to left.
+- **K4 — `track` takes the job's progress itself** (2026-11-09): in place of
+  a separate `progress(p)`, a job is a promise or a function that gets an
+  `onProgress` callback (Case Constructor's shape): with two jobs under one
+  bar, a report always belongs to its own job. `JobProgress` is in
+  `core/progress` (ui and worker both use it, and may not import each
+  other); its `label` is a `Message`. Once the bar is up, the jobs still
+  running under it keep it up, whatever their delay.
+- **K4 — our own dialog, not `<dialog>`** (2026-11-09): `.modal` and
+  `.modal-box` as Plate Builder has them; Esc in the capture phase on the
+  window, so the app's shortcuts never see it; Tab kept inside. jsdom lists
+  a selector list's matches selector by selector, so the focusable elements
+  are sorted into the document's order.
+- **K4 — small additions** (2026-11-09): `kit.preset.open`; a user preset's
+  row has ↗ to open it (its name is a field); `bindHistory` also has
+  `dispose()`; `isTextEntry` does not count contenteditable (no app uses
+  it, jsdom does not know it); `renderPresetList` draws nothing for the same
+  list, so a name being typed keeps its focus.
