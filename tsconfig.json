@@ -17,5 +17,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "showcase", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "showcase", "scripts/**/*.ts", "vite.config.ts", "vitest.config.ts"]
 }
