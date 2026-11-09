@@ -243,10 +243,11 @@ function draw<T, K extends string>(control: Control<T, K>, row: HTMLElement, id:
       if (field instanceof HTMLInputElement) {
         field.type = 'text';
         field.spellcheck = false;
-        field.dir = 'auto';
       } else if (control.kind === 'textarea') {
         field.rows = control.rows;
       }
+      // a Latin name in a Hebrew page reads left to right, and the other way round
+      field.dir = 'auto';
       field.id = id;
       field.maxLength = control.maxLength;
       if (control.kind === 'text' && control.placeholder) field.placeholder = o.t(control.placeholder);

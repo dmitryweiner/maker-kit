@@ -385,7 +385,7 @@ describe('textarea and text', () => {
   it('a textarea reports typing as it goes and once more when the field is left', () => {
     render();
     const area = node('demo_note', HTMLTextAreaElement);
-    expect([area.value, area.maxLength, area.rows]).toEqual(['hi', 20, 2]);
+    expect([area.value, area.maxLength, area.rows, area.dir]).toEqual(['hi', 20, 2, 'auto']);
     area.value = 'hi\nthere';
     area.dispatchEvent(new Event('input'));
     area.dispatchEvent(new Event('change'));
@@ -407,7 +407,7 @@ describe('textarea and text', () => {
     };
     const { handle } = render([text]);
     const field = input('demo_name');
-    expect([field.type, field.value, field.placeholder, field.maxLength]).toEqual(['text', 'Box', 'Type a name', 60]);
+    expect([field.type, field.value, field.placeholder, field.maxLength, field.dir]).toEqual(['text', 'Box', 'Type a name', 60, 'auto']);
     field.focus();
     field.value = 'Box 2';
     field.dispatchEvent(new Event('input'));

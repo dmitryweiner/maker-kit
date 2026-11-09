@@ -1,0 +1,119 @@
+/* The design tokens of the 3D-printing tools: Case Constructor's dark
+   palette, an accent per app, spacing, radii, type and the density of
+   controls. Dark only; the names leave room for a light theme.
+
+   In the kit's layer: any rule of the app wins without a specificity fight,
+   so an app sets its accent with `<html data-accent="emerald">` or by its
+   own `:root { --accent: … }`. Density follows the pointer's size: a phone
+   gets 16 px text and 40 px touch targets, a desktop (≥ 1024 px) 14 px and
+   22–28 px controls. */
+
+@layer kit {
+  :root {
+    color-scheme: dark;
+
+    /* neutrals */
+    --bg: #15181c;
+    --panel: #1c2026;
+    --card: #252a31;
+    --text: #e4e9ef;
+    --muted: #94a0ad;
+    --line: #343b44;
+
+    /* severity */
+    --warn: #e3b341;
+    --bad: #e06c5c;
+
+    /* the accent: cyan (Case Constructor) unless the app picks another */
+    --accent: #4fb3d9;
+    --accent-strong: #7fcbe8;
+    --accent-soft: rgb(79 179 217 / 14%);
+    --on-accent: #081820;
+    --focus: var(--accent-strong);
+    --info: var(--accent-strong);
+
+    /* chips over the 3D view: the page colour, translucent */
+    --overlay: rgb(21 24 28 / 75%);
+    --backdrop: rgb(0 0 0 / 60%);
+    --shadow: 0 12px 40px rgb(0 0 0 / 60%);
+
+    /* type */
+    --font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-size: 16px;
+    --font-small: 13px;
+    --font-tiny: 12px;
+    --line-height: 1.45;
+
+    /* space and shape */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --radius: 6px;
+    --radius-card: 8px;
+    --radius-sheet: 14px;
+
+    /* density: touch targets on a phone */
+    --control-h: 40px;
+    --stepper: 40px;
+    --slider-h: 32px;
+    --tool: 36px;
+    --tool-gap: 4px;
+    /* the row's name column on a desktop: Russian and Ukrainian names wrap in it */
+    --label-w: 96px;
+    --panel-w: 360px;
+  }
+
+  @media (min-width: 760px) {
+    :root {
+      --tool: 40px;
+      --tool-gap: 6px;
+    }
+  }
+
+  /* a pointer, not a finger: Case Constructor's density */
+  @media (min-width: 1024px) {
+    :root {
+      --font-size: 14px;
+      --font-small: 12.5px;
+      --font-tiny: 11.5px;
+      --control-h: 28px;
+      --stepper: 22px;
+      --slider-h: 22px;
+    }
+  }
+
+  /* the shipped accents */
+  :root[data-accent='cyan'] {
+    --accent: #4fb3d9;
+    --accent-strong: #7fcbe8;
+    --accent-soft: rgb(79 179 217 / 14%);
+    --on-accent: #081820;
+  }
+
+  /* Plate Builder */
+  :root[data-accent='emerald'] {
+    --accent: #34c38f;
+    --accent-strong: #5fd6a8;
+    --accent-soft: rgb(52 195 143 / 14%);
+    --on-accent: #04201a;
+  }
+
+  /* Cast Builder: burgundy over warmer neutrals; burgundy is too dark for a
+     focus ring or a link, so those take the strong shade and the warn yellow */
+  :root[data-accent='burgundy'] {
+    --bg: #1a1214;
+    --panel: #221719;
+    --card: #2c1e21;
+    --text: #efe4e4;
+    --muted: #a8959a;
+    --line: #3e2a2e;
+    --bad: #f0806f;
+    --accent: #9e2a44;
+    --accent-strong: #c9566e;
+    --accent-soft: rgb(158 42 68 / 30%);
+    --on-accent: #fff;
+    --focus: #e3b341;
+    --overlay: rgb(26 18 20 / 75%);
+  }
+}

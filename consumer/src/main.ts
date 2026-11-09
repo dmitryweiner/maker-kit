@@ -1,3 +1,4 @@
+import 'maker-kit/styles/kit.css';
 import { greet } from './use';
 
 const out = document.getElementById('out');

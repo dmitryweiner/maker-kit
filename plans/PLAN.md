@@ -685,3 +685,18 @@ the apps, then extended).
 - **K2 — for K3** (2026-11-09): `when` hides rows by `hidden`; `kit.css`
   must keep `[hidden] { display: none !important }`, or a row's
   `display: grid` shows a hidden row (the showcase smoke caught it).
+- **K3 — the kit's strings for K4 came early** (2026-11-09): the top bar's
+  tools, the sheet, the dialog, the presets list and "Building…"
+  (`kit.topbar.*`, `kit.sheet.*`, `kit.modal.close`, `kit.preset.*`,
+  `kit.progress.building`), so the showcase draws them in four languages.
+- **K3 — the sheet, the dialog, the bar and folding are drawn by hand in the
+  showcase** (2026-11-09) until K4's modules replace that code; kit.css
+  styles the markup they will make (`.fcard*` after Case Constructor's
+  `createCard`, `.view-progress` / `.progress-track` / `.progress-fill`,
+  `.modal` / `.modal-box`, `.preset-*`, `.messages` / `.message`).
+- **K3 — accents by `data-accent` on `<html>`** (2026-11-09): `cyan` is the
+  default; `burgundy` brings Cast Builder's warmer neutrals and the warn
+  yellow as the focus ring (burgundy is too dark for one).
+- **K3 — text fields `dir="auto"`, the view's status `unicode-bidi: plaintext`**
+  (2026-11-09): in Hebrew, "60 × 30 mm" turned into "mm 30 × 60" and a Latin
+  text ran right to left.

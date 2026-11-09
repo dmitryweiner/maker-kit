@@ -1,0 +1,52 @@
+/* The showcase's own bits: the stand-in for the 3D view and the phone
+   frame. Everything else is the kit's. */
+
+.view-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 40px 40px;
+  opacity: 0.6;
+}
+
+.cube {
+  inline-size: 120px;
+  aspect-ratio: 1;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent-soft);
+  rotate: 45deg;
+  scale: 1 0.6;
+}
+
+.demo-buttons {
+  margin-block-start: var(--space-2);
+}
+
+.demo-buttons .btn {
+  flex: 1 0 auto;
+}
+
+.demo-footer {
+  color: var(--muted);
+  font-size: var(--font-tiny);
+}
+
+.phone-host {
+  display: grid;
+  place-items: center;
+  min-block-size: 100dvh;
+  padding: var(--space-4);
+}
+
+.phone-frame {
+  inline-size: 390px;
+  block-size: 844px;
+  max-block-size: calc(100dvh - 32px);
+  border: 10px solid #000;
+  border-radius: 36px;
+  background: var(--bg);
+}
