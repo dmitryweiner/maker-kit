@@ -1,0 +1,94 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "env": { "browser": true, "es2024": true },
+  "ignorePatterns": ["dist/**", "consumer/node_modules/**", "consumer/dist/**"],
+  "rules": {
+    // Styles are imported for their side effect.
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
+    // No `as` in the kit: an app's code style is the kit's code style.
+    "typescript/no-unsafe-type-assertion": "error"
+  },
+  "overrides": [
+    // The layers (plans/PLAN.md, "Package layout"): core and i18n import
+    // nothing else of the kit; ui imports core and i18n; 3d and worker import
+    // core and i18n; nothing in the kit imports ui but the showcase. Only 3d
+    // knows three; the kit's sources run in browsers, never import node.
+    // oxlint has no import/no-restricted-paths, so each folder lists what it
+    // may not import.
+    {
+      "files": ["src/core/**", "src/i18n/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "regex": "(^|/)(ui|3d|worker)(/|$)", "message": "core and i18n import nothing from ui, 3d or worker" },
+              { "regex": "^\\.\\./(core|i18n)/", "message": "core and i18n import nothing of each other's" },
+              { "regex": "^(three|node:)", "message": "core runs in a browser: no three, no node" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/ui/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "regex": "(^|/)(3d|worker)(/|$)", "message": "ui imports core and i18n only" },
+              { "regex": "^(three|node:)", "message": "ui runs in a browser: no three, no node" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/3d/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "regex": "(^|/)(ui|worker)(/|$)", "message": "3d imports core and i18n only" },
+              { "regex": "^node:", "message": "3d runs in a browser: no node" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/worker/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "regex": "(^|/)(ui|3d)(/|$)", "message": "worker imports core and i18n only" },
+              { "regex": "^(three|node:)", "message": "worker runs in a browser: no three, no node" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // Tests read fixtures from disk and use test doubles that implement
+      // only the part of a browser API that the code uses.
+      "files": ["**/*.test.ts"],
+      "rules": { "no-restricted-imports": "off", "typescript/no-unsafe-type-assertion": "off" }
+    },
+    {
+      // Browser scripts run their steps one after another on purpose: they share
+      // one server and browser, and their output must stay in order.
+      "files": ["scripts/**"],
+      "rules": { "no-await-in-loop": "off" }
+    }
+  ]
+}

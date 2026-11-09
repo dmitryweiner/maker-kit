@@ -1,0 +1,64 @@
+{
+  "name": "maker-kit",
+  "version": "0.1.0",
+  "description": "Shared pieces of the 3D-printing tools: controls, undo, storage, presets, the 3D view, the worker queue, STL, the smoke harness and the design code.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmitryweiner/maker-kit.git"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts",
+    "scripts/harness.mjs",
+    "scripts/harness.d.mts"
+  ],
+  "exports": {
+    "./core/*": "./src/core/*.ts",
+    "./ui/*": "./src/ui/*.ts",
+    "./3d/*": "./src/3d/*.ts",
+    "./worker/*": "./src/worker/*.ts",
+    "./i18n/*": "./src/i18n/*.ts",
+    "./styles/*": "./src/styles/*",
+    "./harness": {
+      "types": "./scripts/harness.d.mts",
+      "default": "./scripts/harness.mjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint --type-aware --deny-warnings && prettier --check .",
+    "format": "prettier --write .",
+    "check": "npm run typecheck && npm run lint && npm test",
+    "consumer": "node scripts/consumer.mjs",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.50",
+    "three": ">=0.178"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/three": "^0.187.0",
+    "jsdom": "^29.1.1",
+    "oxlint": "^1.90.0",
+    "oxlint-tsgolint": "^7.0.2005",
+    "playwright": "^1.64.1",
+    "prettier": "^3.9.10",
+    "three": "^0.187.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^4.1.12"
+  }
+}

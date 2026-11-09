@@ -1,0 +1,8 @@
+dist/
+package-lock.json
+shots/
+consumer/node_modules/
+consumer/dist/
+# hand-wrapped prose: prettier pulls a list item's line that starts inside an
+# inline code span back to column 0 (_conventions/stack.md)
+*.md
