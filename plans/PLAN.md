@@ -648,3 +648,22 @@ the apps, then extended).
   extracted into `consumer/node_modules/maker-kit`, not `file:..` (a symlink
   would resolve outside `node_modules` and prove nothing). The pack honours
   `files`, as a git dependency does; the kit's tests are left out of it.
+- **K1 — `StoredRecord.write`** (2026-11-09): a record says how its value is
+  stored as well as how it is read: `write(value)` gives the fields kept
+  beside `version`. An app moving to the kit keeps the shape it stores today
+  (`{ version: 2, settings }` in Plate Builder, `{ version, name, ref, state }`
+  in Case Constructor) and nothing needs migrating. `read(data, version)`
+  gets the parsed JSON as it is; a value stored with no version (Case
+  Constructor's user presets, a bare list) comes as version 0.
+- **K1 — files in `ui/files`, not `core/projectFile`** (2026-11-09):
+  downloading and the file dialog touch the page, and core has no DOM.
+  `download(name, data, type)` takes text or bytes (a project file or an
+  STL) in place of `downloadText`.
+- **K1 — small additions** (2026-11-09): `fileSlug(name, fallback)` and
+  `projectFileName(name, ext, fallback)` take the word for an empty name
+  (Plate Builder `plate`, Case Constructor `preset`); `presetRef` and
+  `isPresetRef` build and check refs read from storage; a nameless stored
+  user preset is named by its id rather than dropped.
+- **K1 — `kit.file.foreign` names no app** (2026-11-09): "This file is not a
+  project of this app." An app name in the sentence would need its own
+  grammatical case in Russian and Ukrainian.
