@@ -75,12 +75,13 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 ## Layout
 
 - `src/core/` — no DOM: `message` (the i18n contract's types, `Message`),
-  `format`, `history`, `storage`, `projectFile`, `presets` (`docs/core.md`).
+  `format`, `history`, `storage`, `projectFile`, `presets`, `progress`
+  (the `JobProgress` type) (`docs/core.md`).
 - `src/i18n/` — the kit's own strings, `kit.*` keys, en ru uk he; `en.ts`
   defines `KitKey`.
 - `src/ui/` — DOM, no three: `controls` (the panel), `stepper` (−/+ held),
-  `dom`, `timers`, `files` (download, the file dialog); more with K4
-  (`docs/ui.md`).
+  `card`, `sheet`, `progress`, `banner`, `modal`, `presetList`,
+  `historyKeys`, `languagePicker`, `dom`, `timers`, `files` (`docs/ui.md`).
 - `src/styles/` — `tokens.css` (palette, accents, density) and `kit.css`
   (everything in `@layer kit`, imports the tokens); the rules CSS cannot
   say are in `docs/design.md`.

@@ -20,3 +20,14 @@ export function panel(read: () => Box, change: (next: Box, final: boolean) => vo
   holdToRepeat(extra, { step: () => {}, end: () => {} });
   return root;
 }
+
+// the rest of the kit's ui: compiled and bundled with an app's options
+export { renderBanner } from 'maker-kit/ui/banner';
+export { createCard, restoreCards, snapshotCards } from 'maker-kit/ui/card';
+export { bindHistory, isTextEntry, shortcutLetter } from 'maker-kit/ui/historyKeys';
+export { createLanguagePicker } from 'maker-kit/ui/languagePicker';
+export { createModal, modalOpen } from 'maker-kit/ui/modal';
+export { renderPresetList } from 'maker-kit/ui/presetList';
+export { createProgress } from 'maker-kit/ui/progress';
+export { setupSheet } from 'maker-kit/ui/sheet';
+export type { JobProgress } from 'maker-kit/core/progress';

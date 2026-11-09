@@ -18,6 +18,7 @@ export const kitRu: KitMessages = {
   'kit.preset.builtIn': 'Встроенные',
   'kit.preset.none': 'Своих пресетов пока нет: сохраните проект как пресет кнопкой 💾.',
   'kit.preset.changed': 'изменён',
+  'kit.preset.open': 'Открыть',
   'kit.preset.rename': 'Название пресета',
   'kit.preset.delete': 'Удалить «{name}»',
   'kit.preset.confirm': 'Удалить?',
