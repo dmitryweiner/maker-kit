@@ -6,20 +6,42 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background:
-    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 40px 40px;
-  opacity: 0.6;
+  padding: 56px 16px 72px;
 }
 
-.cube {
-  inline-size: 120px;
-  aspect-ratio: 1;
-  border: 2px solid var(--accent);
-  border-radius: 10px;
-  background: var(--accent-soft);
-  rotate: 45deg;
-  scale: 1 0.6;
+.scene {
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.scene-grid line {
+  stroke: var(--line);
+  stroke-width: 0.5;
+}
+
+.scene-grid .scene-axis {
+  stroke: var(--muted);
+  stroke-opacity: 0.5;
+}
+
+.scene path {
+  stroke: var(--accent);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+
+/* three shades of the accent: the light comes from above */
+.scene .face-top {
+  fill: color-mix(in srgb, var(--accent) 45%, var(--bg));
+}
+
+.scene .face-front {
+  fill: color-mix(in srgb, var(--accent) 30%, var(--bg));
+}
+
+.scene .face-side {
+  fill: color-mix(in srgb, var(--accent) 18%, var(--bg));
 }
 
 .demo-buttons {

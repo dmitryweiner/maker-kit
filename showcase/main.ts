@@ -14,6 +14,7 @@ import type { Translate } from '../src/core/message';
 import { renderControls, type Control } from '../src/ui/controls';
 import { el, make } from '../src/ui/dom';
 import { dictionaries, ENDONYMS, isLocale, LOCALES, type Key, type Locale } from './i18n';
+import { drawScene, isView, type View } from './scene';
 
 const params = new URLSearchParams(location.search);
 
@@ -213,6 +214,8 @@ function start(): void {
   let accent: Accent = isAccent(accentParam) ? accentParam : 'cyan';
   const t: Translate<Key> = (key, values) => format(dictionaries[locale][key], values, locale);
   const history = new History(initial);
+  const viewParam = params.get('view');
+  let view: View = isView(viewParam) ? viewParam : 'iso';
 
   // ---- the panel, drawn again on a language switch ----
   interface ShowcaseState {
@@ -291,6 +294,16 @@ function start(): void {
     presetsOpen.classList.toggle('changed', history.canUndo);
     el('banner', HTMLElement).hidden = !showcase.banner;
     el('viewStatus', HTMLElement).textContent = `${history.state.width} × ${history.state.height} mm`;
+    drawScene(el('scene', HTMLElement), view, history.state);
+    for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip'))
+      chip.setAttribute('aria-pressed', String(chip.dataset.view === view));
+  }
+
+  for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip')) {
+    chip.addEventListener('click', () => {
+      if (isView(chip.dataset.view)) view = chip.dataset.view;
+      show();
+    });
   }
 
   const lang = el('lang', HTMLSelectElement);

@@ -34,11 +34,11 @@
 
     <div class="workspace">
       <main id="view" class="view">
-        <div class="view-placeholder" aria-hidden="true"><div class="cube"></div></div>
+        <div id="scene" class="view-placeholder"></div>
         <div class="chips">
-          <button class="chip" type="button" aria-pressed="true">Iso</button>
-          <button class="chip" type="button" aria-pressed="false">Top</button>
-          <button class="chip" type="button" aria-pressed="false">Front</button>
+          <button class="chip" type="button" data-view="iso" aria-pressed="true">Iso</button>
+          <button class="chip" type="button" data-view="top" aria-pressed="false">Top</button>
+          <button class="chip" type="button" data-view="front" aria-pressed="false">Front</button>
         </div>
         <div id="viewProgress" class="view-progress" hidden>
           <div id="progressLabel" class="progress-label" hidden></div>

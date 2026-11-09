@@ -113,6 +113,23 @@ try {
     }
   });
 
+  await step('the camera chips: one pressed, the stand-in view follows them', async () => {
+    const { page, context } = await app.open();
+    const box = () => page.locator('#scene svg').getAttribute('viewBox');
+    const iso = await box();
+    await page.click('.chip[data-view="top"]');
+    check((await page.getAttribute('.chip[data-view="top"]', 'aria-pressed')) === 'true', 'Top is not pressed');
+    check((await page.getAttribute('.chip[data-view="iso"]', 'aria-pressed')) === 'false', 'Iso stays pressed');
+    check((await box()) !== iso, 'the view did not change with the camera');
+    if (shots) {
+      for (const view of ['top', 'front']) {
+        await page.click(`.chip[data-view="${view}"]`);
+        await page.screenshot({ path: `shots/desktop-view-${view}.png` });
+      }
+    }
+    await context.close();
+  });
+
   await step('the progress bar: a quick job never shows it, two overlapping ones show one bar', async () => {
     const { page, context } = await app.open();
     await page.click('#jobsQuick');
