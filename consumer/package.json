@@ -1,0 +1,7 @@
+{
+  "name": "maker-kit-consumer",
+  "private": true,
+  "description": "A fixture app: installs the packed kit and runs tsc, vitest and vite build over it (scripts/consumer.mjs).",
+  "license": "GPL-3.0-or-later",
+  "type": "module"
+}

@@ -1,0 +1,4 @@
+import { greet } from './use';
+
+const out = document.getElementById('out');
+if (out) out.textContent = greet({ code: 'hello', params: { name: 'kit' } });
