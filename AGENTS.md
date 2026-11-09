@@ -21,7 +21,8 @@ Node.js — the version in `.node-version` (`fnm use`; check `node -v`).
 - `npm run check` — typecheck + oxlint + prettier + unit tests. Must pass
   before any work is called done.
 - `npm run consumer` — packs the kit, installs it into `consumer/` and runs an
-  app's tsc, vitest and vite build over it.
+  app's tsc, vitest and vite build over it, and its page on vite's dev
+  server in Chromium (port 5396).
 - `npm run smoke` — browser smoke of the showcase (dev server, port 5395);
   `-- --preview` builds and checks the build (port 4395); `-- --shots` saves
   screenshots to `shots/`.
@@ -111,7 +112,8 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 ## Scripts
 
-- `scripts/consumer.mjs` — `npm run consumer`: the kit as an installed package.
+- `scripts/consumer.mjs` — `npm run consumer`: the kit as an installed package
+  (tsc, vitest, vite build, the dev server).
 - `scripts/smoke.mjs` — `npm run smoke`: the showcase in every accent and
   language at phone and desktop width; the panel's place, the sheet, the
   dialog, the banner; the worker's mesh in the viewer, the camera chips, the
@@ -124,7 +126,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 ## What costs what
 
-- `npm run check`: ~4 s (241 tests). `npm run consumer`: ~2 s.
+- `npm run check`: ~4 s (241 tests). `npm run consumer`: ~5 s.
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
   states, 13 steps). CI: about a minute.
 

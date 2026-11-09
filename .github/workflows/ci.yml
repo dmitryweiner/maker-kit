@@ -25,9 +25,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      # the kit packed and installed as an app gets it: tsc, vitest, vite build
-      - run: npm run consumer
       - run: npx playwright install --with-deps chromium
+      # the kit packed and installed as an app gets it: tsc, vitest, vite build, the dev server in Chromium
+      - run: npm run consumer
       # builds the showcase into dist/ and checks it in a browser
       - run: npm run smoke -- --preview
       - uses: actions/upload-pages-artifact@v5

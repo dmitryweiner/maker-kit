@@ -20,6 +20,11 @@ export async function smoke(): Promise<void> {
 describe('maker-kit/harness', () => {
   it('runs from node_modules', () => {
     expect(parseArgs(['--preview']).get('preview')).toBe('true');
+    // without repeatable flags every value is a string
+    const out: string | undefined = parseArgs(['--out', 'a.png'], ['out']).get('out');
+    expect(out).toBe('a.png');
+    const set: string | string[] | undefined = parseArgs(['--set', 'a'], [], ['set']).get('set');
+    expect(set).toEqual(['a']);
     expect(binaryStl(new Uint8Array(84))).toEqual({ header: '', triangles: 0 });
   });
 });

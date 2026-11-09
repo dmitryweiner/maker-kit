@@ -7,11 +7,13 @@ export interface Viewport {
 
 export const VIEWPORTS: { phone: Viewport; desktop: Viewport };
 
-/** A bare flag is `'true'`, a value flag its value, a repeatable flag the list of its values. */
+/** A bare flag is `'true'`, a value flag its value. */
+export function parseArgs(argv: readonly string[], valueFlags?: readonly string[]): Map<string, string>;
+/** With repeatable flags: each of them is the list of its values. */
 export function parseArgs(
   argv: readonly string[],
-  valueFlags?: readonly string[],
-  repeatableFlags?: readonly string[],
+  valueFlags: readonly string[],
+  repeatableFlags: readonly string[],
 ): Map<string, string | string[]>;
 
 /** The project's own pair of ports: dev and preview, used with --strictPort. */

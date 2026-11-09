@@ -5,6 +5,9 @@ export default defineConfig({
   // three is half a megabyte of the bundle: known, not news
   build: { chunkSizeWarningLimit: 700 },
   worker: { format: 'es' },
+  // The kit is TypeScript sources: the dev server's dependency pre-bundling
+  // reads them as JavaScript and dies. Vite serves them as the app's own.
+  optimizeDeps: { exclude: ['maker-kit'] },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
