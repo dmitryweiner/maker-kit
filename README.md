@@ -3,8 +3,9 @@
 The shared pieces of the 3D-printing tools — [Case Constructor](https://github.com/dmitryweiner/case-constructor),
 [Plate Builder](https://github.com/dmitryweiner/plate-builder), [Cast Builder](https://github.com/dmitryweiner/cast-builder)
 and the ones to come: the controls panel, undo, storage, presets, the mobile
-sheet, the progress bar, the worker queue, STL, the 3D view, the smoke
-harness and the design code they share. Plate Builder (M1) and Cast Builder
+sheet, the progress bar, the worker queue, STL, the 3D view, the list card
+and the message list, booleans on manifold and the printed thread, the
+smoke harness and the design code they share. Plate Builder (M1) and Cast Builder
 (M2) run on it; Case Constructor moves later (`plans/PLAN.md`).
 
 A source-only TypeScript package: no build step, installed by a git tag.
@@ -63,7 +64,7 @@ npm ci
 npm run dev        # the showcase
 npm run check      # typecheck, lint, unit tests
 npm run consumer   # the kit as an installed package
-npm run smoke      # the showcase in a browser
+npm run smoke      # the showcase in a browser; -- --preview a build, offline too
 ```
 
 Working on an app and the kit together: `npm link ../maker-kit` in the app.
