@@ -3,7 +3,8 @@
 maker-kit — the shared library of the 3D-printing tools in `~/projects`
 (Case Constructor, Plate Builder, Cast Builder): controls, undo, storage,
 presets, the mobile sheet, the progress bar, the worker queue, STL, the 3D
-view, the smoke harness and the design code. A source-only TypeScript
+view, booleans on manifold and the printed thread, the smoke harness and
+the design code. A source-only TypeScript
 package (no build step), installed by git tag:
 `"maker-kit": "github:dmitryweiner/maker-kit#v0.3.1"`. The showcase:
 <https://dmitryweiner.github.io/maker-kit/>.
@@ -22,7 +23,8 @@ Node.js — the version in `.node-version` (`fnm use`; check `node -v`).
   before any work is called done.
 - `npm run consumer` — packs the kit, installs it into `consumer/` and runs an
   app's tsc, vitest and vite build over it, and its page on vite's dev
-  server in Chromium (port 5396).
+  server in Chromium (port 5396), a module worker on `csg` building a
+  threaded rod there.
 - `npm run smoke` — browser smoke of the showcase (dev server, port 5395);
   `-- --preview` builds and checks the build (port 4395); `-- --shots` saves
   screenshots to `shots/`.
@@ -48,9 +50,11 @@ For joint work on an app and the kit: `npm link ../maker-kit` in the app.
 ## Architectural invariants
 
 - Layers: `core` and `i18n` import nothing else of the kit; `ui` imports
-  `core` and `i18n`; `3d` and `worker` import `core` and `i18n`; nothing in
-  the kit imports `ui` (the showcase does). Only `3d` imports `three`; no
-  source imports `node:*`. `.oxlintrc.json` enforces it with
+  `core` and `i18n`; `3d` and `worker` import `core` and `i18n`; `csg`
+  imports `core`, `i18n` and `3d` but its viewer; nothing in the kit imports
+  `ui` (the showcase does) or `csg`. Only `3d` imports `three`, only `csg`
+  `manifold-3d` (and only `csg/manifold` at run time: `csg/thread`'s
+  section loads without WASM); no source imports `node:*`. `.oxlintrc.json` enforces it with
   `no-restricted-imports` per folder.
 - `core` has no DOM: functions that touch the page (download, file picker)
   live in `ui`.
@@ -99,6 +103,10 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
   `viewer` (three) (`docs/3d.md`).
 - `src/worker/` — `protocol`, `client` (`WorkerClient`, `moduleWorker`),
   `serve` (`serveJobs`) (`docs/worker.md`).
+- `src/csg/` — a worker's, on manifold-3d (an optional peer): `manifold`
+  (`initCSG`, `CsgScope`, `toManifold`, `fromManifold`, `outerOutline`),
+  `thread` (`ThreadForm`, `threadSection`, `threadRod`, `threadHole`);
+  tested on the real WASM in node (`docs/csg.md`).
 - `showcase/` — a Vite page with every component, laid out as an app on the
   kit, its box built by a module worker (`box.worker.ts`) and shown by the
   viewer (the root of `vite.config.ts`); deployed to Pages. `?accent=…&lang=…&
@@ -113,7 +121,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 ## Scripts
 
 - `scripts/consumer.mjs` — `npm run consumer`: the kit as an installed package
-  (tsc, vitest, vite build, the dev server).
+  (tsc, vitest, vite build, the dev server with a csg worker).
 - `scripts/smoke.mjs` — `npm run smoke`: the showcase in every accent and
   language at phone and desktop width; the panel's place, the sheet, the
   dialog, the banner; the worker's mesh in the viewer, the camera chips, the
@@ -126,7 +134,8 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 ## What costs what
 
-- `npm run check`: ~4 s (241 tests). `npm run consumer`: ~5 s.
+- `npm run check`: ~4 s (257 tests; `threadHole`'s 1.5 s of them).
+  `npm run consumer`: ~8 s (its page waits for a csg worker's rod).
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
   states, 13 steps). CI: about a minute.
 

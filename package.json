@@ -19,6 +19,7 @@
     "./ui/*": "./src/ui/*.ts",
     "./3d/*": "./src/3d/*.ts",
     "./worker/*": "./src/worker/*.ts",
+    "./csg/*": "./src/csg/*.ts",
     "./i18n/*": "./src/i18n/*.ts",
     "./styles/*": "./src/styles/*",
     "./harness": {
@@ -40,10 +41,14 @@
     "smoke": "node scripts/smoke.mjs"
   },
   "peerDependencies": {
+    "manifold-3d": ">=3.5",
     "playwright": ">=1.50",
     "three": ">=0.178"
   },
   "peerDependenciesMeta": {
+    "manifold-3d": {
+      "optional": true
+    },
     "playwright": {
       "optional": true
     }
@@ -52,6 +57,7 @@
     "@types/node": "^24.19.2",
     "@types/three": "^0.187.0",
     "jsdom": "^29.1.1",
+    "manifold-3d": "^3.5.4",
     "oxlint": "^1.90.0",
     "oxlint-tsgolint": "^7.0.2005",
     "playwright": "^1.64.1",
