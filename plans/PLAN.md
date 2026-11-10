@@ -23,6 +23,7 @@ the user are at the top; deviations go to the end as they happen.
 | License | **GPL-3.0-or-later**, as the apps. |
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
 | A blank Cast Builder project (2026-11-08) | **No model at all**: 📄 New empties the view to its "open a model" state with the default setup. |
+| K7's scope (2026-11-10) | **All of it**: the manifold helpers, the thread profile, `serveJobs` answering a refused job, messageList (Plate Builder and Cast Builder move to it), the list card built now from Plate Builder's code and a reading of Case Constructor's, the banner's words without ⬇️, the offline check in the harness. |
 
 ## Defaults taken without asking (say if any is wrong)
 
@@ -61,7 +62,8 @@ None at the moment.
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
-| K7, C1, M3 | not started |
+| K7 — what the migrations share | planned (below, "K7 in detail") |
+| C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -617,7 +619,8 @@ the apps, then extended).
   mesh of a million triangles.
 - **K7 — what the migrations show is shared next**: the list card and
   accordion, messageList, the manifold helpers, the thread profile (Case
-  Constructor and Cast Builder each have one).
+  Constructor and Cast Builder each have one); and what M1 and M2 left for
+  it. Its parts, their order and the apps' PRs: "K7 in detail" below.
 - **C1 — Conventions.** `_conventions/3d-tools.md`: a 3D tool is built on
   maker-kit; how to add it to a project; the `new-web-app` skill gets a
   "3D tool" option that adds the kit, the viewer, the worker and the
@@ -630,6 +633,145 @@ the apps, then extended).
   undo timer replaced by final changes; its user presets get ids (stored
   names migrate). Until then it keeps its own modules; what the kit learns
   from it (K7) comes by reading its code, not by importing.
+
+## K7 in detail (2026-11-10)
+
+What the three apps still write each on their own, taken into the kit; then
+Plate Builder and Cast Builder move onto it. Case Constructor takes these
+pieces with M3; until then the kit reads its code (its thread, its lists of
+labels and openings, its warnings list).
+
+### csg/manifold — the bridge to manifold-3d
+
+A new layer, `src/csg/`: the only one that imports `manifold-3d` (an
+optional peer dependency, as `playwright`); it imports `core` and `3d/mesh`,
+nothing imports it but apps' workers. Its runtime import is in
+`csg/manifold.ts` only, so the pure parts of `csg/thread` load without WASM.
+
+| Piece | Case Constructor | Plate Builder | Cast Builder |
+|---|---|---|---|
+| `initCSG()` — the WASM once per worker | ✓ | ✓ | ✓ |
+| `CsgScope` — every object deleted at once | ✓ | ✓ | ✓ |
+| `toManifold(csg, mesh, { merge? })` — throws with the reason on a mesh that is not a closed solid | ✓ (always merges) | — | ✓ (merges an imported STL) |
+| `fromManifold(solid)` → `SurfaceMesh` with normals (positions out of `numProp > 3`) | ✓ | — | ✓ |
+| `outerOutline(csg, scope, section)` — the outer rings, holes filled | — | ✓ (`fillHoles`) | ✓ |
+
+Case Constructor's `hullOf`, `splitByPlane`, `extrude`, `unionAll` and its
+affine `toMat4` stay in it until a second app needs them. Tests: the apps'
+`csg.test.ts` merged, on the real WASM in node; the consumer imports
+`maker-kit/csg/manifold` in a worker and builds.
+
+### csg/thread — a printed thread
+
+Case Constructor's form (Cast Builder's is the same with equal flanks): a
+60° profile, flat crests and roots, a single-start right-hand thread as its
+horizontal section extruded with a twist — closed by construction.
+
+```ts
+interface ThreadForm { d: number; pitch: number; depth: number; rise: number; fall: number }   // shares of the pitch
+symmetricForm(d: number, pitch: number): ThreadForm;        // half a pitch deep, 30° flanks
+minorRadius(form: ThreadForm): number;
+threadSection(form, grow: number, points: number): [number, number][];   // pure
+threadRod(csg, scope, form, grow: number, z0: number, z1: number, o: { points: number; slicesPerTurn: number }): Manifold;
+```
+
+`grow` widens a hole by its fit. Points and slices are the app's (Case
+Constructor: a slice per point; Cast Builder: 16 slices per turn, 48 points
+in an export). Sizes, screws, heads, stops and holes stay in the apps
+(domain geometry). Tests: Cast Builder's sections come out the same to the
+float, a rod is one closed solid of the expected volume, rods a whole
+number of pitches apart are in phase.
+
+### worker/serve — a refused job is answered
+
+Today `serveJobs` drops what its `isJob` refuses and the client waits
+forever (Cast Builder passes any object to get round it). A message with a
+job id whose job is refused is answered with `error` and the code
+`kit.worker.badJob`; one with no job id cannot be answered and is dropped.
+Cast Builder then passes its real guard.
+
+### ui/messageList — blockers, warnings, notes
+
+```ts
+type Severity = 'bad' | 'warn' | 'info';
+interface MessageLine { severity: Severity; text: string; mark?: string;   // a badge before the text: Case Constructor's "⚠ 3"
+                        action?: { label: string; run(): void } }          // Plate Builder's "show"
+renderMessages(list: HTMLUListElement, lines: readonly MessageLine[]): void;   // the list hidden when empty
+```
+
+Texts come translated: the apps' warnings are not all `Message`s (Plate
+Builder's name elements). The look is kit.css's `.messages` / `.message`,
+already in the showcase. Plate Builder's Warnings card and Cast Builder's
+two paragraphs (blockers, warnings) move to it; Case Constructor's badges
+over the model and its hover stay in the app, its list moves at M3.
+Visible in Cast Builder: a line per message with its colour bar.
+
+### ui/listCard — a group of items, each with its own controls
+
+From Plate Builder's element groups ("Texts · 2 / 10", add, an accordion of
+items with visibility, duplicate, delete) and Case Constructor's labels
+and openings (a box per item, its controls always open, ✕).
+
+```ts
+interface ListItem { id: string; title: string; hint?: string; icon?: string; visible?: boolean }   // visible absent: no switch
+renderItemList(list: HTMLUListElement, o: {
+  items: readonly ListItem[];
+  body(id: string): HTMLElement | null;   // the row's controls: the app's node, moved in; null: folded
+  t: Translate<KitKey>;
+  select?(id: string | null): void;       // a head is a fold button only with it (Plate Builder's one open item)
+  toggle?(id: string): void; duplicate?(id: string): void;
+  remove(id: string): void;               // at once: undo brings it back
+}): { syncHints(items: readonly ListItem[]): void };   // a text typed into an item changes its head in place
+groupCount(n: number, max: number): string;            // "2 / 10"
+```
+
+- Rows are made again only when ids, titles, visibility or the open one
+  change (Plate Builder's key; Case Constructor rebuilt on a length
+  change): a click that blurs a field must find its button on mouseup, a
+  text field keeps its focus.
+- Ids: the row `<prefix>_<id>`, its buttons `_visible`, `_duplicate`,
+  `_remove` (Case Constructor's `label0_remove` becomes `label_0_remove` at
+  M3, mechanically).
+- `aria-expanded` on a fold head; labels "Visible: Text 2", "Duplicate:
+  Text 2", "Delete: Text 2" (`kit.list.*`).
+- The add button and the count stay in the app's markup (the card's
+  heading is the app's); the kit styles `.group-card`, `.item-*`.
+- Plate Builder moves to it in K7. Case Constructor at M3.
+
+### ui/banner — words that fit an app with no project file
+
+The kit's project sentences say the fact only ("This browser does not keep
+your project: …", "… its storage is full."); what to do is a second key the
+app passes: `advice: { blocked: K; full: K }`. The kit offers
+`kit.storage.advice.file` ("Save the project to a file with ⬇️ before
+closing the page") for an app with a project file; Plate Builder's banner
+reads as before. Cast Builder gets the banner with its own advice (open
+the model again after a reload) and keeps its "too large to keep" note.
+
+### harness — the offline check
+
+`offline(app, { ready(page) })`: a visit warms the service worker's cache
+(waits for `navigator.serviceWorker.ready`), the context goes offline, a
+reload must show the app (`ready` checks it, e.g. the heading). Both apps
+wrote it; the showcase gets a service worker (the template's `sw.js`
+plugin) so the kit's own smoke runs it with `--preview`.
+
+### Order
+
+1. **K7a — csg and worker** (kit PR): `csg/manifold`, `csg/thread`, the
+   refused job; `manifold-3d` as an optional peer and a dev dependency;
+   the layer rule in `.oxlintrc.json`; the consumer builds a worker on it.
+2. **K7b — ui** (kit PR): messageList, listCard, the banner's advice; the
+   showcase draws them (a list card of three items, one folded open; the
+   message list replaces its hand-made `<ul>`); `kit.list.*`,
+   `kit.storage.advice.file`, `kit.worker.badJob` in four languages.
+3. **K7c — harness** (kit PR): `offline`, the showcase's service worker.
+   Tag `v0.4.0`.
+4. **Plate Builder on v0.4.0** (its PR): csg, messageList, listCard, the
+   banner's advice, `offline`.
+5. **Cast Builder on v0.4.0** (its PR): csg, thread (its screws the same to
+   the float: its geometry tests hold unchanged), messageList, its real job
+   guard, the banner, `offline`.
 
 ## Risks
 
