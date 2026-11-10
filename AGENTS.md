@@ -94,8 +94,9 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `src/i18n/` — the kit's own strings, `kit.*` keys, en ru uk he; `en.ts`
   defines `KitKey`.
 - `src/ui/` — DOM, no three: `controls` (the panel), `stepper` (−/+ held),
-  `card`, `sheet`, `progress`, `banner`, `modal`, `presetList`,
-  `historyKeys`, `languagePicker`, `dom`, `timers`, `files` (`docs/ui.md`).
+  `card`, `listCard`, `messageList`, `sheet`, `progress`, `banner`, `modal`,
+  `presetList`, `historyKeys`, `languagePicker`, `dom`, `timers`, `files`
+  (`docs/ui.md`).
 - `src/styles/` — `tokens.css` (palette, accents, density) and `kit.css`
   (everything in `@layer kit`, imports the tokens); the rules CSS cannot
   say are in `docs/design.md`.
@@ -126,7 +127,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
   language at phone and desktop width; the panel's place, the sheet, the
   dialog, the banner; the worker's mesh in the viewer, the camera chips, the
   STL export; the bar's delay and overlap; −/+ held, undo keys, the presets
-  flow, a tap on the view, folding across a language switch, the harness's
+  flow, the list card and the message list, a tap on the view, folding across a language switch, the harness's
   CPU throttling. `--shots`
   saves 37 screenshots to `shots/` for a design review.
 - `scripts/harness.mjs` — the Playwright plumbing (server, pages, steps and
@@ -134,10 +135,10 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 ## What costs what
 
-- `npm run check`: ~4 s (257 tests; `threadHole`'s 1.5 s of them).
+- `npm run check`: ~4 s (269 tests; `threadHole`'s 1.5 s of them).
   `npm run consumer`: ~8 s (its page waits for a csg worker's rod).
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
-  states, 13 steps). CI: about a minute.
+  states, 15 steps). CI: about a minute.
 
 ## Conventions
 

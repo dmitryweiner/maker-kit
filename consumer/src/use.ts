@@ -11,9 +11,14 @@ import { kitEn, kitRu, type KitKey } from 'maker-kit/i18n/index';
 import { download, pickFile } from 'maker-kit/ui/files';
 
 // the app's dictionaries spread the kit's: its "every key" test covers them
-export const en = { ...kitEn, hello: 'Hello, {name}', 'preset.blank.name': 'New box' };
+export const en = { ...kitEn, hello: 'Hello, {name}', 'preset.blank.name': 'New box', 'storage.advice': 'Open the box again.' };
 export type Key = keyof typeof en;
-export const ru: Record<Key, string> = { ...kitRu, hello: 'Привет, {name}', 'preset.blank.name': 'Новая коробка' };
+export const ru: Record<Key, string> = {
+  ...kitRu,
+  hello: 'Привет, {name}',
+  'preset.blank.name': 'Новая коробка',
+  'storage.advice': 'Откройте коробку снова.',
+};
 export const t: Translate<Key> = (key, params) => format(en[key], params, 'en');
 
 /** A component of the kit takes the app's translate function: its keys include the kit's. */

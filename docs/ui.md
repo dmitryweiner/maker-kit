@@ -117,11 +117,68 @@ track is `role="progressbar"`, named by the label or "Building…".
 ## ui/banner — what storage failed to keep
 
 ```ts
-renderBanner(banner, { project: saveResult, preset: failedPresetAction }, { t, onDismiss });
+renderBanner(banner, { project: saveResult, preset: failedPresetAction }, {
+  t,
+  // what to do: an app with a project file takes the kit's words ("save the project to a file with ⬇️")
+  advice: { blocked: 'kit.storage.advice.file', full: 'kit.storage.advice.fileFull' },
+  onDismiss,
+});
 ```
 
 The project's failure stays while it lasts; a preset's can be dismissed.
 Red (`.bad`) when nothing is kept, the warn colour when the storage is full.
+The kit's sentence says what failed; the app's `advice` (its own keys, or
+the kit's two) says what to do, after it: an app with no project file
+cannot send the person to ⬇️.
+
+## ui/messageList — blockers, warnings, notes
+
+```ts
+renderMessages(list, [
+  { severity: 'bad', text: tm(blocker), code: blocker.code },
+  { severity: 'warn', text, code, mark: '⚠ 1', action: { label: t('show'), run: () => frame(spot) } },
+  { severity: 'info', text: t('info.screws', { n: 4 }) },
+]);
+```
+
+A `ul.messages` with a `li.message.<severity>` per line: the text
+(translated by the app — its warnings name its own things), an optional
+badge before it (`.message-mark`: the number of a box over the model) and
+an action after it (a link button). `code` goes to `data-code` for a smoke.
+Hidden with no lines. The same lines are not drawn again (a rebuild after
+every edit repeats them, and a click must find its button); a button runs
+the latest lines' action.
+
+## ui/listCard — a group of items, each with its own controls
+
+```ts
+renderItemList(list, {
+  items: texts.map((x, i) => ({ id: x.id, title: t('text.title', { n: i + 1 }), hint: firstLine(x), icon: 'T', visible: x.visible })),
+  open: selected,                       // with select: one item unfolded
+  body: () => selectedControls,         // the app's node, moved into the open row
+  t, idPrefix: 'text',
+  select: (id) => setSelected(id),      // null: the open head was clicked
+  toggle, duplicate,
+  remove: (id) => edit(removeText(state, id)),   // at once: undo brings it back
+});
+```
+
+- **Two shapes.** With `select` the heads fold (a button with
+  `aria-expanded`): one item is open and holds the app's controls (Plate
+  Builder moves one node into the selected element). Without it every item
+  is open with its own body (`body(id)`) and the head is a name and ✕ (Case
+  Constructor's labels and openings).
+- **Optional buttons**: the visibility switch with `toggle` (for items with
+  `visible`), ⧉ with `duplicate`; ✕ always. Their `aria-label` names the
+  item ("Delete: Text 2", `kit.list.*`), their `title` the action.
+- **Drawn again only when** ids, titles, icons, visibility, the open item or
+  the language change: typing in a row keeps its focus, a click that blurs
+  a field (whose change re-renders) finds its button on mouseup. A hint
+  follows in place. The buttons act on the latest options.
+- A body left out of every new row stays detached; the app keeps its node
+  and its controls' handle, and the next open row takes it.
+- The card's heading, its count (`.group-count`, "2 / 10") and the add
+  button (`.add-button`) are the app's markup.
 
 ## ui/modal — one dialog at a time
 

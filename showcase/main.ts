@@ -1,7 +1,8 @@
 // The showcase: every component of the kit in every state, laid out as an
 // app on the kit is (plans/PLAN.md, "Showcase") — and wired as one: undo and
 // its keys, presets with 📄 New and 💾, the project file, the sheet, the
-// dialog, the bar over the view, the banner, folding cards, the language.
+// dialog, the bar over the view, the banner, folding cards, a list card of
+// labels, the message list, the language.
 // Switches for the accent, the language (Hebrew mirrors the page) and a
 // phone frame. The URL sets them too, so the smoke opens each state directly:
 //   ?accent=emerald&lang=he&view=top&sheet=open&modal=presets&progress=running|label&banner=full|blocked&frame=phone
@@ -31,6 +32,8 @@ import type { StorageWrite } from '../src/core/storage';
 import { renderBanner, type StorageStatus } from '../src/ui/banner';
 import { createCard, restoreCards, snapshotCards } from '../src/ui/card';
 import { renderControls, type Control } from '../src/ui/controls';
+import { renderItemList } from '../src/ui/listCard';
+import { renderMessages } from '../src/ui/messageList';
 import { el, make } from '../src/ui/dom';
 import { download, pickFile } from '../src/ui/files';
 import { bindHistory } from '../src/ui/historyKeys';
@@ -64,7 +67,17 @@ interface Demo {
   clearance: number;
   screws: boolean;
   depth: number;
+  /** the list card's items: in the state, so add, delete and the rest are undo steps */
+  labels: Label[];
 }
+
+interface Label {
+  id: string;
+  text: string;
+  visible: boolean;
+}
+
+const LABELS_MAX = 4;
 
 const initial: Demo = {
   name: 'My box',
@@ -80,7 +93,15 @@ const initial: Demo = {
   clearance: 3,
   screws: true,
   depth: 4,
+  labels: [
+    { id: 'l1', text: 'Hello', visible: true },
+    { id: 'l2', text: 'v1.0', visible: false },
+    { id: 'l3', text: 'ESP32', visible: true },
+  ],
 };
+
+/** A label id no label has: one past the largest number. */
+const nextLabelId = (labels: readonly Label[]): string => `l${Math.max(0, ...labels.map((label) => Number(label.id.slice(1)) || 0)) + 1}`;
 
 const controls: readonly Control<Demo, Key>[] = [
   {
@@ -342,6 +363,20 @@ function start(): void {
   });
 
   const handles: { sync(state: Demo): void }[] = [];
+  // ---- the list card: the open label's controls are one node, moved into its row ----
+  let openLabel: string | null = 'l1';
+  const labelBody = make('div');
+  const labelControls: readonly Control<Demo, Key>[] = [
+    {
+      kind: 'text',
+      key: 'text',
+      label: 'demo.labels.text',
+      maxLength: 40,
+      get: (s) => s.labels.find((label) => label.id === openLabel)?.text ?? '',
+      set: (s, text) => ({ ...s, labels: s.labels.map((label) => (label.id === openLabel ? { ...label, text } : label)) }),
+    },
+  ];
+  const editLabels = (labels: Label[]): void => changeDemo({ ...history.state, labels }, true);
   let showcaseHandle: { sync(state: ShowcaseState): void } | null = null;
   let cards: { setEnabled(on: boolean): void }[] = [];
   let fileNote = '';
@@ -426,6 +461,7 @@ function start(): void {
       renderControls(el('controlsPanel', HTMLElement), controls, { ...o, idPrefix: 'demo' }),
       renderControls(el('statesPanel', HTMLElement), states, { ...o, idPrefix: 'state' }),
       renderControls(lidCard.body, lid, { ...o, idPrefix: 'lid' }),
+      renderControls(labelBody, labelControls, { ...o, idPrefix: 'label' }),
     );
     showcaseHandle = renderControls(el('showcasePanel', HTMLElement), showcaseControls, {
       read: () => showcase,
@@ -449,11 +485,63 @@ function start(): void {
     presetsOpen.classList.toggle('changed', status === 'changed');
     renderBanner(el('banner', HTMLElement), storage, {
       t,
+      // the showcase has a project file: the kit's own advice
+      advice: { blocked: 'kit.storage.advice.file', full: 'kit.storage.advice.fileFull' },
       onDismiss: () => {
         storage = { ...storage, preset: null };
         show();
       },
     });
+    // a label undone away is no longer open
+    if (!state.labels.some((label) => label.id === openLabel)) openLabel = null;
+    renderItemList(el('labelList', HTMLElement), {
+      items: state.labels.map((label, i) => ({
+        id: label.id,
+        title: t('demo.labels.title', { n: i + 1 }),
+        hint: label.text,
+        icon: 'T',
+        visible: label.visible,
+      })),
+      open: openLabel,
+      body: () => labelBody,
+      t,
+      idPrefix: 'labels',
+      select: (id) => {
+        openLabel = id;
+        show();
+      },
+      toggle: (id) => editLabels(history.state.labels.map((label) => (label.id === id ? { ...label, visible: !label.visible } : label))),
+      duplicate: (id) => {
+        const labels = history.state.labels;
+        const at = labels.findIndex((label) => label.id === id);
+        const copy = labels[at];
+        if (!copy || labels.length >= LABELS_MAX) return;
+        openLabel = nextLabelId(labels);
+        editLabels([...labels.slice(0, at + 1), { ...copy, id: openLabel }, ...labels.slice(at + 1)]);
+      },
+      remove: (id) => editLabels(history.state.labels.filter((label) => label.id !== id)),
+    });
+    el('labelsCount', HTMLElement).textContent = `${state.labels.length} / ${LABELS_MAX}`;
+    el('addLabel', HTMLButtonElement).disabled = state.labels.length >= LABELS_MAX;
+    renderMessages(el('messages', HTMLUListElement), [
+      { severity: 'bad', text: t('demo.msg.bad'), code: 'kit.mesh.open' },
+      {
+        severity: 'warn',
+        text: t('demo.msg.warn'),
+        code: 'demo.post',
+        mark: '⚠ 1',
+        // where the warning is: a look from above
+        action: {
+          label: t('demo.show'),
+          run: () => {
+            view = 'top';
+            viewer?.camera(view);
+            show();
+          },
+        },
+      },
+      { severity: 'info', text: t('demo.msg.info'), code: 'demo.screws' },
+    ]);
     el('viewStatus', HTMLElement).textContent = fileNote || `${state.width} × ${state.height} mm`;
     if (viewer) build(state);
     else drawScene(el('scene', HTMLElement), view, state);
@@ -511,6 +599,12 @@ function start(): void {
       if (read.ok) openProject(read.state, '');
       else show();
     });
+  });
+  el('addLabel', HTMLButtonElement).addEventListener('click', () => {
+    const labels = history.state.labels;
+    if (labels.length >= LABELS_MAX) return;
+    openLabel = nextLabelId(labels);
+    editLabels([...labels, { id: openLabel, text: t('demo.labels.new'), visible: true }]);
   });
   for (const chip of document.querySelectorAll<HTMLButtonElement>('.chip')) {
     chip.addEventListener('click', () => {

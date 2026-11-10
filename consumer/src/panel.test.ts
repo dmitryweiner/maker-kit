@@ -27,3 +27,26 @@ describe('the kit’s bar over the view in an app', () => {
     expect(wrap.querySelector('.progress-track')?.getAttribute('role')).toBe('progressbar');
   });
 });
+
+describe('the kit’s banner, list card and messages in an app', () => {
+  it('the banner takes the app’s own advice', async () => {
+    const { renderBanner } = await import('./panel');
+    const banner = document.createElement('div');
+    renderBanner(
+      banner,
+      { project: 'full', preset: null },
+      { t, advice: { blocked: 'storage.advice', full: 'storage.advice' }, onDismiss: () => {} },
+    );
+    expect(banner.textContent).toBe('Your latest changes are not kept in this browser: its storage is full. Open the box again.');
+  });
+
+  it('a list card and a message list draw with the kit’s strings', async () => {
+    const { renderItemList, renderMessages } = await import('./panel');
+    const list = document.createElement('ul');
+    renderItemList(list, { items: [{ id: 'a', title: 'Box' }], body: () => null, t, idPrefix: 'box', remove: () => {} });
+    expect(list.querySelector('#box_a_remove')?.getAttribute('aria-label')).toBe('Delete: Box');
+    const messages = document.createElement('ul');
+    renderMessages(messages, [{ severity: 'warn', text: t('hello', { name: 'kit' }) }]);
+    expect(messages.textContent).toBe('Hello, kit');
+  });
+});

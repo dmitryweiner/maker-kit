@@ -72,13 +72,16 @@
 
         <div id="cards"></div>
 
+        <!-- a list card: the heading, the count and the add button are the app's, the rows the kit's -->
+        <section class="card">
+          <h2><span data-i18n="demo.labels"></span> <span id="labelsCount" class="group-count"></span></h2>
+          <ul id="labelList" class="item-list"></ul>
+          <button id="addLabel" type="button" class="btn add-button" data-i18n="demo.labels.add"></button>
+        </section>
+
         <section class="card">
           <h2 data-i18n="demo.messages"></h2>
-          <ul class="messages">
-            <li class="message bad"><span data-i18n="demo.msg.bad"></span></li>
-            <li class="message warn"><span data-i18n="demo.msg.warn"></span></li>
-            <li class="message info"><span data-i18n="demo.msg.info"></span></li>
-          </ul>
+          <ul id="messages" class="messages"></ul>
         </section>
 
         <section class="card">
