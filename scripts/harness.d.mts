@@ -85,3 +85,13 @@ export function binaryStl(bytes: Uint8Array): { header: string; triangles: numbe
 
 /** Slows the page's CPU `rate` times (1 removes it). */
 export function throttle(page: Page, rate: number): Promise<void>;
+
+/**
+ * The app works offline after a first visit: open, wait for the service
+ * worker, reload, go offline, reload, `ready(page)` checks the app is there.
+ * The page comes back offline; the caller closes the context.
+ */
+export function offline(
+  app: Pick<Harness, 'open'>,
+  o: OpenOptions & { ready(page: Page): Promise<void> },
+): Promise<{ page: Page; context: BrowserContext }>;

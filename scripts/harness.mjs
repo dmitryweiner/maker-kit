@@ -224,3 +224,21 @@ export async function throttle(page, rate) {
   }
   await session.send('Emulation.setCPUThrottlingRate', { rate });
 }
+
+/**
+ * The app works offline after a first visit: the visit warms the service
+ * worker's cache (waits for `navigator.serviceWorker.ready`, then a reload
+ * runs under it), the context goes offline, a reload must show the app —
+ * `ready(page)` checks that it did. Gives the page back, offline, for the
+ * app's further checks (its worker and WASM from the cache); the caller
+ * closes the context. A build only: the dev server has no service worker.
+ */
+export async function offline(app, { ready, ...open }) {
+  const { page, context } = await app.open(open);
+  await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+  await page.reload();
+  await context.setOffline(true);
+  await page.reload();
+  await ready(page);
+  return { page, context };
+}

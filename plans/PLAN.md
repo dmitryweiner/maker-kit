@@ -62,7 +62,7 @@ None at the moment.
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
-| K7 — what the migrations share | in review: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15); the plan: "K7 in detail" below |
+| K7 — what the migrations share | the kit's part done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15). Next: `v0.4.0`, then Plate Builder and Cast Builder move to it ("K7 in detail", "Order", 4–6) |
 | C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
@@ -97,10 +97,11 @@ the end of this file and `docs/` are right.
 maker-kit/
   src/
     core/        no DOM: history, storage, projectFile, presets, message, format
-    ui/          DOM, no three: dom, controls, stepper, card, sheet, progress,
+    ui/          DOM, no three: dom, controls, stepper, card, listCard, sheet, progress,
                  modal, banner, presetList, historyKeys, languagePicker, messageList
     3d/          mesh, validate, stl, viewer (three as a peer dependency)
     worker/      protocol, client, serve
+    csg/         manifold, thread (manifold-3d as an optional peer; a worker's)
     i18n/        the kit's own strings: en, ru, uk, he
     styles/      tokens.css, kit.css (@layer kit)
   scripts/       harness.mjs (Playwright), its d.mts
@@ -117,7 +118,8 @@ rule (`import/no-restricted-paths`) keeps it so.
 `package.json` `exports` names every entry point, so an app imports only
 what it uses: `maker-kit/core/history`, `maker-kit/ui/controls`,
 `maker-kit/styles/kit.css`, `maker-kit/3d/stl`, `maker-kit/worker/client`,
-`maker-kit/harness`. Peer dependencies: `three` (≥ 0.178), `playwright`
+`maker-kit/csg/manifold`, `maker-kit/harness`. Peer dependencies: `three`
+(≥ 0.178), `manifold-3d` (≥ 3.5, optional, for `csg`), `playwright`
 (optional, for the harness).
 
 ### Consuming TypeScript sources from node_modules
@@ -758,20 +760,33 @@ plugin) so the kit's own smoke runs it with `--preview`.
 
 ### Order
 
-1. **K7a — csg and worker** (kit PR): `csg/manifold`, `csg/thread`, the
+1. **K7a — csg and worker** (kit PR #13, done): `csg/manifold`, `csg/thread`, the
    refused job; `manifold-3d` as an optional peer and a dev dependency;
    the layer rule in `.oxlintrc.json`; the consumer builds a worker on it.
-2. **K7b — ui** (kit PR): messageList, listCard, the banner's advice; the
+2. **K7b — ui** (kit PR #14, done): messageList, listCard, the banner's advice; the
    showcase draws them (a list card of three items, one folded open; the
    message list replaces its hand-made `<ul>`); `kit.list.*`,
    `kit.storage.advice.file`, `kit.worker.badJob` in four languages.
-3. **K7c — harness** (kit PR): `offline`, the showcase's service worker.
-   Tag `v0.4.0`.
-4. **Plate Builder on v0.4.0** (its PR): csg, messageList, listCard, the
-   banner's advice, `offline`.
-5. **Cast Builder on v0.4.0** (its PR): csg, thread (its screws the same to
-   the float: its geometry tests hold unchanged), messageList, its real job
-   guard, the banner, `offline`.
+3. **K7c — harness** (kit PR #15, done): `offline`, the showcase's service
+   worker.
+4. **`v0.4.0`** (next): on `main`, one commit bumps `package.json` to
+   0.4.0 and the install line (`#v0.3.1` → `#v0.4.0`) in README.md and
+   AGENTS.md; the tag `v0.4.0` on it (AGENTS.md, "Releases"); the status
+   above.
+5. **Plate Builder on v0.4.0** (its PR): csg (its `csg.ts` → the kit's
+   `initCSG`, `CsgScope`; `fillHoles` → `outerOutline`), messageList (its
+   Warnings card; `data-code` kept), listCard (its element groups:
+   `.element-*` → `.item-*`, row ids `<prefix>_<id>` — smoke selectors
+   updated in one commit; its own `.group-count` CSS goes, so Hebrew reads
+   "3 / 4", not "4 / 3"), the banner's `advice` (the kit's `file` keys:
+   its words unchanged), `offline` in its smoke.
+6. **Cast Builder on v0.4.0** (its PR): csg (`toManifold` with `merge`,
+   `outerOutline`), thread (`THREAD` → `symmetricForm(10, 2)`,
+   `threadRod` with `{ points, slicesPerTurn: 16 }`: its geometry tests
+   hold unchanged), messageList (`#blockers` and `#warnings` → one list:
+   a visible change, its smoke reads lines), its real job guard in
+   `csg.worker.ts`, the storage banner with its own advice (no project
+   file; its "too large to keep" note stays), `offline` in its smoke.
 
 ## Risks
 
@@ -1016,3 +1031,9 @@ plugin) so the kit's own smoke runs it with `--preview`.
   the old sentence in all four languages, a test holds it for English.
   `MessageLine.code` becomes `data-code`: Plate Builder's smoke finds its
   warnings by it, Cast Builder's messages are codes too.
+- **K7c — `offline` gives the page back** (2026-11-10): open, wait for the
+  service worker, reload, go offline, reload, then the app's `ready(page)`;
+  the page stays offline for the app's own checks (Cast Builder builds its
+  sample from the cached worker and WASM) and the caller closes it. The
+  showcase's service worker is the template's `sw-plugin.ts` and `pwa.ts`,
+  copied as every app copies them.

@@ -114,6 +114,8 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
   view=iso|top|front&sheet=open&modal=presets&progress=running|label&
   banner=full|blocked&frame=phone` open a state directly (the smoke's
   screenshots use them). `scene.ts` is its SVG stand-in without WebGL.
+  A build works offline: `sw-plugin.ts` and `pwa.ts` are the template's
+  (tested there), so the smoke can run the harness's `offline`.
 - `consumer/` — a fixture app that gets the packed kit in its `node_modules`.
 - `scripts/harness.mjs` + `harness.d.mts` — exported as `maker-kit/harness`
   (`docs/harness.md`); `harness.test.ts` tests its pure parts.
@@ -127,18 +129,20 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
   language at phone and desktop width; the panel's place, the sheet, the
   dialog, the banner; the worker's mesh in the viewer, the camera chips, the
   STL export; the bar's delay and overlap; −/+ held, undo keys, the presets
-  flow, the list card and the message list, a tap on the view, folding across a language switch, the harness's
-  CPU throttling. `--shots`
+  flow, the list card and the message list, a tap on the view, folding
+  across a language switch, the harness's CPU throttling; with `--preview`,
+  offline after a first visit. `--shots`
   saves 37 screenshots to `shots/` for a design review.
 - `scripts/harness.mjs` — the Playwright plumbing (server, pages, steps and
-  the run, downloads, STL, throttling); apps import it as `maker-kit/harness`.
+  the run, downloads, STL, throttling, the offline check); apps import it
+  as `maker-kit/harness`.
 
 ## What costs what
 
-- `npm run check`: ~4 s (269 tests; `threadHole`'s 1.5 s of them).
+- `npm run check`: ~4 s (271 tests; `threadHole`'s 1.5 s of them).
   `npm run consumer`: ~8 s (its page waits for a csg worker's rod).
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
-  states, 15 steps). CI: about a minute.
+  states, 16 steps with the offline one). CI: about a minute.
 
 ## Conventions
 

@@ -45,6 +45,7 @@ import { setupSheet } from '../src/ui/sheet';
 import { WorkerClient, moduleWorker } from '../src/worker/client';
 import type { BoxJob } from './boxJob';
 import { dictionaries, isLocale, LOCALES, type Key, type Locale } from './i18n';
+import { registerServiceWorker } from './pwa';
 import { drawScene, isView, type View } from './scene';
 
 const params = new URLSearchParams(location.search);
@@ -681,3 +682,6 @@ if (params.get('frame') === 'phone') {
 } else {
   start();
 }
+
+// offline after a first visit (a build only: the dev server has no service worker)
+if (import.meta.env.PROD) registerServiceWorker(navigator, window, document);
