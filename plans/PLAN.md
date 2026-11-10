@@ -60,7 +60,7 @@ None at the moment.
 | K5 — 3d and worker | done (PR #6), tag `v0.2.0` |
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
-| M2 — Cast Builder on the kit | migration done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16; on `v0.3.1`, no kit fixes needed. Next: 📄 New (a separate PR) |
+| M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7, C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
@@ -808,7 +808,8 @@ the apps, then extended).
 - **M2 — opening a model resets the history** (2026-11-10): until 📄 New
   puts the model in the state by reference, the steps belong to the old
   model's setup and would turn the new one. A tab, a turn, Reset and Find
-  are a step each.
+  are a step each. Gone with 📄 New (cast-builder #17): opening a model is
+  one step.
 - **M2 — no storage banner in Cast Builder** (2026-11-10): the kit's
   sentences send the person to "save the project to a file with ⬇️", which
   Cast Builder has not got. It keeps its "model too large to keep" note.
@@ -831,3 +832,12 @@ the apps, then extended).
   (its light, the iso camera, 1.7 × fit, frames on demand; the tooling
   keeps its plaster grey, the grid at least a 200 mm bed), and the export
   gate's sentences (`kit.mesh.*`).
+- **M2 — the model by reference** (2026-11-10): Cast Builder's `Project`
+  holds a `ModelRef` whose `toJSON()` is its id, not an id beside a map of
+  meshes: the history's JSON comparison sees the id, the mesh is shared,
+  and it is freed with the last step that holds it — no pruning, no change
+  to `History`. 📄 New is the app's own button (no presets in Cast Builder):
+  no model, the setup at its defaults, the settings kept; disabled with no
+  model; on a phone it closes the sheet over the invitation. Opening a model
+  is a step from the default setup; a model brought back by undo is stored
+  again.
