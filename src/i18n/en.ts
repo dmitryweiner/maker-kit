@@ -37,6 +37,10 @@ export const kitEn = {
   'kit.preset.rename': 'Name of the preset',
   'kit.preset.delete': 'Delete “{name}”',
   'kit.preset.confirm': 'Delete?',
+  // a list card's buttons (ui/listCard); their aria-label adds the item's name
+  'kit.list.visible': 'Visible',
+  'kit.list.duplicate': 'Duplicate',
+  'kit.list.remove': 'Delete',
   // the bar over the view (ui/progress)
   'kit.progress.building': 'Building…',
   // a project file that cannot be opened (core/projectFile)
@@ -45,9 +49,11 @@ export const kitEn = {
   'kit.file.newer': 'This project comes from a newer version of the app. Reload the page to get it.',
   // what the browser's storage failed to keep (core/storage, ui/banner)
   'kit.storage.project.blocked':
-    'This browser does not keep your project: its storage is unavailable (a private window or blocked site data). Save the project to a file with ⬇️ before closing the page.',
-  'kit.storage.project.full':
-    'Your latest changes are not kept in this browser: its storage is full. Delete presets you no longer need, or save the project to a file with ⬇️.',
+    'This browser does not keep your project: its storage is unavailable (a private window or blocked site data).',
+  'kit.storage.project.full': 'Your latest changes are not kept in this browser: its storage is full.',
+  // what to do: the app passes its own advice (ui/banner); these are for an app with a project file
+  'kit.storage.advice.file': 'Save the project to a file with ⬇️ before closing the page.',
+  'kit.storage.advice.fileFull': 'Delete presets you no longer need, or save the project to a file with ⬇️.',
   'kit.storage.preset.save': 'Could not save the preset: the browser storage is unavailable.',
   'kit.storage.preset.saveFull': 'Could not save the preset: the browser storage is full. Delete presets you no longer need and try again.',
   'kit.storage.preset.delete': 'Could not delete the preset: the browser storage is unavailable.',

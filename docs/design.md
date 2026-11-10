@@ -74,6 +74,13 @@ import 'maker-kit/styles/kit.css';   // tokens included
   (`M3`), a caret. It **unfolds when its feature turns on** and **never folds
   under the hand** — turning a feature off happens inside the open card.
   Folding survives a re-render (a language switch).
+- A **list card** is a group of items of one kind ("Labels 3 / 4", `+ Add
+  a label` under them): a bordered row per item, its head the name in bold,
+  a muted hint after it (a text's first line), then the visibility switch,
+  ⧉ and ✕. One item is open at a time and its controls sit under its head,
+  the row's border in the accent; a hidden item's name is dimmed. Delete
+  acts at once (it is one undo step, not a destruction); the add button is
+  disabled at the limit, which the count shows.
 
 ## The slider row
 
@@ -121,7 +128,9 @@ free. Without WebGL the app goes on without its view.
 | info | `--info` (the accent) | worth knowing: how many screws to buy |
 
 Messages (`.messages > .message.bad|warn|info`) carry a bar of their colour
-on the start side; their text stays in the text colour for reading.
+on the start side; their text stays in the text colour for reading. A badge
+before the text (`⚠ 1`) is the number of its box over the model; an action
+after it ("Show") is a link button.
 
 ## Actions
 
@@ -150,14 +159,17 @@ One scheme, used by every app's smoke: `<prefix>_<key>` the input; `_n` a
 range's exact field; `_dec` / `_inc`; `_v<value>` a value button; `_<value>`
 a segment or toggle; `_note`; `_label` a group's name. A folding card is
 `card_<id>`, its body `card_<id>_body`; a preset's row carries
-`data-ref="b:<id>"` or `"u:<id>"`.
+`data-ref="b:<id>"` or `"u:<id>"`. A list card's row is `<prefix>_<id>`
+(`data-id` the item's id), its buttons `_visible`, `_duplicate`,
+`_remove`; a message's line carries `data-code`.
 
 ## RTL
 
 `dir="rtl"` on `<html>` mirrors everything: the CSS has logical properties
 only (`inline-start`, `block-end`, …). Sliders run from the start side; a
 folded card's caret points to the end. Icons that mean a direction (↶ ↷)
-are not mirrored: undo is undo.
+are not mirrored: undo is undo. A count ("3 / 4") is isolated left to
+right: spaced, its numbers are runs an RTL line would reverse.
 
 ## Density and touch targets
 

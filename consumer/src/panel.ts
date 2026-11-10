@@ -26,6 +26,8 @@ export { renderBanner } from 'maker-kit/ui/banner';
 export { createCard, restoreCards, snapshotCards } from 'maker-kit/ui/card';
 export { bindHistory, isTextEntry, shortcutLetter } from 'maker-kit/ui/historyKeys';
 export { createLanguagePicker } from 'maker-kit/ui/languagePicker';
+export { renderItemList } from 'maker-kit/ui/listCard';
+export { renderMessages } from 'maker-kit/ui/messageList';
 export { createModal, modalOpen } from 'maker-kit/ui/modal';
 export { renderPresetList } from 'maker-kit/ui/presetList';
 export { createProgress } from 'maker-kit/ui/progress';

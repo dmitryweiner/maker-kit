@@ -64,6 +64,12 @@ export const en = {
   'demo.preset.pi.note': 'A Pi 4 with its ports in the back wall, vents, rubber feet',
   'demo.preset.esp': 'ESP32 sensor box',
   'demo.preset.esp.note': 'A small box for a board and a sensor, a hole for the cable',
+  'demo.labels': 'Labels',
+  'demo.labels.add': 'Add a label',
+  'demo.labels.title': 'Label {n}',
+  'demo.labels.text': 'Text',
+  'demo.labels.new': 'New label',
+  'demo.show': 'Show',
 };
 
 export type Key = keyof typeof en;
@@ -130,6 +136,12 @@ export const ru: Dict = {
   'demo.preset.pi.note': 'Pi 4 с портами в задней стенке, вентиляция, резиновые ножки',
   'demo.preset.esp': 'Коробка для датчика ESP32',
   'demo.preset.esp.note': 'Небольшая коробка для платы и датчика, отверстие для кабеля',
+  'demo.labels': 'Надписи',
+  'demo.labels.add': 'Добавить надпись',
+  'demo.labels.title': 'Надпись {n}',
+  'demo.labels.text': 'Текст',
+  'demo.labels.new': 'Новая надпись',
+  'demo.show': 'Показать',
 };
 
 export const uk: Dict = {
@@ -193,6 +205,12 @@ export const uk: Dict = {
   'demo.preset.pi.note': 'Pi 4 з портами в задній стінці, вентиляція, гумові ніжки',
   'demo.preset.esp': 'Коробка для датчика ESP32',
   'demo.preset.esp.note': 'Невелика коробка для плати й датчика, отвір для кабелю',
+  'demo.labels': 'Написи',
+  'demo.labels.add': 'Додати напис',
+  'demo.labels.title': 'Напис {n}',
+  'demo.labels.text': 'Текст',
+  'demo.labels.new': 'Новий напис',
+  'demo.show': 'Показати',
 };
 
 export const he: Dict = {
@@ -256,6 +274,12 @@ export const he: Dict = {
   'demo.preset.pi.note': 'Pi 4 עם היציאות בדופן האחורית, אוורור, רגליות גומי',
   'demo.preset.esp': 'קופסת חיישן ESP32',
   'demo.preset.esp.note': 'קופסה קטנה ללוח ולחיישן, חור לכבל',
+  'demo.labels': 'כיתובים',
+  'demo.labels.add': 'הוספת כיתוב',
+  'demo.labels.title': 'כיתוב {n}',
+  'demo.labels.text': 'טקסט',
+  'demo.labels.new': 'כיתוב חדש',
+  'demo.show': 'הצגה',
 };
 
 export type Locale = 'en' | 'ru' | 'uk' | 'he';

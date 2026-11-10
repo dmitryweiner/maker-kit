@@ -1018,4 +1018,130 @@
     flex: 1;
     color: var(--text);
   }
+
+  /* a badge before the text (a numbered box over the model), an action after it */
+  .message-mark {
+    flex: none;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .message > .link-button {
+    flex: none;
+  }
+
+  /* ---- a list card: a group of items, each with its own controls (ui/listCard) ---- */
+
+  .item-list {
+    margin: 0 0 var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* "2 / 10" reads left to right in Hebrew too: spaced, the numbers are runs an RTL line reverses */
+  .group-count {
+    direction: ltr;
+    unicode-bidi: isolate;
+    margin-inline-start: var(--space-1);
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .item-row {
+    margin-block: 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .item-row.open {
+    border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+  }
+
+  .item-head {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding-inline-end: 2px;
+  }
+
+  .item-row.hidden-item .item-name {
+    opacity: 0.5;
+  }
+
+  .item-name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-inline-size: 0;
+    min-block-size: var(--control-h);
+    padding-inline: var(--space-2) var(--space-1);
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+  }
+
+  button.item-name {
+    cursor: pointer;
+  }
+
+  .item-caret {
+    color: var(--muted);
+    font-size: var(--font-tiny);
+  }
+
+  /* a folded item's caret points along the line: leftwards in RTL */
+  [dir='rtl'] .item-caret {
+    scale: -1 1;
+  }
+
+  .item-icon {
+    inline-size: 1.5em;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .item-title {
+    flex: none;
+    font-weight: 600;
+  }
+
+  .item-hint {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: var(--font-tiny);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .item-row.open .item-title {
+    color: var(--accent);
+  }
+
+  /* the item's controls: the app's node under the head */
+  .item-row > :not(.item-head) {
+    padding: 0 var(--space-2) 6px;
+    border-block-start: 1px solid var(--line);
+  }
+
+  .item-visible {
+    inline-size: 18px;
+    block-size: 18px;
+    margin-inline: 6px;
+    accent-color: var(--accent);
+  }
+
+  .add-button {
+    inline-size: 100%;
+  }
+
+  .add-button::before {
+    content: '+ ';
+  }
 }

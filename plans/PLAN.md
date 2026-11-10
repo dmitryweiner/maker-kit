@@ -1002,3 +1002,17 @@ plugin) so the kit's own smoke runs it with `--preview`.
   server's root, and the `.wasm` is fetched as a file: `server.fs.allow`
   `['..']` in `consumer/vite.config.ts`. An app's manifold is in its own
   `node_modules`.
+- **K7b — no `groupCount`** (2026-11-10): "2 / 10" is a template literal;
+  what the kit owes it is CSS — `.group-count` isolated left to right, or
+  Hebrew read "10 / 2" (the showcase's screenshot caught it).
+- **K7b — `renderItemList` returns nothing** (2026-11-10): the plan's
+  `syncHints` is the render itself — called with the same rows it updates
+  the hints in place and leaves the rest. A body left out of every new row
+  stays detached: the app keeps its node, no parking (Plate Builder parked
+  its controls in the panel).
+- **K7b — two advice keys and a `code` per message** (2026-11-10): the kit's
+  advice is `kit.storage.advice.file` and `.fileFull` (the full storage's
+  advice adds "delete presets"); fact and advice joined by a space read as
+  the old sentence in all four languages, a test holds it for English.
+  `MessageLine.code` becomes `data-code`: Plate Builder's smoke finds its
+  warnings by it, Cast Builder's messages are codes too.

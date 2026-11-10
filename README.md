@@ -48,7 +48,7 @@ The app's toolchain compiles the kit's sources:
 | Group | Modules | Docs |
 |---|---|---|
 | `core` — no DOM | `message`, `format`, `history`, `storage`, `projectFile`, `presets`, `progress` | [docs/core.md](docs/core.md) |
-| `ui` — the page, no three | `controls`, `stepper`, `card`, `sheet`, `progress`, `banner`, `modal`, `presetList`, `historyKeys`, `languagePicker`, `dom`, `timers`, `files` | [docs/ui.md](docs/ui.md) |
+| `ui` — the page, no three | `controls`, `stepper`, `card`, `listCard`, `messageList`, `sheet`, `progress`, `banner`, `modal`, `presetList`, `historyKeys`, `languagePicker`, `dom`, `timers`, `files` | [docs/ui.md](docs/ui.md) |
 | `3d` | `mesh`, `validate`, `stl` (no three), `viewer` (three) | [docs/3d.md](docs/3d.md) |
 | `worker` | `protocol`, `client`, `serve` | [docs/worker.md](docs/worker.md) |
 | `csg` — a worker's, manifold-3d | `manifold`, `thread` | [docs/csg.md](docs/csg.md) |

@@ -2,7 +2,8 @@
 // and language (Hebrew mirrored), no horizontal scroll and no console
 // errors; the sheet, the dialog, the banner and the bar over the view in
 // their states; the worker's mesh in the viewer and the STL export; the
-// panel's −/+, undo keys, the presets flow in a real browser; the harness's
+// panel's −/+, undo keys, the presets flow, the list card and the message
+// list in a real browser; the harness's
 // CPU throttling. With --shots it saves a screenshot of every state for a
 // design review.
 //
@@ -251,6 +252,56 @@ await app.run(
       const slow = await busy();
       await throttle(page, 1);
       check(slow > plain * 2, `4× throttling took ${Math.round(slow)} ms against ${Math.round(plain)} ms`);
+      await context.close();
+    });
+
+    await step('the list card: fold, type with the hint following, hide, duplicate, delete, add, undo', async () => {
+      const { page, context } = await app.open({ viewport: VIEWPORTS.desktop });
+      const titles = () => page.locator('#labelList .item-title').allTextContents();
+      check((await titles()).length === 3, 'not three labels');
+      check((await page.locator('#labelsCount').textContent()) === '3 / 4', 'the count is not 3 / 4');
+      check((await page.locator('#labels_l1.open #label_text').count()) === 1, 'the first label is not open with its field');
+      // typing: the field keeps its focus, the hint follows, the row is not made again
+      const row = await page.locator('#labels_l1').elementHandle();
+      await page.locator('#label_text').fill('');
+      await page.locator('#label_text').pressSequentially('Hi there');
+      check(await page.evaluate(() => document.activeElement?.id === 'label_text'), 'the field lost its focus while typing');
+      check((await page.locator('#labels_l1 .item-hint').textContent()) === 'Hi there', 'the hint did not follow the typing');
+      check(await row.evaluate((node) => node.isConnected), 'the row was made again while typing');
+      await page.locator('#label_text').press('Enter');
+      // fold: the open head closes it, another opens and takes the field
+      await page.click('#labels_l1 .item-name');
+      check((await page.locator('#labelList .item-row.open').count()) === 0, 'the open label did not fold');
+      await page.click('#labels_l3 .item-name');
+      check((await page.locator('#label_text').inputValue()) === 'ESP32', 'the field is not the third label’s');
+      // hide, duplicate (the copy opens), delete, add up to the limit
+      await page.click('#labels_l3_visible');
+      check((await page.locator('#labels_l3.hidden-item').count()) === 1, 'hiding did not mark the label');
+      await page.click('#labels_l3_duplicate');
+      check((await titles()).length === 4, 'duplicate did not add a label');
+      check((await page.locator('#labels_l4.open').count()) === 1, 'the copy is not open');
+      check(await page.locator('#addLabel').isDisabled(), 'add is enabled at the limit');
+      await page.click('#labels_l2_remove');
+      check((await titles()).join() === 'Label 1,Label 2,Label 3', `titles after delete: ${(await titles()).join()}`);
+      await page.click('#undo');
+      check((await page.locator('#labels_l2').count()) === 1, 'undo did not bring the deleted label back');
+      await page.click('#undo');
+      await page.click('#undo');
+      check((await page.locator('#labels_l3.hidden-item').count()) === 0, 'undo did not show the label again');
+      await page.click('#undo');
+      check((await page.locator('#labels_l1 .item-hint').textContent()) === 'Hello', 'undo did not bring the text back');
+      // a screen reader hears the item's name
+      check((await page.getAttribute('#labels_l1_remove', 'aria-label')) === 'Delete: Label 1', 'delete does not name its label');
+      await context.close();
+    });
+
+    await step('the message list: a line per severity, a badge, "show" turns the camera', async () => {
+      const { page, context } = await app.open({ viewport: VIEWPORTS.desktop });
+      const severities = await page.locator('#messages li').evaluateAll((items) => items.map((li) => li.className));
+      check(severities.join() === 'message bad,message warn,message info', `lines: ${severities.join()}`);
+      check((await page.locator('#messages li[data-code="demo.post"] .message-mark').textContent()) === '⚠ 1', 'no badge');
+      await page.click('#messages li[data-code="demo.post"] button');
+      check((await page.getAttribute('.chip[data-view="top"]', 'aria-pressed')) === 'true', '"show" did not turn the camera');
       await context.close();
     });
 

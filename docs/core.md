@@ -120,7 +120,8 @@ export const en = { ...kitEn, 'app.title': 'Plate Builder', … };
 ```
 
 Key groups: `kit.control.*` (−/+), `kit.file.*` (project file refusals),
-`kit.storage.*` (the banner), `kit.topbar.*`, `kit.sheet.*`,
-`kit.modal.close`, `kit.preset.*` (the presets dialog),
+`kit.storage.*` (the banner; `kit.storage.advice.*` the advice of an app
+with a project file), `kit.topbar.*`, `kit.sheet.*`, `kit.modal.close`,
+`kit.preset.*` (the presets dialog), `kit.list.*` (a list card's buttons),
 `kit.progress.building`, `kit.mesh.*` (the export gate). Components take
 the app's translate function, whose keys include the kit's (`docs/ui.md`).
