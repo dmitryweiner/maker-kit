@@ -6,7 +6,7 @@ presets, the mobile sheet, the progress bar, the worker queue, STL, the 3D
 view, booleans on manifold and the printed thread, the smoke harness and
 the design code. A source-only TypeScript
 package (no build step), installed by git tag:
-`"maker-kit": "github:dmitryweiner/maker-kit#v0.3.1"`. The showcase:
+`"maker-kit": "github:dmitryweiner/maker-kit#v0.4.0"`. The showcase:
 <https://dmitryweiner.github.io/maker-kit/>.
 
 The shared conventions are in `~/projects/CLAUDE.md` and
