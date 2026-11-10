@@ -10,6 +10,8 @@
   keys, the language picker, files.
 - `3d.md` — meshes, the export gate, STL, the 3D viewer.
 - `worker.md` — the job worker: client, serveJobs, protocol.
+- `csg.md` — booleans on manifold-3d in a worker: the WASM, the scope,
+  meshes in and out, outlines, the printed thread.
 - `harness.md` — the smoke harness: the server, pages, steps and the run,
   downloads, STL files, CPU throttling.
 

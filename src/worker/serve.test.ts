@@ -80,14 +80,28 @@ describe('serveJobs', () => {
     expect(sent.map((s) => s.message)).toEqual([{ type: 'error', jobId: 3, message: 'not manifold' }]);
   });
 
-  it('ignores what is not a job of this worker', async () => {
+  it('ignores what has no job id: there is nobody to answer', async () => {
     const { scope, sent, send } = fakeScope();
     serveJobs<Job, string>({ isJob, handle: () => ({ result: 'x' }), scope });
     send('hello');
     send({ jobId: 'one', job: { kind: 'box', size: 1 } });
-    send({ jobId: 1, job: { kind: 'sphere' } });
+    send({ job: { kind: 'box', size: 1 } });
     await flush();
     expect(sent).toEqual([]);
+  });
+
+  it('answers a job it refuses with an error: the client must not wait for it forever', async () => {
+    const { scope, sent, send } = fakeScope();
+    const handled: unknown[] = [];
+    serveJobs<Job, string>({ isJob, handle: (job) => (handled.push(job), { result: 'x' }), scope });
+    send({ jobId: 1, job: { kind: 'sphere' } });
+    send({ jobId: 2 });
+    await flush();
+    expect(handled).toEqual([]);
+    expect(sent.map((s) => s.message)).toEqual([
+      { type: 'error', jobId: 1, message: 'the job is not one this worker takes' },
+      { type: 'error', jobId: 2, message: 'the job is not one this worker takes' },
+    ]);
   });
 });
 

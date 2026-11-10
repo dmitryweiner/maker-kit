@@ -17,8 +17,9 @@
   "overrides": [
     // The layers (plans/PLAN.md, "Package layout"): core and i18n import
     // nothing else of the kit; ui imports core and i18n; 3d and worker import
-    // core and i18n; nothing in the kit imports ui but the showcase. Only 3d
-    // knows three; the kit's sources run in browsers, never import node.
+    // core and i18n; csg imports core, i18n and 3d but its viewer; nothing in the kit
+    // imports ui but the showcase, nothing imports csg. Only 3d knows three,
+    // only csg manifold-3d; the kit's sources run in browsers, never import node.
     // oxlint has no import/no-restricted-paths, so each folder lists what it
     // may not import.
     {
@@ -28,9 +29,9 @@
           "error",
           {
             "patterns": [
-              { "regex": "(^|/)(ui|3d|worker)(/|$)", "message": "core and i18n import nothing from ui, 3d or worker" },
+              { "regex": "(^|/)(ui|3d|worker|csg)(/|$)", "message": "core and i18n import nothing from ui, 3d, worker or csg" },
               { "regex": "^\\.\\./(core|i18n)/", "message": "core and i18n import nothing of each other's" },
-              { "regex": "^(three|node:)", "message": "core runs in a browser: no three, no node" }
+              { "regex": "^(three|manifold-3d|node:)", "message": "core runs in a browser: no three, no manifold, no node" }
             ]
           }
         ]
@@ -43,8 +44,8 @@
           "error",
           {
             "patterns": [
-              { "regex": "(^|/)(3d|worker)(/|$)", "message": "ui imports core and i18n only" },
-              { "regex": "^(three|node:)", "message": "ui runs in a browser: no three, no node" }
+              { "regex": "(^|/)(3d|worker|csg)(/|$)", "message": "ui imports core and i18n only" },
+              { "regex": "^(three|manifold-3d|node:)", "message": "ui runs in a browser: no three, no manifold, no node" }
             ]
           }
         ]
@@ -57,8 +58,8 @@
           "error",
           {
             "patterns": [
-              { "regex": "(^|/)(ui|worker)(/|$)", "message": "3d imports core and i18n only" },
-              { "regex": "^node:", "message": "3d runs in a browser: no node" }
+              { "regex": "(^|/)(ui|worker|csg)(/|$)", "message": "3d imports core and i18n only" },
+              { "regex": "^(manifold-3d|node:)", "message": "3d runs in a browser: no manifold, no node" }
             ]
           }
         ]
@@ -71,8 +72,26 @@
           "error",
           {
             "patterns": [
-              { "regex": "(^|/)(ui|3d)(/|$)", "message": "worker imports core and i18n only" },
-              { "regex": "^(three|node:)", "message": "worker runs in a browser: no three, no node" }
+              { "regex": "(^|/)(ui|3d|csg)(/|$)", "message": "worker imports core and i18n only" },
+              { "regex": "^(three|manifold-3d|node:)", "message": "worker runs in a browser: no three, no manifold, no node" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      // csg runs in an app's worker: meshes in and out (3d's pure modules),
+      // never the viewer, the page or the worker's plumbing. (oxlint's regex
+      // has no lookahead: the viewer is named.)
+      "files": ["src/csg/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "regex": "(^|/)(ui|worker)(/|$)", "message": "csg imports core, i18n and 3d only" },
+              { "regex": "(^|/)3d/viewer$", "message": "csg runs in a worker: not the viewer (three)" },
+              { "regex": "^(three|node:)", "message": "csg runs in a worker: no three, no node" }
             ]
           }
         ]

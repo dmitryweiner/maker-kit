@@ -57,6 +57,10 @@ async function devServer() {
   try {
     const { page } = await app.open();
     await page.waitForFunction(() => document.getElementById('out')?.textContent !== '', null, { timeout: 15000 });
+    // a module worker on maker-kit/csg: the WASM loaded through the kit, a threaded rod built
+    await page.waitForFunction(() => document.getElementById('solid')?.textContent !== '', null, { timeout: 30000 });
+    const solid = await page.locator('#solid').textContent();
+    check(Number(solid) > 500 && Number(solid) < 790, `the csg worker answered ${solid}`);
     // the optimizer runs on after the page has loaded, and a reload follows it: the server must outlive both
     await page.waitForTimeout(3000);
     await page.reload({ waitUntil: 'load' });

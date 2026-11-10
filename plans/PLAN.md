@@ -62,7 +62,7 @@ None at the moment.
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
-| K7 — what the migrations share | planned (below, "K7 in detail") |
+| K7 — what the migrations share | in review: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15); the plan: "K7 in detail" below |
 | C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
@@ -983,3 +983,22 @@ plugin) so the kit's own smoke runs it with `--preview`.
   model; on a phone it closes the sheet over the invitation. Opening a model
   is a step from the default setup; a model brought back by undo is stored
   again.
+- **K7a — a refused job's answer is a sentence, not a code** (2026-11-10):
+  every error from a worker is a plain English message today (an
+  exception's, the client's "the worker reply is unreadable"), shown inside
+  the app's own "could not build: {error}". `kit.worker.badJob` would be the
+  only translated one: the answer is "the job is not one this worker takes".
+- **K7a — `threadHole` and `ThreadDetail`** (2026-11-10): Case Constructor's
+  `threadHole` came too — a screw goes in tip down, and an asymmetric form
+  meets its own flanks only with the hole turned over; its test proves it.
+  Points and slices per turn are one `{ points, slicesPerTurn }`: Case
+  Constructor slices once per point, Cast Builder 16 times per turn against
+  48 points.
+- **K7a — `csg` takes `3d` but its viewer** (2026-11-10), not only
+  `3d/mesh`: `stl` and `validate` are as pure. oxlint's regex has no
+  lookahead, so the rule names the viewer.
+- **K7a — the consumer serves the kit's `node_modules`** (2026-11-10): it has
+  no install of its own, so its `manifold-3d` is the kit's, out of the dev
+  server's root, and the `.wasm` is fetched as a file: `server.fs.allow`
+  `['..']` in `consumer/vite.config.ts`. An app's manifold is in its own
+  `node_modules`.

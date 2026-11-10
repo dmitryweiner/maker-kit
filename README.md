@@ -38,7 +38,8 @@ The app's toolchain compiles the kit's sources:
   the kit is served like the app's own files. `vite build` does not need it.
 - A job worker: `worker: { format: 'es' }` in `vite.config.ts`.
 - `three` is a peer dependency; `playwright` too, optional, for
-  `maker-kit/harness`.
+  `maker-kit/harness`; `manifold-3d`, optional, for `maker-kit/csg/*`
+  (and `optimizeDeps.exclude` for it: [docs/csg.md](docs/csg.md)).
 - The app's dictionaries spread the kit's strings: `{ ...kitEn, … }` from
   `maker-kit/i18n/index`.
 
@@ -50,6 +51,7 @@ The app's toolchain compiles the kit's sources:
 | `ui` — the page, no three | `controls`, `stepper`, `card`, `sheet`, `progress`, `banner`, `modal`, `presetList`, `historyKeys`, `languagePicker`, `dom`, `timers`, `files` | [docs/ui.md](docs/ui.md) |
 | `3d` | `mesh`, `validate`, `stl` (no three), `viewer` (three) | [docs/3d.md](docs/3d.md) |
 | `worker` | `protocol`, `client`, `serve` | [docs/worker.md](docs/worker.md) |
+| `csg` — a worker's, manifold-3d | `manifold`, `thread` | [docs/csg.md](docs/csg.md) |
 | `i18n` | the kit's strings in en, ru, uk, he | [docs/core.md](docs/core.md#i18n--the-kits-strings) |
 | `styles` | `tokens.css`, `kit.css` | [docs/design.md](docs/design.md) |
 | `harness` | the Playwright plumbing of an app's smoke | [docs/harness.md](docs/harness.md) |

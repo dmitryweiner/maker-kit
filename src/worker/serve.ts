@@ -1,11 +1,14 @@
 // The worker's side of the protocol: what each app's csg.worker.ts repeated.
-// It takes the jobs it knows, runs them one at a time as they come, sends
+// It takes the jobs it knows (one it refuses is answered with an error, or
+// the client would wait for it forever), runs them one at a time as they come, sends
 // progress, the result with its time and the buffers to move, or the error's
 // message. The time counts from the job's arrival, so the first job's
 // includes loading WASM.
 
 import type { JobProgress } from '../core/progress';
 import { isWorkerIn, type WorkerOut } from './protocol';
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /** What a job gives back: the result and the buffers moved, not copied, to the main thread. */
 export interface JobAnswer<R> {
@@ -37,7 +40,13 @@ export function serveJobs<J, R>(o: ServeOptions<J, R>): void {
   let queue = Promise.resolve();
   scope.addEventListener('message', (event) => {
     const data: unknown = event.data;
-    if (!isWorkerIn(data, (job): job is J => o.isJob(job))) return;
+    if (!isWorkerIn(data, (job): job is J => o.isJob(job))) {
+      // with no id there is nobody to answer
+      if (isRecord(data) && typeof data.jobId === 'number') {
+        send({ type: 'error', jobId: data.jobId, message: 'the job is not one this worker takes' });
+      }
+      return;
+    }
     const { jobId, job } = data;
     const started = now();
     queue = queue.then(async () => {

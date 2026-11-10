@@ -38,7 +38,11 @@ serveJobs<Job, Result>({
 
 Jobs run one at a time as they come; the reply carries the time from the
 job's arrival (the first one's includes loading WASM); an error goes back
-as its message.
+as its message. A job `isJob` refuses is answered with the error "the job
+is not one this worker takes" — the client would wait for it forever
+otherwise; a message with no numeric `jobId` has nobody to answer and is
+dropped. The guard is the worker's outer boundary: give it the real check
+of a job, not "any object".
 
 ## worker/protocol
 
