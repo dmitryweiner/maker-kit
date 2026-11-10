@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { binaryStl, createSteps, parseArgs } from './harness.mjs';
+import { binaryStl, createSteps, offline, parseArgs } from './harness.mjs';
 
 describe('parseArgs', () => {
   it('reads bare flags and flags with a value', () => {
@@ -112,5 +112,49 @@ describe('createSteps', () => {
       throw new Error('no box');
     });
     expect(lines).toEqual(['error FAIL no box', 'error [one] TypeError: x is undefined']);
+  });
+});
+
+/** A page and its context that write down what is done to them. */
+function fakeVisit() {
+  const done: string[] = [];
+  const page = {
+    evaluate: async () => void done.push('wait for the service worker'),
+    reload: async () => void done.push('reload'),
+  };
+  const context = { setOffline: async (off: boolean) => void done.push(`offline ${off}`) };
+  const app = {
+    open: async (o?: { path?: string }) => {
+      done.push(`open ${o?.path ?? ''}`);
+      return { page, context };
+    },
+  };
+  return { app, page, context, done };
+}
+
+describe('offline', () => {
+  it('warms the cache on a first visit, then reloads with no network and asks the app whether it is there', async () => {
+    const { app, page, context, done } = fakeVisit();
+    const opened = await offline(app as never, {
+      path: '?lang=he',
+      ready: async (p) => {
+        expect(p).toBe(page);
+        done.push('ready?');
+      },
+    });
+    expect(done).toEqual(['open ?lang=he', 'wait for the service worker', 'reload', 'offline true', 'reload', 'ready?']);
+    // the page stays open and offline: the app goes on checking it
+    expect(opened).toEqual({ page, context });
+  });
+
+  it('fails as the app’s check does', async () => {
+    const { app } = fakeVisit();
+    await expect(
+      offline(app as never, {
+        ready: async () => {
+          throw new Error('the app did not load offline');
+        },
+      }),
+    ).rejects.toThrow('the app did not load offline');
   });
 });

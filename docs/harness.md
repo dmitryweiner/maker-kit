@@ -69,6 +69,25 @@ await app.run(async () => {
 - `throttle(page, rate)`: slows the page's CPU `rate` times, 1 removes it.
   On a fast machine much happens before it can be seen: the progress bar,
   for one.
+- `offline(app, { ready, ...open })`: the app works offline after a first
+  visit. Opens the page (`open`'s options: `path`, `locale`, …), waits for
+  `navigator.serviceWorker.ready`, reloads under it, takes the context
+  offline, reloads; `ready(page)` checks the app is there (its heading,
+  its `lang`). The page comes back offline for the app's own checks (its
+  worker and WASM from the cache); the caller closes the context. A build
+  only (`--preview`): the dev server has no service worker.
+
+  ```js
+  if (preview) {
+    await app.step('works offline after the first visit', async () => {
+      const { page, context } = await offline(app, {
+        ready: async (p) => check((await p.locator('h1').textContent()) === 'Bring a ready piece', 'not offline'),
+      });
+      await page.click('#exampleBtn'); // the worker and its WASM come from the cache
+      await context.close();
+    });
+  }
+  ```
 - `parseArgs(argv, valueFlags, repeatableFlags)`: `--flag` is `'true'`,
   `--name value` for a value flag, a list for a repeatable one
   (`--set a=1 --set b=2`).
@@ -76,5 +95,4 @@ await app.run(async () => {
 ## What stays in the app
 
 Its scenario and the helpers that know its page: waiting for its build,
-reading its status line, the offline check after its service worker (the
-showcase has none, so the kit cannot test such a helper).
+reading its status line, what proves it is there offline (`ready`).

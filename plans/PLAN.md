@@ -1016,3 +1016,9 @@ plugin) so the kit's own smoke runs it with `--preview`.
   the old sentence in all four languages, a test holds it for English.
   `MessageLine.code` becomes `data-code`: Plate Builder's smoke finds its
   warnings by it, Cast Builder's messages are codes too.
+- **K7c — `offline` gives the page back** (2026-11-10): open, wait for the
+  service worker, reload, go offline, reload, then the app's `ready(page)`;
+  the page stays offline for the app's own checks (Cast Builder builds its
+  sample from the cached worker and WASM) and the caller closes it. The
+  showcase's service worker is the template's `sw-plugin.ts` and `pwa.ts`,
+  copied as every app copies them.

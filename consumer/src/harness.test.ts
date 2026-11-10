@@ -3,7 +3,7 @@
 // own smoke drives the rest.
 
 import { describe, expect, it } from 'vitest';
-import { binaryStl, check, launch, parseArgs, type Harness } from 'maker-kit/harness';
+import { binaryStl, check, launch, offline, parseArgs, type Harness } from 'maker-kit/harness';
 
 /** How an app's scripts/smoke.mjs starts, typed: never called here. */
 export async function smoke(): Promise<void> {
@@ -12,6 +12,14 @@ export async function smoke(): Promise<void> {
     await app.step('opens', async () => {
       const { page, context } = await app.open({ path: '?lang=he' });
       check((await page.getAttribute('html', 'dir')) === 'rtl', 'not mirrored');
+      await context.close();
+    });
+    await app.step('works offline', async () => {
+      const { page, context } = await offline(app, {
+        path: '?lang=he',
+        ready: async (p) => check((await p.locator('h1').count()) === 1, 'not offline'),
+      });
+      await page.reload();
       await context.close();
     });
   });

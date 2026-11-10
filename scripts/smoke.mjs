@@ -8,14 +8,14 @@
 // design review.
 //
 //   npm run smoke               # dev server
-//   npm run smoke -- --preview  # a fresh production build
+//   npm run smoke -- --preview  # a fresh production build, offline after a first visit too
 //   npm run smoke -- --shots    # also saves shots/<viewport>-<accent>-<lang>.png and the states
 //
 // Prints one line per step with its time; exits 1 on the first failed step
 // or on any console error. New checks are new steps here, not new scripts.
 
 import { mkdirSync } from 'node:fs';
-import { binaryStl, check, download, horizontalOverflow, launch, parseArgs, settled, throttle, VIEWPORTS } from './harness.mjs';
+import { binaryStl, check, download, horizontalOverflow, launch, offline, parseArgs, settled, throttle, VIEWPORTS } from './harness.mjs';
 
 /** The kit's own ports (other projects: case-constructor 5273, plate-builder 5373, cast-builder 5291). */
 const PORTS = { dev: 5395, preview: 4395 };
@@ -315,6 +315,18 @@ await app.run(
       check((await page.locator('#card_vents.collapsed').count()) === 0, 'the vents card folded on a language switch');
       await context.close();
     });
+
+    if (preview) {
+      await step('offline after a first visit: the page, its worker and the box it builds', async () => {
+        const { page, context } = await offline(app, {
+          path: '?lang=ru',
+          ready: async (p) => check((await p.locator('html').getAttribute('lang')) === 'ru', 'the showcase did not load offline'),
+        });
+        // the page loaded with no network builds its box: the module worker came from the cache too
+        await page.waitForFunction(() => Number(document.getElementById('view')?.dataset.triangles) > 0, null, { timeout: 15000 });
+        await context.close();
+      });
+    }
   },
   `smoke passed (${preview ? 'preview' : 'dev'})`,
 );
