@@ -4,8 +4,8 @@ The shared pieces of the 3D-printing tools — [Case Constructor](https://github
 [Plate Builder](https://github.com/dmitryweiner/plate-builder), [Cast Builder](https://github.com/dmitryweiner/cast-builder)
 and the ones to come: the controls panel, undo, storage, presets, the mobile
 sheet, the progress bar, the worker queue, STL, the 3D view, the smoke
-harness and the design code they share. Plate Builder runs on it (M1); Cast Builder and
-Case Constructor move next (`plans/PLAN.md`).
+harness and the design code they share. Plate Builder (M1) and Cast Builder
+(M2) run on it; Case Constructor moves later (`plans/PLAN.md`).
 
 A source-only TypeScript package: no build step, installed by a git tag.
 Every component in every state: the showcase,

@@ -60,7 +60,7 @@ None at the moment.
 | K5 — 3d and worker | done (PR #6), tag `v0.2.0` |
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
-| M2 — Cast Builder on the kit | in review: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness (stacked); 📄 New after them |
+| M2 — Cast Builder on the kit | migration done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16; on `v0.3.1`, no kit fixes needed. Next: 📄 New (a separate PR) |
 | K7, C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
