@@ -1,6 +1,6 @@
 {
   "name": "maker-kit",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Shared pieces of the 3D-printing tools: controls, undo, storage, presets, the 3D view, the worker queue, STL, the smoke harness and the design code.",
   "license": "GPL-3.0-or-later",
   "type": "module",

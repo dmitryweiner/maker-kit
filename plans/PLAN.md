@@ -62,7 +62,7 @@ None at the moment.
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
-| K7 — what the migrations share | the kit's part done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15). Next: `v0.4.0`, then Plate Builder and Cast Builder move to it ("K7 in detail", "Order", 4–6) |
+| K7 — what the migrations share | the kit's part done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`. Next: Plate Builder and Cast Builder move to it ("K7 in detail", "Order", 5–6) |
 | C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
@@ -769,11 +769,11 @@ plugin) so the kit's own smoke runs it with `--preview`.
    `kit.storage.advice.file`, `kit.worker.badJob` in four languages.
 3. **K7c — harness** (kit PR #15, done): `offline`, the showcase's service
    worker.
-4. **`v0.4.0`** (next): on `main`, one commit bumps `package.json` to
+4. **`v0.4.0`** (done): on `main`, one commit bumps `package.json` to
    0.4.0 and the install line (`#v0.3.1` → `#v0.4.0`) in README.md and
    AGENTS.md; the tag `v0.4.0` on it (AGENTS.md, "Releases"); the status
    above.
-5. **Plate Builder on v0.4.0** (its PR): csg (its `csg.ts` → the kit's
+5. **Plate Builder on v0.4.0** (its PR, next): csg (its `csg.ts` → the kit's
    `initCSG`, `CsgScope`; `fillHoles` → `outerOutline`), messageList (its
    Warnings card; `data-code` kept), listCard (its element groups:
    `.element-*` → `.item-*`, row ids `<prefix>_<id>` — smoke selectors
