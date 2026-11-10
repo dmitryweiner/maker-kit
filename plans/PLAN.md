@@ -59,8 +59,9 @@ None at the moment.
 | K4 — ui | done (PR #5) |
 | K5 — 3d and worker | done (PR #6), tag `v0.2.0` |
 | K6 — harness | done (PR #7), tag `v0.3.0` |
-| M1 — Plate Builder on the kit | in review: plate-builder PRs #16 core, #17 controls + styles, #18 ui, #19 3d + worker, harness next (stacked, merged in that order); the kit's fixes it found in PR #8 → `v0.3.1` |
-| M2, K7, C1, M3 | not started |
+| M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
+| M2 — Cast Builder on the kit | migration done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16; on `v0.3.1`, no kit fixes needed. Next: 📄 New (a separate PR) |
+| K7, C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -789,8 +790,44 @@ the apps, then extended).
   (blocked in red, full in the warn colour; its save button gone), the
   export gate's sentences (`kit.mesh.*`), the 3D view's 1.7 × fit and
   token colours, the check row's 18 px box, a foreign file "not a project
-  of this app". Its density stays its own by tokens (14 px text, 36 px
-  controls on a phone, 88 px names); whether to take the kit's 16 px and
-  40 px is the user's call. Built-in preset names moved into the
+  of this app", and the kit's density (16 px text and 40 px controls on a
+  phone, 14 px and 28 px on a desktop): the user's call, 2026-11-10; its
+  own pieces follow the kit's tokens. Built-in preset names moved into the
   dictionaries (`preset.<id>.name`); a preset's state keeps its English
   project name, as before.
+- **M1 — stacked PRs** (2026-11-10): one PR per group, each based on the
+  previous branch. GitHub moves a stacked PR to `main` only when its base
+  branch is deleted; `m1-core` stayed after its merge, so #17–#19 merged
+  into it and a PR of `m1-core` carried them on. M2 and M3: each group's PR
+  waits for the previous one to be merged into `main` and is then based on
+  `main`, or the base branch is deleted at once after its merge.
+- **M2 — the language is no undo step** (2026-11-10): Cast Builder kept
+  the language inside its `Settings`; undo goes over the settings and the
+  setup, so the language left `Settings` and is stored beside them, in the
+  same place of the record as before (no new version).
+- **M2 — opening a model resets the history** (2026-11-10): until 📄 New
+  puts the model in the state by reference, the steps belong to the old
+  model's setup and would turn the new one. A tab, a turn, Reset and Find
+  are a step each.
+- **M2 — no storage banner in Cast Builder** (2026-11-10): the kit's
+  sentences send the person to "save the project to a file with ⬇️", which
+  Cast Builder has not got. It keeps its "model too large to keep" note.
+  The banner's words should say what to do without a project file before a
+  third app takes it (K7).
+- **M2 — one lane, kept jobs** (2026-11-10): Cast Builder's queue is
+  `WorkerClient` with one lane, an export and Find kept. The kit lets a
+  fresher kept job replace a waiting one (an export clicked while a Find
+  waits drops the Find); Cast Builder's own client dropped the newer one.
+  Both are silent; the buttons guard against the case.
+- **M2 — the worker takes any object** (2026-11-10): `serveJobs` drops
+  what `isJob` refuses, and the client then waits forever. Cast Builder
+  passes any object and lets its sanitizer answer a broken job with an
+  error. A kit option to answer a refused job may come with K7.
+- **M2 — what Cast Builder shows differently** (2026-11-10), beyond the
+  plan's list (the exact field, undo and redo, the palette, the view's
+  bar): the panel beside the view from 1024 px (was 761 px), the kit's
+  density, a two-line top bar on a phone (the brand and 🌐, then Open STL
+  and ↶ ↷), −/+ with a 400 ms pause before the repeat, the kit's viewer
+  (its light, the iso camera, 1.7 × fit, frames on demand; the tooling
+  keeps its plaster grey, the grid at least a 200 mm bed), and the export
+  gate's sentences (`kit.mesh.*`).
