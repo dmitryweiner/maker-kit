@@ -106,4 +106,13 @@ describe('outerOutline', () => {
     expect(filled.toPolygons()).toHaveLength(2);
     scope.dispose();
   });
+
+  it('gives an empty section for an empty one: manifold makes none of no polygons', () => {
+    const scope = new CsgScope();
+    const filled = outerOutline(csg, scope, scope.keep(csg.CrossSection.square([0, 0])));
+    expect(filled.isEmpty()).toBe(true);
+    // kept in the scope as any other result
+    expect(scope.size).toBe(2);
+    scope.dispose();
+  });
 });

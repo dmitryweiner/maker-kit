@@ -97,7 +97,8 @@ export function fromManifold(solid: Manifold): SurfaceMesh {
 }
 
 /**
- * A section with its holes filled: the outer rings only (counter-clockwise).
+ * A section with its holes filled: the outer rings only (counter-clockwise);
+ * an empty one for an empty section.
  * A hole through a tile is a post of its mold, not a hole through the mold's
  * land (Cast Builder); a plate's outline has no holes of a picture (Plate
  * Builder).
@@ -112,6 +113,8 @@ export function outerOutline(csg: CsgApi, scope: CsgScope, section: CrossSection
     }
     return twice > 0;
   });
+  // manifold makes no section of no polygons; a square of no size is its empty one
+  if (outer.length === 0) return scope.keep(csg.CrossSection.square([0, 0]));
   return scope.keep(new csg.CrossSection(outer, 'Positive'));
 }
 
