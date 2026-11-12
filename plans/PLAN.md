@@ -806,7 +806,7 @@ commit, golden tests pin the geometry, the user merges.
 | `state/history` (`push`/`replace` + 500 ms timer in `main.ts`) | `core/history` | `live`/`commit` from the controls' `final`; the timer goes |
 | `state/storage`, `currentProject`, `userPresets` | `core/storage` records | its keys and shapes stay: `caseconstructor_current_v1` `{ version: 1, name, ref, state }`; the user presets' bare list is read as version 0 and gets ids (`u1`, …), written back as version 1; a ref `u:<name>` becomes `u:<id>` by the name |
 | `state/presetFile` | `core/projectFile` | the same `{ app, version, name, savedAt, state }`; a bare state stays `legacy`; a refused file says why (`kit.file.*`); `case-constructor-<name>.json` kept by `projectFileName` |
-| `state/presets` (`overlay`, `presetSignature`) | `core/presets` | `overlay`, `presetStatus` with its signature (no view, resolution, print layout); built-in names move into the dictionaries (`preset.<id>.name`), as in M1 |
+| `state/presets` (`overlay`, `presetSignature`) | `core/presets` | `overlay`, `presetStatus` with its signature (no view, resolution, print layout); built-in names move into the dictionaries (`preset.<id>.name`) the same in every language: its rule, a name travels into file names |
 | `i18n/index` (`t`, `tm`, `tDynamic`, plurals) | `core/format`, `core/message`, `kit.*` keys | its `t` stays the app's; the dictionaries spread the kit's; `Message` is the kit's, its `spot` an app field beside it |
 | `ui/controls` (7 kinds, `Label`, `optionDisabled`, `disabled`) | `ui/controls` + `ui/stepper` | every kind exists in the kit; `change(next, final)`; the exact field in slider rows; −/+ after a 400 ms pause |
 | `ui/card` | `ui/card` (made from it) | `snapshotCards`/`restoreCards` the same |
@@ -834,8 +834,7 @@ presets with ids — and, as M1 and M2 showed: the sheet on a phone and the
 panel beside the view from 1024 px (was 760 px), the kit's density, the
 presets dialog (rename in place, ↗), the banner's words, the kit's
 sentences for a refused file and the export gate (`kit.mesh.*`), the
-language button, one message list, preset names in the interface's
-language.
+language button, one message list.
 
 ### Its PRs
 
