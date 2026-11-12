@@ -11,6 +11,8 @@ package (no build step), installed by git tag:
 
 The shared conventions are in `~/projects/CLAUDE.md` and
 `~/projects/_conventions/`; this file is what holds for this repository.
+How an app takes the kit (a new 3D tool, `/new-web-app`'s "3D tool"):
+`~/projects/_conventions/3d-tools.md` — change it with the kit's API.
 The plan, its decisions and deviations: `plans/PLAN.md`.
 
 ## Commands
@@ -139,7 +141,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 ## What costs what
 
-- `npm run check`: ~4 s (271 tests; `threadHole`'s 1.5 s of them).
+- `npm run check`: ~4 s (272 tests; `threadHole`'s 1.5 s of them).
   `npm run consumer`: ~8 s (its page waits for a csg worker's rod).
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
   states, 16 steps with the offline one). CI: about a minute.
