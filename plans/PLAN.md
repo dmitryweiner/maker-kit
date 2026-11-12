@@ -49,7 +49,7 @@ the user are at the top; deviations go to the end as they happen.
 
 None at the moment.
 
-## Status (2026-11-11)
+## Status (2026-11-12)
 
 | Milestone | State |
 |---|---|
@@ -62,8 +62,9 @@ None at the moment.
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
-| K7 — what the migrations share | the kit's part done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1`. Next: Cast Builder ("K7 in detail", "Order", 6) |
-| C1, M3 | not started |
+| K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
+| C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
+| M3 | not started; when to schedule it is the user's call |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -781,7 +782,7 @@ plugin) so the kit's own smoke runs it with `--preview`.
    updated in one commit; its own `.group-count` CSS goes, so Hebrew reads
    "3 / 4", not "4 / 3"), the banner's `advice` (the kit's `file` keys:
    its words unchanged), `offline` in its smoke.
-6. **Cast Builder on v0.4.1** (its PR, next): csg (`toManifold` with `merge`,
+6. **Cast Builder on v0.4.1** (cast-builder PR #18, done): csg (`toManifold` with `merge`,
    `outerOutline`), thread (`THREAD` → `symmetricForm(10, 2)`,
    `threadRod` with `{ points, slicesPerTurn: 16 }`: its geometry tests
    hold unchanged), messageList (`#blockers` and `#warnings` → one list:
@@ -1045,3 +1046,20 @@ plugin) so the kit's own smoke runs it with `--preview`.
   detached. It found that `outerOutline` threw a TypeError on an empty
   section (manifold makes no section of no polygons): `v0.4.1` gives an
   empty one; Plate Builder's `fillHoles` keeps its `null` for it.
+- **Cast Builder on v0.4.1** (2026-11-12, cast-builder PR #18): its guard
+  is `isRawJob` (an object whose model is a valid mesh) and `sanitizeJob`
+  brings the rest of a taken job to a valid one, so a job the guard takes
+  always becomes one. Its messages list a failed job's error first; a
+  failed build shows that line alone (the last build's warnings went with
+  its parts). The banner is drawn from the project's write only: the model
+  that does not fit keeps its own note in the Model card.
+- **C1 — the recipe was run, not only written** (2026-11-12): the steps of
+  `_conventions/3d-tools.md` were applied to a fresh copy of the template
+  (a cube with a hole built by a worker on `csg/manifold`, the kit's layout,
+  panel, sheet, picker and bar, an STL download) and passed its check, the
+  dev and the preview smoke (offline with the worker and the WASM, a new
+  deploy reaching an open page), and the main-chunk grep. It found the
+  skill's rename list missing `src/sw-plugin.test.ts` (the manifest's name);
+  the skill now lists it. The kit's docs are not in the package, so the
+  recipe points at `~/projects/maker-kit/docs/`. `_conventions/` and
+  `~/projects/CLAUDE.md` are not under git: C1 has no PR of its own.

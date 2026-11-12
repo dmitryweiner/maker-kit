@@ -68,6 +68,8 @@ npm run smoke      # the showcase in a browser; -- --preview a build, offline to
 ```
 
 Working on an app and the kit together: `npm link ../maker-kit` in the app.
+A new tool on the kit: `~/projects/_conventions/3d-tools.md` (the
+`/new-web-app` skill's "3D tool").
 
 The plan and its decisions: [plans/PLAN.md](plans/PLAN.md).
 
