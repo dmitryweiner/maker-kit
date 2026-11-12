@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12: "M3 in detail" below; next: m3-core |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core in review (case-constructor PR #12); m3-controls waits for its merge |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1151,3 +1151,12 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   the skill now lists it. The kit's docs are not in the package, so the
   recipe points at `~/projects/maker-kit/docs/`. `_conventions/` and
   `~/projects/CLAUDE.md` are not under git: C1 has no PR of its own.
+- **M3 core** (2026-11-12, case-constructor PR #12): the current project's
+  record becomes version 2 — a user preset is referred to by id; a
+  version 1 ref by name is turned into that preset's id by a record made
+  over the user presets already read (`currentProjectRecord(presets)`).
+  💾 under a saved name keeps replacing that preset (its id and place
+  kept), as before. Its file names take the kit's slug: lower case, letters
+  of any script kept. Whether the project is still its preset is
+  `presetStatus` over the preset itself; the signature cached at opening
+  went. No kit change needed.
