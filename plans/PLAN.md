@@ -24,6 +24,7 @@ the user are at the top; deviations go to the end as they happen.
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
 | A blank Cast Builder project (2026-11-08) | **No model at all**: 📄 New empties the view to its "open a model" state with the default setup. |
 | K7's scope (2026-11-10) | **All of it**: the manifold helpers, the thread profile, `serveJobs` answering a refused job, messageList (Plate Builder and Cast Builder move to it), the list card built now from Plate Builder's code and a reading of Case Constructor's, the banner's words without ⬇️, the offline check in the harness. |
+| M3 (2026-11-12) | **Scheduled now.** Case Constructor's view goes onto the kit's viewer (the kit gets `onFrame` and `look`, `v0.5.0`); its PWA comes as a PR of its own after M3; 📄 New opens `plain-box`'s state. "M3 in detail". |
 
 ## Defaults taken without asking (say if any is wrong)
 
@@ -64,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 | not started; when to schedule it is the user's call |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core in review (case-constructor PR #12); m3-controls waits for its merge |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -628,10 +629,9 @@ the apps, then extended).
   maker-kit; how to add it to a project; the `new-web-app` skill gets a
   "3D tool" option that adds the kit, the viewer, the worker and the
   layout.
-- **M3 — Case Constructor on the kit** — not scheduled yet. Its condition
-  is met: Case Constructor moved to TS 7 + oxlint on its own (2026-11-08,
-  `_conventions/stack.md`); when to schedule it is the user's call.
-  The largest app. Visible: full RTL mirroring, the exact field, Ctrl+Z on
+- **M3 — Case Constructor on the kit** — scheduled by the user
+  2026-11-12 (Case Constructor moved to TS 7 + oxlint on its own,
+  2026-11-08); its PRs: "M3 in detail" below. The largest app. Visible: full RTL mirroring, the exact field, Ctrl+Z on
   any layout and after a slider; 📄 New as a separate PR after it; its 500 ms
   undo timer replaced by final changes; its user presets get ids (stored
   names migrate). Until then it keeps its own modules; what the kit learns
@@ -789,6 +789,94 @@ plugin) so the kit's own smoke runs it with `--preview`.
    a visible change, its smoke reads lines), its real job guard in
    `csg.worker.ts`, the storage banner with its own advice (no project
    file; its "too large to keep" note stays), `offline` in its smoke.
+
+## M3 in detail (2026-11-12)
+
+Case Constructor (37 000 lines, `main.ts` 1 578 of them) replaces its
+copies of the kit's pieces with the kit's, on `v0.4.1` (or the release M3's
+own kit changes make). Its geometry (`src/geo/`, `src/boards/`, the hinged
+case) and its domain cards stay; what moves is listed per PR below. Its
+rules hold during M3: `npm run check` and `npm run smoke` before every
+commit, golden tests pin the geometry, the user merges.
+
+### What Case Constructor has, and what takes its place
+
+| Its module | The kit's | Notes |
+|---|---|---|
+| `state/history` (`push`/`replace` + 500 ms timer in `main.ts`) | `core/history` | `live`/`commit` from the controls' `final`; the timer goes |
+| `state/storage`, `currentProject`, `userPresets` | `core/storage` records | its keys and shapes stay: `caseconstructor_current_v1` `{ version: 1, name, ref, state }`; the user presets' bare list is read as version 0 and gets ids (`u1`, …), written back as version 1; a ref `u:<name>` becomes `u:<id>` by the name |
+| `state/presetFile` | `core/projectFile` | the same `{ app, version, name, savedAt, state }`; a bare state stays `legacy`; a refused file says why (`kit.file.*`); `case-constructor-<name>.json` kept by `projectFileName` |
+| `state/presets` (`overlay`, `presetSignature`) | `core/presets` | `overlay`, `presetStatus` with its signature (no view, resolution, print layout); built-in names move into the dictionaries (`preset.<id>.name`) the same in every language: its rule, a name travels into file names |
+| `i18n/index` (`t`, `tm`, `tDynamic`, plurals) | `core/format`, `core/message`, `kit.*` keys | its `t` stays the app's; the dictionaries spread the kit's; `Message` is the kit's, its `spot` an app field beside it |
+| `ui/controls` (7 kinds, `Label`, `optionDisabled`, `disabled`) | `ui/controls` + `ui/stepper` | every kind exists in the kit; `change(next, final)`; the exact field in slider rows; −/+ after a 400 ms pause |
+| `ui/card` | `ui/card` (made from it) | `snapshotCards`/`restoreCards` the same |
+| boards, openings, labels, cables in `boardsCard`, `cutsCard`, `labelsCard`, `hingeCard` | `ui/listCard` | a box per item, controls always open (no `select`), ✕; ids `board0_remove` → `board_0_remove` (mechanical, one commit) |
+| `ui/presetList` + its panel | `ui/presetList` in `ui/modal` | the user's presets first, rename in place, ↗ open, two-tap delete |
+| `ui/storageNote` | `ui/banner` | advice `kit.storage.advice.file` / `.fileFull` (it has ⬇️); a preset's failure still dismissable |
+| `ui/progress` | `ui/progress` | its labels as `Message`s; the bar over the view |
+| its own sheet under 760 px, opened by ⚙ Settings | `ui/sheet` | the kit's sheet below 1024 px, the panel beside the view from there; `onInset` → the view's inset |
+| `#warnings` + `#blockers` | `ui/messageList` | one list, the blockers first; "⚠ 3" as `mark`; hover and the picked line stay the app's (it marks the box over the model) |
+| the 🌐 `<select>` | `ui/languagePicker` | the kit's button with endonyms |
+| undo keys in `main.ts` | `ui/historyKeys` | Ctrl/⌘+Z on any layout and right after a slider |
+| `geo/surface` (`SurfaceMesh`), `geo/stl`, `geo/validate` | `3d/mesh`, `3d/stl`, `3d/validate` | its largest-part check (`MAX_PART_MM`) stays in the app; `stlFileName` |
+| `geo/csg` | `csg/manifold` | `initCSG`, `CsgScope`, `toManifold(…, { merge: true })`, `fromManifold`; `hullOf`, `splitByPlane`, `trimByPlane`, `extrude`, `transformSolid`, `unionAll`, `toMat4` stay |
+| `geo/thread` | `csg/thread` | `threadSection`, `threadRod`, `threadHole`, a slice per point; its sizes, `screwShape`, engagement stay |
+| `worker/client` (one-deep queue), `protocol` | `worker/client`, `worker/serve` | one lane: a preview replaced by a fresher one, an export kept; `serveJobs` with its real guard |
+| `render/scene` | `3d/viewer` + `onFrame`, `look` (`v0.5.0`) | roles, captions, spots, x-ray stay the app's, added to `model` |
+| `scripts/lib/harness.mjs` | `maker-kit/harness` | its ports 5273 / 4273; `parseArgs` with repeatable flags; `throttle`; a phone viewport |
+| `style.css` (1 107 lines, desktop first) | `tokens.css` + `kit.css` | cyan is its accent (the kit's palette is its own); what stays is its own pieces, mobile first, logical properties |
+
+### Visible changes
+
+The plan's list — full RTL mirroring, the exact field, Ctrl+Z on any layout
+and after a slider, final changes in place of the 500 ms timer, user
+presets with ids — and, as M1 and M2 showed: the sheet on a phone and the
+panel beside the view from 1024 px (was 760 px), the kit's density, the
+presets dialog (rename in place, ↗), the banner's words, the kit's
+sentences for a refused file and the export gate (`kit.mesh.*`), the
+language button, one message list.
+
+### Its PRs
+
+As in M1 and M2: one PR per group, each based on `main` after the previous
+one is merged (or its base deleted at once); the smoke green after each;
+selectors changed in a commit of their own.
+
+1. **m3-core** — the kit as a dependency (`optimizeDeps.exclude`,
+   `test.server.deps.inline`); history (the timer still commits until
+   PR 2), storage records, the project file, presets, messages and format,
+   `kit.*` in the dictionaries.
+2. **m3-controls** — controls and stepper; `final` replaces the timer;
+   `tokens.css` and `kit.css` under its own CSS, mobile first, full RTL.
+3. **m3-ui** — card, listCard (the four lists), modal + presetList, banner,
+   progress, sheet, messageList, languagePicker, historyKeys, files.
+4. **m3-3d** — mesh, stl, validate, csg, thread, the worker on
+   `WorkerClient` and `serveJobs`, the view on `3d/viewer` (after the kit's
+   `v0.5.0`: `onFrame`, `look`).
+5. **m3-harness** — the smoke and `snap.mjs` on `maker-kit/harness`.
+6. **m3-docs** — `docs/`, README, AGENTS.md / CLAUDE.md after it.
+7. **📄 New** — its blank preset is `plain-box`'s state (no boards,
+   100 × 70 × 35), `listed: false`, named "New case"; one undo step.
+8. **PWA** — the template's manifest, `sw-plugin.ts`, `pwa.ts`; `offline`
+   in its smoke.
+
+The kit's changes M3 finds go to a kit PR and a release before the app's
+PR that needs them, as `v0.3.1` and `v0.4.1` did.
+
+### Decided with the user (2026-11-12)
+
+1. **The 3D view goes onto the kit's viewer.** Case Constructor's scene
+   draws every frame (captions follow the camera, overlapping ones give
+   way), projects points for the smoke and puts the camera on any
+   direction (`snap.mjs --camera`); the kit's viewer draws on demand and
+   hides its camera. The kit gets `onFrame(listener)` — called with the
+   camera after each drawn frame — and `look(direction)`, in a kit PR and
+   `v0.5.0` before m3-3d. Roles, captions, spots and x-ray stay the app's,
+   in `model`. Visible: the kit's light, the grid by the bed, the 1.7 × fit,
+   frames on demand.
+2. **PWA after M3**, a PR of its own after 📄 New (PR 8 above): it has no
+   service worker, though nothing in it calls out.
+3. **📄 New is `plain-box`'s state** (PR 7 above).
 
 ## Risks
 
@@ -1063,3 +1151,12 @@ plugin) so the kit's own smoke runs it with `--preview`.
   the skill now lists it. The kit's docs are not in the package, so the
   recipe points at `~/projects/maker-kit/docs/`. `_conventions/` and
   `~/projects/CLAUDE.md` are not under git: C1 has no PR of its own.
+- **M3 core** (2026-11-12, case-constructor PR #12): the current project's
+  record becomes version 2 — a user preset is referred to by id; a
+  version 1 ref by name is turned into that preset's id by a record made
+  over the user presets already read (`currentProjectRecord(presets)`).
+  💾 under a saved name keeps replacing that preset (its id and place
+  kept), as before. Its file names take the kit's slug: lower case, letters
+  of any script kept. Whether the project is still its preset is
+  `presetStatus` over the preset itself; the signature cached at opening
+  went. No kit change needed.
