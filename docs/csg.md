@@ -44,8 +44,9 @@ try {
 - **`fromManifold(solid)`** picks x, y, z out of vertices with more
   properties and computes the normals anew.
 - **`outerOutline(csg, scope, section)`**: the section with its holes
-  filled (the counter-clockwise rings). A hole through a tile is a post of
-  its mold; a plate's outline keeps no holes of its picture.
+  filled (the counter-clockwise rings); an empty section gives an empty
+  one. A hole through a tile is a post of its mold; a plate's outline keeps
+  no holes of its picture.
 
 ## csg/thread
 

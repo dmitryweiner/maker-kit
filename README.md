@@ -15,7 +15,7 @@ Every component in every state: the showcase,
 ## Install
 
 ```json
-"dependencies": { "maker-kit": "github:dmitryweiner/maker-kit#v0.4.0" }
+"dependencies": { "maker-kit": "github:dmitryweiner/maker-kit#v0.4.1" }
 ```
 
 Each module is its own entry point, so an app imports only what it uses:

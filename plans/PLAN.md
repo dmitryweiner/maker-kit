@@ -18,7 +18,7 @@ the user are at the top; deviations go to the end as they happen.
 | Shared code or a written spec | **A separate repository with code**, its own tests and docs; `_conventions/` gets a short page pointing to it. |
 | Name | **maker-kit** |
 | Scope | Design code, standard controls, settings persistence (undo included), presets — plus whatever else the three projects duplicate (below). |
-| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.4.0"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
+| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.4.1"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
 | TypeScript | **TS 7 only.** Every app will be on TS 7; the kit is not made to compile under TS 5.9. Case Constructor is not moved now: its migration (M3) waits until it is on TS 7. |
 | License | **GPL-3.0-or-later**, as the apps. |
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
@@ -49,7 +49,7 @@ the user are at the top; deviations go to the end as they happen.
 
 None at the moment.
 
-## Status (2026-11-10)
+## Status (2026-11-11)
 
 | Milestone | State |
 |---|---|
@@ -62,7 +62,7 @@ None at the moment.
 | K6 — harness | done (PR #7), tag `v0.3.0` |
 | M1 — Plate Builder on the kit | done: plate-builder PRs #16–#21 (#21 carried #17–#19 to `main`), docs #22; on `v0.3.1` (the kit's fixes it found, PR #8) |
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
-| K7 — what the migrations share | the kit's part done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`. Next: Plate Builder and Cast Builder move to it ("K7 in detail", "Order", 5–6) |
+| K7 — what the migrations share | the kit's part done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1`. Next: Cast Builder ("K7 in detail", "Order", 6) |
 | C1, M3 | not started |
 
 Where a module's API below differs from what was built, the deviation at
@@ -773,14 +773,15 @@ plugin) so the kit's own smoke runs it with `--preview`.
    0.4.0 and the install line (`#v0.3.1` → `#v0.4.0`) in README.md and
    AGENTS.md; the tag `v0.4.0` on it (AGENTS.md, "Releases"); the status
    above.
-5. **Plate Builder on v0.4.0** (its PR, next): csg (its `csg.ts` → the kit's
+5. **Plate Builder on v0.4.0** (plate-builder PR #23, done; the kit's fix
+   it found is `v0.4.1`, below): csg (its `csg.ts` → the kit's
    `initCSG`, `CsgScope`; `fillHoles` → `outerOutline`), messageList (its
    Warnings card; `data-code` kept), listCard (its element groups:
    `.element-*` → `.item-*`, row ids `<prefix>_<id>` — smoke selectors
    updated in one commit; its own `.group-count` CSS goes, so Hebrew reads
    "3 / 4", not "4 / 3"), the banner's `advice` (the kit's `file` keys:
    its words unchanged), `offline` in its smoke.
-6. **Cast Builder on v0.4.0** (its PR): csg (`toManifold` with `merge`,
+6. **Cast Builder on v0.4.1** (its PR, next): csg (`toManifold` with `merge`,
    `outerOutline`), thread (`THREAD` → `symmetricForm(10, 2)`,
    `threadRod` with `{ points, slicesPerTurn: 16 }`: its geometry tests
    hold unchanged), messageList (`#blockers` and `#warnings` → one list:
@@ -1037,3 +1038,10 @@ plugin) so the kit's own smoke runs it with `--preview`.
   sample from the cached worker and WASM) and the caller closes it. The
   showcase's service worker is the template's `sw-plugin.ts` and `pwa.ts`,
   copied as every app copies them.
+- **Plate Builder on v0.4.0** (2026-11-11, plate-builder PR #23): the row
+  ids' prefix is the group's type (`text_t1`, `hole_h1_remove`); the app
+  keeps no redraw key of its own (the kit's lists skip an unchanged
+  drawing) and parks its controls node only when a redraw left it
+  detached. It found that `outerOutline` threw a TypeError on an empty
+  section (manifold makes no section of no polygons): `v0.4.1` gives an
+  empty one; Plate Builder's `fillHoles` keeps its `null` for it.
