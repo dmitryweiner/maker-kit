@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core in review (case-constructor PR #12); m3-controls waits for its merge |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core merged (case-constructor PR #12); m3-controls in review (#13) |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1160,3 +1160,11 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   of any script kept. Whether the project is still its preset is
   `presetStatus` over the preset itself; the signature cached at opening
   went. No kit change needed.
+- **M3 controls** (2026-11-13, case-constructor PR #13): the app binds the
+  kit's `renderControls` to its dictionary in a five-line wrapper; a card's
+  own buttons (add, remove) call its change without `final`, which counts
+  as final. The custom board editor's own number fields follow the kit's
+  rule (live on input, final on change). Its styles take kit.css for the
+  panel's cards, rows, fields and buttons only: the frame (top bar, sheet,
+  dialogs, progress, banner) and full RTL mirroring move to m3-ui with the
+  modules that draw them, so the frame is not rewritten twice.
