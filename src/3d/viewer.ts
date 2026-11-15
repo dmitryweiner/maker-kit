@@ -7,7 +7,8 @@
 //
 // The model is z-up (the printing convention); `model` turns it y-up for
 // display, centred over the bed and standing on it. Frames are drawn on
-// demand: a camera move, a resize, new meshes — never a loop at rest.
+// demand: a camera move, a resize, new meshes — never a loop at rest; what
+// follows the camera (captions over the canvas) listens to `onFrame`.
 // Colours follow the page's tokens (--bg, --line, --muted). Kept thin:
 // vitest does not load it; the showcase's smoke does.
 
@@ -17,6 +18,9 @@ import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { IndexedMesh } from './mesh';
 
 export type CameraPreset = 'iso' | 'top' | 'front' | 'side' | 'bottom';
+
+/** A direction in the display frame: y up, the model's front faces +z. */
+export type Direction = readonly [number, number, number];
 
 export interface ViewerPart {
   mesh: IndexedMesh;
@@ -32,6 +36,15 @@ export interface Viewer {
   /** the printer's bed: the grid is at least this big */
   fitBed(widthMm: number, depthMm: number): void;
   camera(preset: CameraPreset): void;
+  /** the camera on any direction to it from the model, fitted as a preset is; a zero or non-finite one is ignored */
+  look(direction: Direction): void;
+  /**
+   * Calls `listener` after each drawn frame with the camera that drew it
+   * (its matrices and the model's are current): to place what follows the
+   * camera, or to project a point. Read it, do not move it. Returns the
+   * unsubscribe.
+   */
+  onFrame(listener: (camera: THREE.PerspectiveCamera) => void): () => void;
   /** how much of the view's bottom a sheet covers, px: the model is centred above it */
   setInset(px: number): void;
   /** reads the page's colour tokens again — after a theme or an accent change */
@@ -47,7 +60,7 @@ const FIT_MARGIN = 1.7;
 /** faces meeting at more than this angle get their own normals: a slab's edges stay sharp */
 const CREASE = (40 * Math.PI) / 180;
 /** Directions to the camera from the target, in the display frame (y up; the model's front faces +z). */
-const PRESETS: Record<CameraPreset, readonly [number, number, number]> = {
+const PRESETS: Record<CameraPreset, Direction> = {
   iso: [0.7, 0.62, 0.95],
   top: [0, 1, 0.0001],
   bottom: [0, -1, 0.0001],
@@ -102,12 +115,15 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
   let size = new THREE.Vector3();
   let radius = 60;
   let fitted = false;
+  /** where the first fit looks from: a preset or a look asked before the first mesh */
+  let first = new THREE.Vector3(...PRESETS.iso);
   /** whether the person turned or zoomed since the last fit: until then a resize fits again */
   let touched = false;
   let inset = 0;
   let frameId = 0;
   let disposed = false;
   let colors = { background: new THREE.Color(), center: new THREE.Color(), lines: new THREE.Color() };
+  const frameListeners = new Set<(camera: THREE.PerspectiveCamera) => void>();
 
   function recolor(): void {
     const line = token('--line', '#343b44');
@@ -166,6 +182,7 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
     // from under the bed the grid would hide the bottom: it shows from above only
     if (grid) grid.visible = camera.position.y > controls.target.y;
     renderer.render(scene, camera);
+    for (const listener of frameListeners) listener(camera);
     // damping carries the camera on after the hand lets go
     if (moving) render();
   }
@@ -191,6 +208,13 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
     camera.far = distance * 20;
     camera.updateProjectionMatrix();
     render();
+  }
+
+  function look(direction: Direction): void {
+    const v = new THREE.Vector3(...direction);
+    if (!Number.isFinite(v.length()) || v.length() === 0) return;
+    if (!fitted) first = v.clone();
+    place(v);
   }
 
   function setMeshes(next: readonly ViewerPart[]): void {
@@ -223,7 +247,7 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
     // fitted once, and again (from where it looks now) when the model changes its size a lot
     if (!fitted || Math.abs(nextRadius - radius) > radius * 0.2) {
       radius = nextRadius;
-      place(fitted ? camera.position.clone().sub(controls.target) : new THREE.Vector3(...PRESETS.iso));
+      place(fitted ? camera.position.clone().sub(controls.target) : first);
       fitted = true;
     }
     render();
@@ -245,7 +269,12 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
       setGrid();
       render();
     },
-    camera: (preset) => place(new THREE.Vector3(...PRESETS[preset])),
+    camera: (preset) => look(PRESETS[preset]),
+    look,
+    onFrame(listener) {
+      frameListeners.add(listener);
+      return () => frameListeners.delete(listener);
+    },
     setInset(px) {
       inset = Math.max(0, px);
       // the sheet came or went: fit what is left free, unless the person placed the camera
@@ -256,6 +285,7 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
     render,
     dispose() {
       disposed = true;
+      frameListeners.clear();
       if (frameId) cancelAnimationFrame(frameId);
       observer?.disconnect();
       controls.dispose();

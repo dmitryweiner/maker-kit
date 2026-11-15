@@ -18,7 +18,7 @@ the user are at the top; deviations go to the end as they happen.
 | Shared code or a written spec | **A separate repository with code**, its own tests and docs; `_conventions/` gets a short page pointing to it. |
 | Name | **maker-kit** |
 | Scope | Design code, standard controls, settings persistence (undo included), presets — plus whatever else the three projects duplicate (below). |
-| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.4.2"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
+| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.5.0"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
 | TypeScript | **TS 7 only.** Every app will be on TS 7; the kit is not made to compile under TS 5.9. Case Constructor is not moved now: its migration (M3) waits until it is on TS 7. |
 | License | **GPL-3.0-or-later**, as the apps. |
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); next m3-3d, after `v0.5.0` |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); `v0.5.0`: the viewer's `onFrame` and `look` (#24); next m3-3d |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1182,3 +1182,18 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   sets a name's direction). Its `--preview` smoke was
   already broken on `main` (it reads the dev-only `window.__case`):
   m3-harness.
+- **M3 — `v0.5.0`, the viewer's `onFrame` and `look`** (2026-11-15, PR #24):
+  `onFrame(listener)` returns its unsubscribe; the listener gets the
+  `PerspectiveCamera` after `renderer.render`, so the camera's and the
+  model's matrices are current, and projects with them itself (the kit
+  adds no `project`: `point.applyMatrix4(model.matrixWorld).project(camera)`
+  is one line). `look(direction)` takes the display frame (y up, front +z)
+  as the presets and Case Constructor's `lookFrom` do, and fits from there
+  as a preset does (`lookFrom` kept the distance; a fit is what a
+  screenshot wants); `camera(preset)` is `look` of the preset's direction.
+  Found on the way: a preset or a look asked before the first mesh was
+  lost — the first fit always looked from iso, so the showcase's
+  `?view=top` opened in iso; now the first fit looks from the last one
+  asked. The showcase's smoke checks frames on demand (none at rest), a
+  preset's frame, `?look=` (its direction, the box in the middle) and
+  `?view=top`.
