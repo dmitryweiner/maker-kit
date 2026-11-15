@@ -61,6 +61,9 @@ await app.run(
       const rtl = await state('desktop', 'lang=he', 'desktop-panel-he');
       const rtlPanel = await rtl.page.locator('#panel').boundingBox();
       check(rtlPanel && rtlPanel.x + rtlPanel.width > VIEWPORTS.desktop.width - 5, 'the panel is not on the start side in Hebrew');
+      // "My box" in a Hebrew bar: the name's own letters set its direction, so the " …" stays after it
+      const bidi = await rtl.page.locator('#presetsOpen').evaluate((button) => getComputedStyle(button).unicodeBidi);
+      check(bidi === 'plaintext', `a Latin project name in Hebrew runs right to left (unicode-bidi: ${bidi})`);
       await rtl.context.close();
 
       const phone = await state('phone', 'lang=en', 'phone-closed');
