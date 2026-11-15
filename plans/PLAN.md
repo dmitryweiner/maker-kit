@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core merged (case-constructor PR #12); m3-controls in review (#13) |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core and m3-controls merged (case-constructor PRs #12, #13); m3-ui in review (#14) |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1168,3 +1168,16 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   panel's cards, rows, fields and buttons only: the frame (top bar, sheet,
   dialogs, progress, banner) and full RTL mirroring move to m3-ui with the
   modules that draw them, so the frame is not rewritten twice.
+- **M3 ui** (2026-11-15, case-constructor PR #14): no kit change needed.
+  The sheet gets no `view`: Case Constructor's taps on the view are its
+  own (a caption toggles its port, a badge opens), and an empty tap closes
+  the sheet through `close()`. Its four lists take `renderItemList` through
+  an app wrapper (`src/ui/boxList.ts`): a body per index, kept while the
+  item is there, filled again when the list's layout changes. The counts
+  "3 warnings · 2 notes" over the message list stay the app's; 💾 still asks
+  for a name (the dialog renames). The preset button keeps the app's rule
+  (the name only while the project is the preset), so no `.changed` mark.
+  Found for the kit: in Hebrew `.preset-button`'s " …" lands before a Latin
+  name — it needs `unicode-bidi: plaintext`. Its `--preview` smoke was
+  already broken on `main` (it reads the dev-only `window.__case`):
+  m3-harness.
