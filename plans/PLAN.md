@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); `v0.5.0`: the viewer's `onFrame` and `look` (#24); next m3-3d |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); `v0.5.0`: the viewer's `onFrame`, `look` and `turn` (#24); next m3-3d |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1182,7 +1182,7 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   sets a name's direction). Its `--preview` smoke was
   already broken on `main` (it reads the dev-only `window.__case`):
   m3-harness.
-- **M3 — `v0.5.0`, the viewer's `onFrame` and `look`** (2026-11-15, PR #24):
+- **M3 — `v0.5.0`, the viewer's `onFrame`, `look` and `turn`** (2026-11-15, PR #24):
   `onFrame(listener)` returns its unsubscribe; the listener gets the
   `PerspectiveCamera` after `renderer.render`, so the camera's and the
   model's matrices are current, and projects with them itself (the kit
@@ -1197,3 +1197,11 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   asked. The showcase's smoke checks frames on demand (none at rest), a
   preset's frame, `?look=` (its direction, the box in the middle) and
   `?view=top`.
+  Decided with the user: Case Constructor's idle turn (after 30 s with no
+  input, a turn per 120 s, eased in, off under `prefers-reduced-motion`)
+  stays, in the app: the kit gets `turn(radians)` — about the vertical
+  through the target, the distance kept, positive as OrbitControls'
+  autoRotate, not the person's move, nothing before the first mesh — and
+  the app runs its timer and a loop of turns. Plate Builder and Cast
+  Builder have no idle turn, so the kit gets no option for it. The
+  showcase's `?turn=` turns its first box; the smoke checks the quarter turn.

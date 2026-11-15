@@ -39,6 +39,14 @@ export interface Viewer {
   /** the camera on any direction to it from the model, fitted as a preset is; a zero or non-finite one is ignored */
   look(direction: Direction): void;
   /**
+   * Turns the camera about the vertical through the target, at the same
+   * distance; positive as OrbitControls' autoRotate (the model seems to turn
+   * counter-clockwise seen from above). An app's own animation (an idle
+   * turn) is a turn per animation frame. Not counted as the person's move;
+   * nothing before the first mesh.
+   */
+  turn(radians: number): void;
+  /**
    * Calls `listener` after each drawn frame with the camera that drew it
    * (its matrices and the model's are current): to place what follows the
    * camera, or to project a point. Read it, do not move it. Returns the
@@ -59,6 +67,7 @@ const MODEL_COLOR = 0xe9e4da;
 const FIT_MARGIN = 1.7;
 /** faces meeting at more than this angle get their own normals: a slab's edges stay sharp */
 const CREASE = (40 * Math.PI) / 180;
+const UP = new THREE.Vector3(0, 1, 0);
 /** Directions to the camera from the target, in the display frame (y up; the model's front faces +z). */
 const PRESETS: Record<CameraPreset, Direction> = {
   iso: [0.7, 0.62, 0.95],
@@ -217,6 +226,14 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
     place(v);
   }
 
+  function turn(radians: number): void {
+    // nothing to turn about before the first mesh
+    if (!fitted || !Number.isFinite(radians) || radians === 0) return;
+    const offset = camera.position.clone().sub(controls.target).applyAxisAngle(UP, -radians);
+    camera.position.copy(controls.target).add(offset);
+    render();
+  }
+
   function setMeshes(next: readonly ViewerPart[]): void {
     for (const child of parts.children) if (child instanceof THREE.Mesh) child.geometry.dispose();
     parts.clear();
@@ -271,6 +288,7 @@ export function createViewer(canvas: HTMLCanvasElement, o: { background?: string
     },
     camera: (preset) => look(PRESETS[preset]),
     look,
+    turn,
     onFrame(listener) {
       frameListeners.add(listener);
       return () => frameListeners.delete(listener);

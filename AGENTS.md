@@ -113,7 +113,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `showcase/` — a Vite page with every component, laid out as an app on the
   kit, its box built by a module worker (`box.worker.ts`) and shown by the
   viewer (the root of `vite.config.ts`); deployed to Pages. `?accent=…&lang=…&
-  view=iso|top|front&look=x,y,z&sheet=open&modal=presets&progress=running|label&
+  view=iso|top|front&look=x,y,z&turn=deg&sheet=open&modal=presets&progress=running|label&
   banner=full|blocked&frame=phone` open a state directly (the smoke's
   screenshots use them); `#view`'s `data-frames`, `data-camera` and
   `data-centre` are written by the viewer's `onFrame`. `scene.ts` is its SVG stand-in without WebGL.
@@ -131,7 +131,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `scripts/smoke.mjs` — `npm run smoke`: the showcase in every accent and
   language at phone and desktop width; the panel's place, the sheet, the
   dialog, the banner; the worker's mesh in the viewer, the camera chips, frames
-  on demand and `look`, the STL export; the bar's delay and overlap; −/+ held, undo keys, the presets
+  on demand, `look` and `turn`, the STL export; the bar's delay and overlap; −/+ held, undo keys, the presets
   flow, the list card and the message list, a tap on the view, folding
   across a language switch, the harness's CPU throttling; with `--preview`,
   offline after a first visit. `--shots`

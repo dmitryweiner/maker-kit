@@ -346,6 +346,8 @@ function start(): void {
   /** the shown box's height: its centre is half way up */
   let shownHeight = 0;
   let frames = 0;
+  /** `?turn=` in degrees, once the first box is shown: Case Constructor's idle turn is made of turns */
+  let turn = Number(params.get('turn'));
   // for the smoke: what each drawn frame shows — the camera's direction and the box's centre on the canvas
   viewer?.onFrame((camera) => {
     const box = el('view', HTMLElement);
@@ -429,6 +431,8 @@ function start(): void {
       if (!done) return;
       shownHeight = state.height;
       viewer?.setMeshes([{ mesh: done.result }]);
+      if (turn) viewer?.turn((turn * Math.PI) / 180);
+      turn = 0;
       // for the smoke: what the view shows now
       el('view', HTMLElement).dataset.triangles = String(done.result.indices.length / 3);
     });
