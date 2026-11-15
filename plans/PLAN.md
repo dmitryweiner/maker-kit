@@ -18,7 +18,7 @@ the user are at the top; deviations go to the end as they happen.
 | Shared code or a written spec | **A separate repository with code**, its own tests and docs; `_conventions/` gets a short page pointing to it. |
 | Name | **maker-kit** |
 | Scope | Design code, standard controls, settings persistence (undo included), presets — plus whatever else the three projects duplicate (below). |
-| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.4.1"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
+| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.4.2"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
 | TypeScript | **TS 7 only.** Every app will be on TS 7; the kit is not made to compile under TS 5.9. Case Constructor is not moved now: its migration (M3) waits until it is on TS 7. |
 | License | **GPL-3.0-or-later**, as the apps. |
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core and m3-controls merged (case-constructor PRs #12, #13); m3-ui in review (#14) |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14); `v0.4.2`: the fix m3-ui found (#22) |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1177,7 +1177,8 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   "3 warnings · 2 notes" over the message list stay the app's; 💾 still asks
   for a name (the dialog renames). The preset button keeps the app's rule
   (the name only while the project is the preset), so no `.changed` mark.
-  Found for the kit: in Hebrew `.preset-button`'s " …" lands before a Latin
-  name — it needs `unicode-bidi: plaintext`. Its `--preview` smoke was
+  Found for the kit: in Hebrew `.preset-button`'s " …" landed before a Latin
+  name — `v0.4.2` gives it `unicode-bidi: plaintext` (its own first letter
+  sets a name's direction). Its `--preview` smoke was
   already broken on `main` (it reads the dev-only `window.__case`):
   m3-harness.
