@@ -169,7 +169,10 @@ a segment or toggle; `_note`; `_label` a group's name. A folding card is
 only (`inline-start`, `block-end`, …). Sliders run from the start side; a
 folded card's caret points to the end. Icons that mean a direction (↶ ↷)
 are not mirrored: undo is undo. A count ("3 / 4") is isolated left to
-right: spaced, its numbers are runs an RTL line would reverse.
+right: spaced, its numbers are runs an RTL line would reverse. A user's
+name (the project's on the preset button) takes its direction from its own
+first letter (`unicode-bidi: plaintext`): a Latin name in a Hebrew bar keeps
+its " …" after it.
 
 ## Density and touch targets
 
