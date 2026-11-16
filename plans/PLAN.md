@@ -65,7 +65,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); `v0.5.0`: the viewer's `onFrame`, `look` and `turn` (#24); next m3-3d |
+| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); `v0.5.0`: the viewer's `onFrame`, `look` and `turn` (#24); m3-3d in review (case-constructor #17) |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1205,3 +1205,16 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   the app runs its timer and a loop of turns. Plate Builder and Cast
   Builder have no idle turn, so the kit gets no option for it. The
   showcase's `?turn=` turns its first box; the smoke checks the quarter turn.
+- **M3 3d** (2026-11-16, case-constructor PR #17): on `v0.5.0`, no further
+  kit change. Its `geo/validate` is the kit's gate plus its largest part
+  (`assessPart`); its message codes take every `KitKey`. `geo/csg` keeps
+  its helpers over the kit's bridge; the thread takes a slice per point
+  (`perPoint`). The worker's guard is `isCsgJob`. `render/scene` keeps
+  its handle over the viewer; captions are placed after each frame and at
+  once when they change (a read or a click may come before the next
+  frame). Decided with the user: the warnings' badges never give way at
+  the kit's 1.7× fit (a user project's badge hid behind another);
+  the idle turn is `render/idleTurn.ts`, a loop of `turn`s. The sheet now
+  refits the view until the person turns or zooms it (the app's smoke
+  closes it with a tap on the view, so its "the sheet keeps the scale"
+  check holds; its docs say both).
