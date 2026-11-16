@@ -6,7 +6,7 @@ presets, the mobile sheet, the progress bar, the worker queue, STL, the 3D
 view, booleans on manifold and the printed thread, the smoke harness and
 the design code. A source-only TypeScript
 package (no build step), installed by git tag:
-`"maker-kit": "github:dmitryweiner/maker-kit#v0.4.2"`. The showcase:
+`"maker-kit": "github:dmitryweiner/maker-kit#v0.5.0"`. The showcase:
 <https://dmitryweiner.github.io/maker-kit/>.
 
 The shared conventions are in `~/projects/CLAUDE.md` and
@@ -113,9 +113,10 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `showcase/` — a Vite page with every component, laid out as an app on the
   kit, its box built by a module worker (`box.worker.ts`) and shown by the
   viewer (the root of `vite.config.ts`); deployed to Pages. `?accent=…&lang=…&
-  view=iso|top|front&sheet=open&modal=presets&progress=running|label&
+  view=iso|top|front&look=x,y,z&turn=deg&sheet=open&modal=presets&progress=running|label&
   banner=full|blocked&frame=phone` open a state directly (the smoke's
-  screenshots use them). `scene.ts` is its SVG stand-in without WebGL.
+  screenshots use them); `#view`'s `data-frames`, `data-camera` and
+  `data-centre` are written by the viewer's `onFrame`. `scene.ts` is its SVG stand-in without WebGL.
   A build works offline: `sw-plugin.ts` and `pwa.ts` are the template's
   (tested there), so the smoke can run the harness's `offline`.
 - `consumer/` — a fixture app that gets the packed kit in its `node_modules`.
@@ -129,8 +130,8 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
   (tsc, vitest, vite build, the dev server with a csg worker).
 - `scripts/smoke.mjs` — `npm run smoke`: the showcase in every accent and
   language at phone and desktop width; the panel's place, the sheet, the
-  dialog, the banner; the worker's mesh in the viewer, the camera chips, the
-  STL export; the bar's delay and overlap; −/+ held, undo keys, the presets
+  dialog, the banner; the worker's mesh in the viewer, the camera chips, frames
+  on demand, `look` and `turn`, the STL export; the bar's delay and overlap; −/+ held, undo keys, the presets
   flow, the list card and the message list, a tap on the view, folding
   across a language switch, the harness's CPU throttling; with `--preview`,
   offline after a first visit. `--shots`
@@ -144,7 +145,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 - `npm run check`: ~4 s (272 tests; `threadHole`'s 1.5 s of them).
   `npm run consumer`: ~8 s (its page waits for a csg worker's rod).
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
-  states, 16 steps with the offline one). CI: about a minute.
+  states, 17 steps with the offline one). CI: about a minute.
 
 ## Conventions
 

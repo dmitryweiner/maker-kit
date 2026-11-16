@@ -1,8 +1,8 @@
 // Browser smoke of the showcase: at phone and desktop width, in each accent
 // and language (Hebrew mirrored), no horizontal scroll and no console
 // errors; the sheet, the dialog, the banner and the bar over the view in
-// their states; the worker's mesh in the viewer and the STL export; the
-// panel's −/+, undo keys, the presets flow, the list card and the message
+// their states; the worker's mesh in the viewer, its frames on demand,
+// `look` and `turn`, the STL export; the panel's −/+, undo keys, the presets flow, the list card and the message
 // list in a real browser; the harness's
 // CPU throttling. With --shots it saves a screenshot of every state for a
 // design review.
@@ -28,6 +28,16 @@ const preview = flags.has('preview');
 const app = await launch({ preview, ports: PORTS });
 const { step } = app;
 if (shots) mkdirSync('shots', { recursive: true });
+
+/** The camera's direction from its target, as the showcase's onFrame writes it. */
+const direction = async (page) => (await page.getAttribute('#view', 'data-camera')).split(',').map(Number);
+/** How many frames the view has drawn. */
+const frames = async (page) => Number(await page.getAttribute('#view', 'data-frames'));
+/** Whether two directions are one. */
+function along(a, b) {
+  const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  return dot / Math.hypot(...a) / Math.hypot(...b) > 0.999;
+}
 
 /** Opens the showcase in a state; checks it does not scroll sideways; saves a shot with --shots. */
 async function state(viewportName, query, shot) {
@@ -117,6 +127,52 @@ await app.run(
       }
       await context.close();
     });
+
+    await step(
+      "the view's frames: on demand, each one told with its camera; look turns it to any direction, turn about the vertical",
+      async () => {
+        const { page, context } = await app.open();
+        await page.waitForSelector('#view[data-triangles="12"][data-camera]');
+        // damping settles, then nothing moves: no frame is drawn
+        await page.waitForTimeout(1000);
+        const resting = await frames(page);
+        await page.waitForTimeout(500);
+        check((await frames(page)) === resting, `frames at rest: ${resting} → ${await frames(page)}`);
+        check(along(await direction(page), [0.7, 0.62, 0.95]), `iso looks along ${await direction(page)}`);
+        await page.click('.chip[data-view="front"]');
+        await page.waitForFunction(() => document.querySelector('#view').dataset.camera?.endsWith(',1'));
+        check((await frames(page)) > resting, 'a camera preset drew no frame');
+        await context.close();
+
+        const look = await app.open({ path: '?look=1,0.5,-1' });
+        await look.page.waitForSelector('#view[data-triangles="12"][data-camera]');
+        await look.page.waitForTimeout(300);
+        check(along(await direction(look.page), [1, 0.5, -1]), `look=1,0.5,-1 looks along ${await direction(look.page)}`);
+        // fitted from there as a preset is: the box is in the middle of the view
+        const centre = await look.page.getAttribute('#view', 'data-centre');
+        const [x, y] = centre.split(',').map(Number);
+        const box = await look.page.locator('#viewCanvas').boundingBox();
+        check(
+          Math.abs(x - box.width / 2) < 2 && Math.abs(y - box.height / 2) < box.height * 0.1,
+          `the box's centre is at ${centre} in ${box.width} × ${box.height}`,
+        );
+        await look.context.close();
+
+        // a preset asked before the first mesh is where the first fit looks from
+        const top = await app.open({ path: '?view=top' });
+        await top.page.waitForSelector('#view[data-triangles="12"][data-camera]');
+        check(along(await direction(top.page), [0, 1, 0.0001]), `view=top looks along ${await direction(top.page)}`);
+        await top.context.close();
+
+        // a turn goes about the vertical, as OrbitControls' autoRotate: from the side a quarter turn is the front (the showcase turns its first box)
+        const turn = await app.open({ path: '?look=1,0.0001,0&turn=90' });
+        await turn.page.waitForSelector('#view[data-triangles="12"][data-camera]');
+        // the turn comes with the box: its frame is the next one
+        await turn.page.waitForTimeout(300);
+        check(along(await direction(turn.page), [0, 0, 1]), `look=1,0,0&turn=90 looks along ${await direction(turn.page)}`);
+        await turn.context.close();
+      },
+    );
 
     await step('the export: a kept job under a labelled bar, a checked mesh, an STL file', async () => {
       const { page, context } = await app.open();

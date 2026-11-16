@@ -13,6 +13,7 @@ import { encodeSTL, stlFileName } from '../src/3d/stl';
 import { assessExport, validateMesh } from '../src/3d/validate';
 import { createViewer } from '../src/3d/viewer';
 import './showcase.css';
+import { Vector3 } from 'three';
 import { format } from '../src/core/format';
 import { History } from '../src/core/history';
 import type { Translate } from '../src/core/message';
@@ -342,6 +343,24 @@ function start(): void {
     { lane: () => 'box', kept: (job) => job.export },
   );
   let built = '';
+  /** the shown box's height: its centre is half way up */
+  let shownHeight = 0;
+  let frames = 0;
+  /** `?turn=` in degrees, once the first box is shown: Case Constructor's idle turn is made of turns */
+  let turn = Number(params.get('turn'));
+  // for the smoke: what each drawn frame shows — the camera's direction and the box's centre on the canvas
+  viewer?.onFrame((camera) => {
+    const box = el('view', HTMLElement);
+    const canvas = el('viewCanvas', HTMLCanvasElement);
+    const direction = camera.getWorldDirection(new Vector3()).negate();
+    const centre = viewer.model.localToWorld(new Vector3(0, 0, shownHeight / 2)).project(camera);
+    box.dataset.frames = String(++frames);
+    box.dataset.camera = direction
+      .toArray()
+      .map((v) => Number(v.toFixed(3)))
+      .join(',');
+    box.dataset.centre = `${(((centre.x + 1) / 2) * canvas.clientWidth).toFixed(1)},${(((1 - centre.y) / 2) * canvas.clientHeight).toFixed(1)}`;
+  });
 
   setupSheet({
     onInset: (px) => viewer?.setInset(px),
@@ -410,7 +429,10 @@ function start(): void {
     built = key;
     void run({ width: state.width, depth: 40, height: state.height, export: false }).then((done) => {
       if (!done) return;
+      shownHeight = state.height;
       viewer?.setMeshes([{ mesh: done.result }]);
+      if (turn) viewer?.turn((turn * Math.PI) / 180);
+      turn = 0;
       // for the smoke: what the view shows now
       el('view', HTMLElement).dataset.triangles = String(done.result.indices.length / 3);
     });
@@ -657,6 +679,9 @@ function start(): void {
   // the accent is on <html> only now: the view takes its colours again
   viewer?.recolor();
   if (view !== 'iso') viewer?.camera(view);
+  // any direction, as Case Constructor's snap.mjs --camera turns its view
+  const look = params.get('look')?.split(',').map(Number);
+  if (look?.length === 3) viewer?.look([look[0] ?? 0, look[1] ?? 0, look[2] ?? 0]);
   if (params.get('modal') === 'presets') presetsDialog.open(presetsOpen);
 }
 
