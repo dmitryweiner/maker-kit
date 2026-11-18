@@ -50,14 +50,23 @@ function run(cmd, args) {
 }
 
 /**
- * Starts a dev / preview server on the project's port unless one already
- * listens there. Ports of the project's own, with --strictPort: another
- * project's server on Vite's default 5173 is never tested by mistake.
+ * Starts a dev / preview server on the project's port. Ports of the
+ * project's own, with --strictPort: another project's server on Vite's
+ * default 5173 is never tested by mistake. A dev server already there is
+ * taken (it serves the code as it is now). A busy preview port is an error:
+ * the server there serves whatever build it started on (often one a crashed
+ * run left), and a build under it would 404 its new assets. `up` probes
+ * the port (a test's double).
  */
-export async function ensureServer({ preview, ports }) {
+export async function ensureServer({ preview, ports, up = serverUp }) {
   const port = preview ? ports.preview : ports.dev;
   const base = `http://localhost:${port}/`;
-  if (await serverUp(base)) return { base, proc: null };
+  if (await up(base)) {
+    if (!preview) return { base, proc: null };
+    throw new Error(
+      `port ${port} is taken: a server there would be tested instead of a fresh build. Stop it (lsof -nP -iTCP:${port} -sTCP:LISTEN) and run again.`,
+    );
+  }
   // vite preview serves the last build; without a rebuild the smoke would
   // test old code and fail somewhere puzzling
   if (preview) await run('npx', ['vite', 'build']);

@@ -18,7 +18,7 @@ the user are at the top; deviations go to the end as they happen.
 | Shared code or a written spec | **A separate repository with code**, its own tests and docs; `_conventions/` gets a short page pointing to it. |
 | Name | **maker-kit** |
 | Scope | Design code, standard controls, settings persistence (undo included), presets — plus whatever else the three projects duplicate (below). |
-| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.5.0"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
+| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.5.1"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
 | TypeScript | **TS 7 only.** Every app will be on TS 7; the kit is not made to compile under TS 5.9. Case Constructor is not moved now: its migration (M3) waits until it is on TS 7. |
 | License | **GPL-3.0-or-later**, as the apps. |
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
@@ -1218,3 +1218,11 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   refits the view until the person turns or zooms it (the app's smoke
   closes it with a tap on the view, so its "the sheet keeps the scale"
   check holds; its docs say both).
+- **`v0.5.1`, a busy preview port is an error** (2026-11-18, decided with
+  the user): `ensureServer` took any server already on the project's port,
+  and with `--preview` skipped the build, so a `vite preview` a crashed run
+  left made the smoke test an old `dist/` (Case Constructor's m3-harness: a
+  fixed page still failed). A dev server is still taken; a busy preview
+  port throws with the `lsof` that finds it. Killing it was not chosen: the
+  port may be someone else's process. `ensureServer` takes `up`, the port's
+  probe, so its test starts nothing.

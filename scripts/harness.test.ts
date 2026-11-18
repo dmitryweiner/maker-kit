@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { binaryStl, createSteps, offline, parseArgs } from './harness.mjs';
+import { binaryStl, createSteps, ensureServer, offline, parseArgs } from './harness.mjs';
 
 describe('parseArgs', () => {
   it('reads bare flags and flags with a value', () => {
@@ -15,6 +15,23 @@ describe('parseArgs', () => {
     const flags = parseArgs(['--set', 'a=1', '--lang', 'he', '--set', 'b=2'], ['lang'], ['set']);
     expect(flags.get('set')).toEqual(['a=1', 'b=2']);
     expect(flags.get('lang')).toBe('he');
+  });
+});
+
+/** A port where a server already answers. */
+const listening = async (): Promise<boolean> => true;
+
+describe('ensureServer', () => {
+  const ports = { dev: 5395, preview: 4395 };
+
+  it('takes a dev server already on the port: it serves the code as it is now', async () => {
+    expect(await ensureServer({ preview: false, ports, up: listening })).toEqual({ base: 'http://localhost:5395/', proc: null });
+  });
+
+  it('refuses a busy preview port: a server there serves an old build, and a build under it would not be seen', async () => {
+    await expect(ensureServer({ preview: true, ports, up: listening })).rejects.toThrow(
+      /port 4395 is taken.*lsof -nP -iTCP:4395 -sTCP:LISTEN/s,
+    );
   });
 });
 
