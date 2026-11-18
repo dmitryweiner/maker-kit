@@ -50,7 +50,16 @@ the user are at the top; deviations go to the end as they happen.
 
 None at the moment.
 
-## Status (2026-11-12)
+## Known issues
+
+- **`offline()` in the harness can hang** (found 2026-11-18, M3's PWA): it
+  awaits `navigator.serviceWorker.ready` with no timeout, so a build whose
+  worker never registers hangs the smoke instead of failing it (Case
+  Constructor's red run had to be stopped by hand). The fix: a timeout
+  with a message ("the service worker never became ready"), a test with a
+  page double whose `ready` never settles; a patch tag.
+
+## Status (2026-11-18)
 
 | Milestone | State |
 |---|---|
@@ -65,7 +74,7 @@ None at the moment.
 | M2 — Cast Builder on the kit | done: cast-builder PRs #11 core, #12 controls + styles, #13 ui, #14 3d + worker, #15 harness, docs #16, 📄 New #17; on `v0.3.1`, no kit fixes needed |
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
-| M3 — Case Constructor on the kit | scheduled 2026-11-12 ("M3 in detail" below): m3-core, m3-controls and m3-ui merged (case-constructor PRs #12–#14), jsdom and the box list's test (#15); `v0.4.2`: the fix m3-ui found (#22); `v0.5.0`: the viewer's `onFrame`, `look` and `turn` (#24); m3-3d in review (case-constructor #17) |
+| M3 — Case Constructor on the kit | done (2026-11-18, "M3 in detail" below): case-constructor PRs #12 core, #13 controls, #14 ui, #15 jsdom, #16 docs after ui, #17 3d, #19 harness (`smoke --preview` fixed and in CI), #20 docs, #21 📄 New, #22 PWA; the kit's `v0.4.2` (#22), `v0.5.0` (#24: the viewer's `onFrame`, `look`, `turn`), `v0.5.1` (#26: a busy preview port); the app on `v0.5.1` |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
