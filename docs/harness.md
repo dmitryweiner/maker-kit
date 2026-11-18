@@ -28,7 +28,11 @@ await app.run(async () => {
 
 - `launch({ preview, ports })` starts `vite` (or `vite build` + `vite
   preview` with `--preview`: a preview of an old build tests old code) on the
-  project's own port with `--strictPort`, unless one already listens there.
+  project's own port with `--strictPort`. A dev server already on the port
+  is taken (it serves the code as it is now). With `--preview` a busy port
+  is an error that names the `lsof` to find it: the server there serves
+  the build it started on (often one a crashed run left), and a build under
+  it would 404 its new assets.
   Each project has its own pair: another project's server on 5173 is never
   tested by mistake. Taken: Case Constructor 5273/4273, cast-builder
   5291/4291, Plate Builder 5373/4373, the kit 5395/4395.

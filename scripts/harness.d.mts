@@ -22,7 +22,16 @@ export interface Ports {
   preview: number;
 }
 
-export function ensureServer(o: { preview: boolean; ports: Ports }): Promise<{ base: string; proc: { kill(): void } | null }>;
+/**
+ * Starts the dev or preview server on the project's port. A dev server
+ * already there is taken; a busy preview port throws (it would serve an old
+ * build). `up` probes the port (a test's double).
+ */
+export function ensureServer(o: {
+  preview: boolean;
+  ports: Ports;
+  up?: (base: string) => Promise<boolean>;
+}): Promise<{ base: string; proc: { kill(): void } | null }>;
 
 export interface OpenOptions {
   locale?: string;
