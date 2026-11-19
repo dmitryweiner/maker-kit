@@ -71,7 +71,7 @@ None at the moment.
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
 | M3 — Case Constructor on the kit | done (2026-11-18, "M3 in detail" below): case-constructor PRs #12 core, #13 controls, #14 ui, #15 jsdom, #16 docs after ui, #17 3d, #19 harness (`smoke --preview` fixed and in CI), #20 docs, #21 📄 New, #22 PWA; the kit's `v0.4.2` (#22), `v0.5.0` (#24: the viewer's `onFrame`, `look`, `turn`), `v0.5.1` (#26: a busy preview port); the app on `v0.5.1` |
 | M4 — ClayForm on the kit | done (2026-11-19): the plan is clayform's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); clayform PRs #4 plan + toolchain (Vite 8, Vitest 4, manifold 3.5, Node 24), #5 core, #6 controls, #7 ui, #8 3d, #9 harness (its own ports 5281 / 4281, `smoke --preview` in CI), #10 docs, #11 📄 New, #12 the piece kept in the browser (decided with the user: a PWA's reload must not lose it), #13 PWA; on `v0.5.1`, no kit change needed |
-| M5 — MathSculpt on the kit | in progress (2026-11-19): the plan is mathsculpt's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); mathsculpt PRs #1 plan + toolchain (TS 7, oxlint, Vite 8, Vitest 4, Node 24, Pages by Actions), #2 core, #3 controls, #4 ui, #5 i18n (en, ru, uk, he — it had English only), #6 3d, #7 harness (its own ports 5287 / 4287), #8 docs; then 📄 New, the project file, the model kept in the browser, PWA; on `v0.5.1`, no kit change needed |
+| M5 — MathSculpt on the kit | in progress (2026-11-19): the plan is mathsculpt's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); mathsculpt PRs #1 plan + toolchain (TS 7, oxlint, Vite 8, Vitest 4, Node 24, Pages by Actions), #2 core, #3 controls, #4 ui, #5 i18n (en, ru, uk, he — it had English only), #6 3d, #7 harness (its own ports 5287 / 4287), #8 docs; then 📄 New, the project file, the model kept in the browser, PWA; the kit's `v0.5.2` (#30: `offline()` fails instead of hanging, met again in its PWA's smoke); the app moves from `v0.5.1` to `v0.5.2` |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1251,7 +1251,7 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   `npx` and left `vite preview` behind after a crashed run, so two of its
   PRs' smokes tested an old `dist/` until re-run — exactly what `v0.5.1`'s
   busy preview port now refuses.
-- **M5 — MathSculpt on `v0.5.1`, no kit change** (2026-11-19, mathsculpt's
+- **M5 — MathSculpt on the kit, one kit fix** (2026-11-19, mathsculpt's
   `plans/PLAN-MAKER-KIT.md`): the first app on the kit without booleans —
   no manifold-3d; its worker builds the surface in plain TypeScript and
   takes the kit's queue as it is (`WorkerClient`, `serveJobs`, a `kept`
@@ -1262,3 +1262,6 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   four, and a language switch redraws the panel by `snapshotCards` /
   `restoreCards`. What stayed in the app: the profile graph, the overhang
   and amplitude warnings beside the kit's gate, its blue palette as tokens.
+  Its PWA's smoke met the known `offline()` hang and wrapped the call in a
+  30 s race of its own; the fix went into the kit as `v0.5.2` (#30), and
+  the app drops the wrapper on that tag.
