@@ -75,6 +75,7 @@ None at the moment.
 | K7 — what the migrations share | done: K7a csg + worker (#13), K7b ui (#14), K7c harness (#15), tag `v0.4.0`; Plate Builder on it (plate-builder PR #23), the fix it found in `v0.4.1` (#17); Cast Builder on `v0.4.1` (cast-builder PR #18) |
 | C1 — conventions | done (2026-11-12): `_conventions/3d-tools.md`, `/new-web-app`'s "3D tool", run end to end on a fresh copy of the template |
 | M3 — Case Constructor on the kit | done (2026-11-18, "M3 in detail" below): case-constructor PRs #12 core, #13 controls, #14 ui, #15 jsdom, #16 docs after ui, #17 3d, #19 harness (`smoke --preview` fixed and in CI), #20 docs, #21 📄 New, #22 PWA; the kit's `v0.4.2` (#22), `v0.5.0` (#24: the viewer's `onFrame`, `look`, `turn`), `v0.5.1` (#26: a busy preview port); the app on `v0.5.1` |
+| M4 — ClayForm on the kit | done (2026-11-19): the plan is clayform's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); clayform PRs #4 plan + toolchain (Vite 8, Vitest 4, manifold 3.5, Node 24), #5 core, #6 controls, #7 ui, #8 3d, #9 harness (its own ports 5281 / 4281, `smoke --preview` in CI), #10 docs, #11 📄 New, #12 the piece kept in the browser (decided with the user: a PWA's reload must not lose it), #13 PWA; on `v0.5.1`, no kit change needed |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1235,3 +1236,13 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   port throws with the `lsof` that finds it. Killing it was not chosen: the
   port may be someone else's process. `ensureServer` takes `up`, the port's
   probe, so its test starts nothing.
+- **M4 — ClayForm on `v0.5.1`, no kit change** (2026-11-18, clayform's
+  `plans/PLAN-MAKER-KIT.md`): what one app needs stayed in it — a picture
+  from a file is its own row, drawn between runs of the kit's rows; the
+  overhang share for clay printing is its own check beside the kit's gate;
+  the view keeps its terracotta and its looks (`look` before the first mesh,
+  and on the bottom). Its feature switches moved from the card heads into
+  the cards (`#<id>_on`), as the design code says. Its old harness killed
+  `npx` and left `vite preview` behind after a crashed run, so two of its
+  PRs' smokes tested an old `dist/` until re-run — exactly what `v0.5.1`'s
+  busy preview port now refuses.
