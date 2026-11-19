@@ -18,7 +18,7 @@ the user are at the top; deviations go to the end as they happen.
 | Shared code or a written spec | **A separate repository with code**, its own tests and docs; `_conventions/` gets a short page pointing to it. |
 | Name | **maker-kit** |
 | Scope | Design code, standard controls, settings persistence (undo included), presets — plus whatever else the three projects duplicate (below). |
-| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.5.1"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
+| Distribution | **Git tags**: `"maker-kit": "github:dmitryweiner/maker-kit#v0.5.2"`. No npm publishing for now: the kit is internal. A source-only TypeScript package, no build step. Joint work on an app and the kit uses `npm link ../maker-kit`; CI of every app installs the tag. |
 | TypeScript | **TS 7 only.** Every app will be on TS 7; the kit is not made to compile under TS 5.9. Case Constructor is not moved now: its migration (M3) waits until it is on TS 7. |
 | License | **GPL-3.0-or-later**, as the apps. |
 | Plate Builder's new pieces (2026-11-08) | **Into the kit**: 📄 New in the top bar (a blank preset, one undo step), the progress bar over the view (a running stripe after 300 ms while any job runs), and Ctrl/⌘+Z on any keyboard layout and from a slider, check box or select. |
@@ -52,12 +52,7 @@ None at the moment.
 
 ## Known issues
 
-- **`offline()` in the harness can hang** (found 2026-11-18, M3's PWA): it
-  awaits `navigator.serviceWorker.ready` with no timeout, so a build whose
-  worker never registers hangs the smoke instead of failing it (Case
-  Constructor's red run had to be stopped by hand). The fix: a timeout
-  with a message ("the service worker never became ready"), a test with a
-  page double whose `ready` never settles; a patch tag.
+None at the moment.
 
 ## Status (2026-11-18)
 
@@ -1236,6 +1231,15 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   port throws with the `lsof` that finds it. Killing it was not chosen: the
   port may be someone else's process. `ensureServer` takes `up`, the port's
   probe, so its test starts nothing.
+- **`v0.5.2`, `offline()` fails instead of hanging** (2026-11-19, found in
+  M3's PWA, met again in M5's): it awaited `navigator.serviceWorker.ready`,
+  which never settles when no worker registers or its install fails, and
+  Playwright's evaluate has no timeout. The page now races `ready` against
+  `timeout` ms (30 s) itself — no evaluate left pending in Node, no timer to
+  clear — and the step fails with "the service worker never became ready".
+  On any failure `offline` closes the context it opened: the caller never
+  gets it. The test's page double runs the real page function under a
+  stubbed `navigator`.
 - **M4 — ClayForm on `v0.5.1`, no kit change** (2026-11-18, clayform's
   `plans/PLAN-MAKER-KIT.md`): what one app needs stayed in it — a picture
   from a file is its own row, drawn between runs of the kit's rows; the

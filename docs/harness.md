@@ -79,7 +79,10 @@ await app.run(async () => {
   offline, reloads; `ready(page)` checks the app is there (its heading,
   its `lang`). The page comes back offline for the app's own checks (its
   worker and WASM from the cache); the caller closes the context. A build
-  only (`--preview`): the dev server has no service worker.
+  only (`--preview`): the dev server has no service worker. A service
+  worker not ready in `timeout` ms (30 s by default) fails it with "the
+  service worker never became ready": none registered, or its install
+  failed. On any failure the context is closed here.
 
   ```js
   if (preview) {

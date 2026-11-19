@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { binaryStl, createSteps, ensureServer, offline, parseArgs } from './harness.mjs';
 
 describe('parseArgs', () => {
@@ -132,14 +132,25 @@ describe('createSteps', () => {
   });
 });
 
-/** A page and its context that write down what is done to them. */
-function fakeVisit() {
+/**
+ * A page and its context that write down what is done to them. The page
+ * runs the function it evaluates, under a `navigator` whose service worker
+ * gets ready when `ready` does.
+ */
+function fakeVisit(ready: Promise<unknown> = Promise.resolve()) {
   const done: string[] = [];
+  vi.stubGlobal('navigator', { serviceWorker: { ready } });
   const page = {
-    evaluate: async () => void done.push('wait for the service worker'),
+    evaluate: async <A, R>(fn: (arg: A) => R, arg: A) => {
+      done.push('wait for the service worker');
+      return fn(arg);
+    },
     reload: async () => void done.push('reload'),
   };
-  const context = { setOffline: async (off: boolean) => void done.push(`offline ${off}`) };
+  const context = {
+    setOffline: async (off: boolean) => void done.push(`offline ${off}`),
+    close: async () => void done.push('close'),
+  };
   const app = {
     open: async (o?: { path?: string }) => {
       done.push(`open ${o?.path ?? ''}`);
@@ -150,6 +161,10 @@ function fakeVisit() {
 }
 
 describe('offline', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('warms the cache on a first visit, then reloads with no network and asks the app whether it is there', async () => {
     const { app, page, context, done } = fakeVisit();
     const opened = await offline(app as never, {
@@ -164,8 +179,8 @@ describe('offline', () => {
     expect(opened).toEqual({ page, context });
   });
 
-  it('fails as the app’s check does', async () => {
-    const { app } = fakeVisit();
+  it('fails as the app’s check does, and closes the page it opened: the caller never gets it', async () => {
+    const { app, done } = fakeVisit();
     await expect(
       offline(app as never, {
         ready: async () => {
@@ -173,5 +188,14 @@ describe('offline', () => {
         },
       }),
     ).rejects.toThrow('the app did not load offline');
+    expect(done.at(-1)).toBe('close');
+  });
+
+  it('fails, not hangs, when the service worker never gets ready: none registered, or its install failed', async () => {
+    const { app, done } = fakeVisit(new Promise(() => {}));
+    await expect(offline(app as never, { timeout: 10, ready: async () => void done.push('ready?') })).rejects.toThrow(
+      'the service worker never became ready',
+    );
+    expect(done).toEqual(['open ', 'wait for the service worker', 'close']);
   });
 });
