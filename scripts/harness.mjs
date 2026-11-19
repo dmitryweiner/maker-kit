@@ -241,13 +241,30 @@ export async function throttle(page, rate) {
  * `ready(page)` checks that it did. Gives the page back, offline, for the
  * app's further checks (its worker and WASM from the cache); the caller
  * closes the context. A build only: the dev server has no service worker.
+ * `ready` of a worker that never registers, or whose install failed, never
+ * settles, and Playwright's evaluate has no timeout: the page waits `timeout`
+ * ms itself, so the evaluate always ends and nothing is left to clear. On a
+ * failure the context is closed here: the caller never gets it.
  */
-export async function offline(app, { ready, ...open }) {
+export async function offline(app, { ready, timeout = 30000, ...open }) {
   const { page, context } = await app.open(open);
-  await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
-  await page.reload();
-  await context.setOffline(true);
-  await page.reload();
-  await ready(page);
-  return { page, context };
+  try {
+    const active = await page.evaluate(
+      (ms) =>
+        Promise.race([navigator.serviceWorker.ready.then(() => true), new Promise((resolve) => setTimeout(() => resolve(false), ms))]),
+      timeout,
+    );
+    check(
+      active,
+      `the service worker never became ready in ${timeout / 1000} s: none registered (the dev server? a build without one?) or its install failed (a precached file missing?)`,
+    );
+    await page.reload();
+    await context.setOffline(true);
+    await page.reload();
+    await ready(page);
+    return { page, context };
+  } catch (error) {
+    await context.close();
+    throw error;
+  }
 }

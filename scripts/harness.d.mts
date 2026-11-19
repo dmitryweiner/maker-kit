@@ -98,9 +98,11 @@ export function throttle(page: Page, rate: number): Promise<void>;
 /**
  * The app works offline after a first visit: open, wait for the service
  * worker, reload, go offline, reload, `ready(page)` checks the app is there.
- * The page comes back offline; the caller closes the context.
+ * The page comes back offline; the caller closes the context. A service
+ * worker not ready in `timeout` ms (30 s) fails it; on a failure the context
+ * is closed here.
  */
 export function offline(
   app: Pick<Harness, 'open'>,
-  o: OpenOptions & { ready(page: Page): Promise<void> },
+  o: OpenOptions & { ready(page: Page): Promise<void>; timeout?: number },
 ): Promise<{ page: Page; context: BrowserContext }>;

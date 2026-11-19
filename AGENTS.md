@@ -6,7 +6,7 @@ presets, the mobile sheet, the progress bar, the worker queue, STL, the 3D
 view, booleans on manifold and the printed thread, the smoke harness and
 the design code. A source-only TypeScript
 package (no build step), installed by git tag:
-`"maker-kit": "github:dmitryweiner/maker-kit#v0.5.1"`. The showcase:
+`"maker-kit": "github:dmitryweiner/maker-kit#v0.5.2"`. The showcase:
 <https://dmitryweiner.github.io/maker-kit/>.
 
 The shared conventions are in `~/projects/CLAUDE.md` and
@@ -142,7 +142,7 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 ## What costs what
 
-- `npm run check`: ~4 s (272 tests; `threadHole`'s 1.5 s of them).
+- `npm run check`: ~4 s (275 tests; `threadHole`'s 1.5 s of them).
   `npm run consumer`: ~8 s (its page waits for a csg worker's rod).
   `npm run smoke -- --preview`: ~20 s (a build, 24 accent × language × width
   states, 17 steps with the offline one). CI: about a minute.
