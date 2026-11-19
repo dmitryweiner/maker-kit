@@ -1,16 +1,28 @@
 # maker-kit
 
-The shared pieces of the 3D-printing tools — [Case Constructor](https://github.com/dmitryweiner/case-constructor),
-[Plate Builder](https://github.com/dmitryweiner/plate-builder), [Cast Builder](https://github.com/dmitryweiner/cast-builder)
-and the ones to come: the controls panel, undo, storage, presets, the mobile
-sheet, the progress bar, the worker queue, STL, the 3D view, the list card
-and the message list, booleans on manifold and the printed thread, the
-smoke harness and the design code they share. Plate Builder (M1) and Cast Builder
-(M2) run on it; Case Constructor moves later (`plans/PLAN.md`).
+The shared pieces of the 3D-printing tools — the apps below and the ones to
+come: the controls panel, undo, storage, presets, the mobile sheet, the
+progress bar, the worker queue, STL, the 3D view, the list card and the
+message list, booleans on manifold and the printed thread, the smoke
+harness and the design code they share.
 
 A source-only TypeScript package: no build step, installed by a git tag.
 Every component in every state: the showcase,
 <https://dmitryweiner.github.io/maker-kit/>.
+
+## Apps on the kit
+
+| App | What it makes | Moved to the kit |
+|---|---|---|
+| [Plate Builder](https://dmitryweiner.github.io/plate-builder/) · [code](https://github.com/dmitryweiner/plate-builder) | A flat plate: a sign, a keychain, a tag | M1 |
+| [Cast Builder](https://dmitryweiner.github.io/cast-builder/) · [code](https://github.com/dmitryweiner/cast-builder) | Slip-casting molds from a ready STL | M2 |
+| [Case Constructor](https://dmitryweiner.github.io/case-constructor/) · [code](https://github.com/dmitryweiner/case-constructor) | An enclosure for a PCB: the shell and its lid | M3 |
+| [ClayForm](https://dmitryweiner.github.io/clayform/) · [code](https://github.com/dmitryweiner/clayform) | Clay pottery from parameters | M4 |
+| [MathSculpt](https://dmitryweiner.github.io/mathsculpt/) · [code](https://github.com/dmitryweiner/mathsculpt) | Vases, bowls and tori from math formulas | M5 |
+
+Each app pins a tag of the kit in its `package.json`. The milestones, their
+PRs and the kit fixes they found are in [plans/PLAN.md](plans/PLAN.md)'s
+status.
 
 ## Install
 

@@ -1,7 +1,8 @@
 # Agents guide
 
 maker-kit — the shared library of the 3D-printing tools in `~/projects`
-(Case Constructor, Plate Builder, Cast Builder): controls, undo, storage,
+(Plate Builder, Cast Builder, Case Constructor, ClayForm, MathSculpt; the
+README's "Apps on the kit" lists them): controls, undo, storage,
 presets, the mobile sheet, the progress bar, the worker queue, STL, the 3D
 view, booleans on manifold and the printed thread, the smoke harness and
 the design code. A source-only TypeScript
