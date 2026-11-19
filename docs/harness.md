@@ -34,8 +34,9 @@ await app.run(async () => {
   the build it started on (often one a crashed run left), and a build under
   it would 404 its new assets.
   Each project has its own pair: another project's server on 5173 is never
-  tested by mistake. Taken: Case Constructor 5273/4273, cast-builder
-  5291/4291, Plate Builder 5373/4373, the kit 5395/4395.
+  tested by mistake. Taken: Case Constructor 5273/4273, ClayForm
+  5281/4281, MathSculpt 5287/4287, cast-builder 5291/4291, Plate Builder
+  5373/4373, the kit 5395/4395.
 - `PLAYWRIGHT_BROWSER` gives a chromium's path where Playwright misses its own
   (a cloud container).
 - `app.open({ locale, viewport, storage, script, path })` makes a fresh
