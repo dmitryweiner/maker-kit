@@ -57,7 +57,7 @@
   /* ---- top bar ----
      A phone: the brand and the language, then the project's name and the
      tools in a second line; from 760 px all in one line. Order of the tools:
-     📄 new, 💾 save as preset, 📂 open a file, ⬇️ save it, ↶ ↷. */
+     📄 new, 💾 save as preset, 📂 open a file, ⬇️ save it, ↩ ↪. */
 
   .topbar {
     display: flex;

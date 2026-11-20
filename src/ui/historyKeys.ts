@@ -1,4 +1,4 @@
-// Undo and redo from the top bar's ↶ ↷ and the keyboard (Plate Builder's):
+// Undo and redo from the top bar's ↩ ↪ and the keyboard (Plate Builder's):
 // Ctrl/⌘+Z, Shift+Ctrl/⌘+Z and Ctrl/⌘+Y.
 //
 // - Matched by the key's place when its letter is not Latin: on a Cyrillic
