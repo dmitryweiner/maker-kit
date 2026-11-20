@@ -202,7 +202,7 @@ The user's presets first (a name field renamed on change, ↗ open, 🗑 then
 "changed" once the project differs. Called with the same list, it draws
 nothing, so a name being typed keeps its focus.
 
-## ui/historyKeys — ↶ ↷ and Ctrl/⌘+Z, Shift+Ctrl/⌘+Z, Ctrl/⌘+Y
+## ui/historyKeys — ↩ ↪ and Ctrl/⌘+Z, Shift+Ctrl/⌘+Z, Ctrl/⌘+Y
 
 ```ts
 const keys = bindHistory({ undo, redo, onUndo, onRedo, canUndo, canRedo });

@@ -30,7 +30,7 @@ import 'maker-kit/styles/kit.css';   // tokens included
 
 ```
 ┌ top bar ─────────────────────────────────────────────────────┐
-│ brand  [project name …]  📄 💾 📂 ⬇️ ↶ ↷          🌐 language │
+│ brand  [project name …]  📄 💾 📂 ⬇️ ↩ ↪          🌐 language │
 ├ banner (only when storage fails) ───────────────────────────┤
 │ panel (cards)   │ view                          chips (Iso…) │
 │ 360 px, scrolls │                                            │
@@ -56,7 +56,9 @@ import 'maker-kit/styles/kit.css';   // tokens included
 - Order: the brand; the project's name, which opens the presets dialog
   (a `●` in the warn colour when the project differs from its preset); then
   the tools 📄 new, 💾 save as a preset, 📂 open a project file, ⬇️ save it to
-  a file, ↶ undo, ↷ redo; then 🌐 the language.
+  a file, ↩ undo, ↪ redo; then 🌐 the language. The arrows are written
+  with U+FE0E (`↩&#xFE0E;`), the text form: without it a phone may draw
+  them as blue emoji tiles.
 - **On a phone, two lines**: the brand and the language, then the name and
   the six tools. Tools are 36 px with a 4 px gap, so the name keeps some room
   on a 360 px screen; from 760 px everything is one line, tools 40 px, gap
@@ -167,7 +169,7 @@ a segment or toggle; `_note`; `_label` a group's name. A folding card is
 
 `dir="rtl"` on `<html>` mirrors everything: the CSS has logical properties
 only (`inline-start`, `block-end`, …). Sliders run from the start side; a
-folded card's caret points to the end. Icons that mean a direction (↶ ↷)
+folded card's caret points to the end. Icons that mean a direction (↩ ↪)
 are not mirrored: undo is undo. A count ("3 / 4") is isolated left to
 right: spaced, its numbers are runs an RTL line would reverse. A user's
 name (the project's on the preset button) takes its direction from its own

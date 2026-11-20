@@ -23,7 +23,7 @@ const press = (target: EventTarget, init: KeyboardEventInit) => {
 
 beforeEach(() => {
   document.body.innerHTML = `
-    <button id="undo">↶</button><button id="redo">↷</button>
+    <button id="undo">↩</button><button id="redo">↪</button>
     <input id="slider" type="range" /><input id="box" type="checkbox" /><select id="pick"></select>
     <input id="name" type="text" /><textarea id="text"></textarea><input id="size" type="number" />
     <div id="dialog" class="modal" hidden><div class="modal-box"><button id="x">✕</button></div></div>`;
