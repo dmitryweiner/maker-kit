@@ -54,7 +54,7 @@ None at the moment.
 
 None at the moment.
 
-## Status (2026-11-20)
+## Status (2026-11-22)
 
 | Milestone | State |
 |---|---|
@@ -73,6 +73,7 @@ None at the moment.
 | M4 — ClayForm on the kit | done (2026-11-19): the plan is clayform's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); clayform PRs #4 plan + toolchain (Vite 8, Vitest 4, manifold 3.5, Node 24), #5 core, #6 controls, #7 ui, #8 3d, #9 harness (its own ports 5281 / 4281, `smoke --preview` in CI), #10 docs, #11 📄 New, #12 the piece kept in the browser (decided with the user: a PWA's reload must not lose it), #13 PWA; on `v0.5.1`, no kit change needed |
 | M5 — MathSculpt on the kit | done (2026-11-19): the plan is mathsculpt's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); mathsculpt PRs #1 plan + toolchain (TS 7, oxlint, Vite 8, Vitest 4, Node 24, Pages by Actions), #2 core, #3 controls, #4 ui, #5 i18n (en, ru, uk, he — it had English only), #6 3d, #7 harness (its own ports 5287 / 4287), #8 docs, #9 📄 New, #10 the project file, #11 the model kept in the browser, #12 PWA, #13 onto `v0.5.2` (its own race around `offline()` gone), #14 comments in English; the kit's `v0.5.2` (#30: `offline()` fails instead of hanging, met again in its PWA's smoke); on `v0.5.2` |
 | Apps on `v0.5.2` | done (2026-11-20): plate-builder #25 (from `v0.4.0`), cast-builder #21 (from `v0.4.1`), case-constructor #24 and clayform #15 (from `v0.5.1`); no app code changed, each one's `check` and `smoke --preview` pass; MathSculpt is on it since mathsculpt #13. In the same round undo and redo became ↩ ↪ in their text form (#31, the design code): plate-builder #26, mathsculpt #15, and in the three bump PRs; no kit tag, as nothing an app imports changed |
+| `v0.5.3` — the name button's width | (2026-11-22, asked in Plate Builder's `plans/PLAN-TEXT-MAGNETS.md`): on a desktop the project's name button is 240 px whatever the name or the `●`, the first to give way on a narrow bar; the tag also carries #31's ↩ ↪. Plate Builder moves to it; the other apps when they next move |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -1266,3 +1267,13 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
   Its PWA's smoke met the known `offline()` hang and wrapped the call in a
   30 s race of its own; the fix went into the kit as `v0.5.2` (#30), and
   the app dropped the wrapper on that tag (mathsculpt #13).
+- **`v0.5.3`, the name button keeps its width** (2026-11-22, Plate
+  Builder's user: "when I save a new preset it changes size"): on a desktop
+  `.preset-button` was `flex: 0 1 auto`, as wide as the name up to 240 px,
+  so a short name made it narrow, a new one, or the `●` of "changed",
+  moved every tool after it. It is `flex: 0 1 240px` now — narrower only
+  when the bar has no room. A phone's was already steady (it fills its
+  line). The smoke checks the width in English and Hebrew, for a one-letter
+  and a too-long name, and with "changed". On a narrow desktop (760 px,
+  Ukrainian) a fixed 240 px squeezed the language picker; the button gives
+  way first (`flex-shrink: 100`), and the smoke checks the picker whole.

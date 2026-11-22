@@ -17,6 +17,9 @@
 import { mkdirSync } from 'node:fs';
 import { binaryStl, check, download, horizontalOverflow, launch, offline, parseArgs, settled, throttle, VIEWPORTS } from './harness.mjs';
 
+/** The project's name button's width, px. */
+const nameButtonWidth = async (page) => Math.round((await page.locator('#presetsOpen').boundingBox())?.width ?? 0);
+
 /** The kit's own ports (other projects: case-constructor 5273, plate-builder 5373, cast-builder 5291). */
 const PORTS = { dev: 5395, preview: 4395 };
 const ACCENTS = ['cyan', 'emerald', 'burgundy'];
@@ -67,6 +70,23 @@ await app.run(
       const panel = await desktop.page.locator('#panel').boundingBox();
       check(panel && panel.x < 5 && panel.width > 300, `the desktop panel is not on the start side: ${JSON.stringify(panel)}`);
       check(await desktop.page.locator('#sheetOpen').isHidden(), 'a desktop shows the settings button');
+      // the project's name: the same width whatever the name, so the tools after it never move
+      check((await nameButtonWidth(desktop.page)) === 240, `the name button is ${await nameButtonWidth(desktop.page)} px wide, not 240`);
+      // on a narrow desktop the name gives way (it ends in "…"), not the language picker
+      const narrow = await app.open({ viewport: { width: 760, height: 700 }, path: '?lang=uk' });
+      const squeezed = await narrow.page.locator('.lang-field').evaluate((field) => {
+        const now = field.getBoundingClientRect().width;
+        field.style.flex = 'none';
+        const full = field.getBoundingClientRect().width;
+        field.style.flex = '';
+        return Math.round(full - now);
+      });
+      check(squeezed === 0, `at 760 px the language picker is squeezed by ${squeezed} px`);
+      check(
+        (await nameButtonWidth(narrow.page)) < 240,
+        `at 760 px the name button did not give way: ${await nameButtonWidth(narrow.page)} px`,
+      );
+      await narrow.context.close();
       await desktop.context.close();
       const rtl = await state('desktop', 'lang=he', 'desktop-panel-he');
       const rtlPanel = await rtl.page.locator('#panel').boundingBox();
@@ -74,6 +94,7 @@ await app.run(
       // "My box" in a Hebrew bar: the name's own letters set its direction, so the " …" stays after it
       const bidi = await rtl.page.locator('#presetsOpen').evaluate((button) => getComputedStyle(button).unicodeBidi);
       check(bidi === 'plaintext', `a Latin project name in Hebrew runs right to left (unicode-bidi: ${bidi})`);
+      check((await nameButtonWidth(rtl.page)) === 240, `the name button in Hebrew is ${await nameButtonWidth(rtl.page)} px wide, not 240`);
       await rtl.context.close();
 
       const phone = await state('phone', 'lang=en', 'phone-closed');
@@ -255,8 +276,13 @@ await app.run(
 
     await step('presets: 💾 saves, a built-in one opens as one undo step, “changed”, two-tap delete, 📄 new, Esc', async () => {
       const { page, context } = await app.open();
-      await page.fill('#demo_name', 'Lid test');
-      await page.press('#demo_name', 'Enter');
+      const nameWidth = async () => (await page.locator('#presetsOpen').boundingBox())?.width;
+      const wide = await nameWidth();
+      for (const name of ['L', 'A box with a name far too long for the bar', 'Lid test']) {
+        await page.fill('#demo_name', name);
+        await page.press('#demo_name', 'Enter');
+        check((await nameWidth()) === wide, `the name button changed its width for "${name}": ${wide} → ${await nameWidth()}`);
+      }
       await page.click('#savePreset');
       await page.click('#presetsOpen');
       check(await page.isVisible('#presets'), 'the dialog did not open');
@@ -264,8 +290,10 @@ await app.run(
       await page.click('.preset-row[data-ref="b:pi"] .preset-pick');
       check(await page.isHidden('#presets'), 'opening a preset left the dialog open');
       check((await page.inputValue('#demo_width_n')) === '95', 'the preset did not open');
+      const unchanged = await nameWidth();
       await page.click('#demo_width_inc');
       check((await page.locator('#presetsOpen.changed').count()) === 1, 'an edited preset is not marked changed');
+      check((await nameWidth()) === unchanged, `"changed" moved the name button's edge: ${unchanged} → ${await nameWidth()}`);
       await page.click('#undo');
       await page.click('#undo');
       check((await page.inputValue('#demo_name')) === 'Lid test', 'undo did not bring the project before the preset back');
