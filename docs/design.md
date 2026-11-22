@@ -56,7 +56,7 @@ import 'maker-kit/styles/kit.css';   // tokens included
 - Order: the brand; the project's name, which opens the presets dialog
   (a `●` in the warn colour when the project differs from its preset; on a
   desktop always 240 px wide, so neither a name nor the `●` moves the
-  tools); then
+  tools; on a narrow bar it gives way first); then
   the tools 📄 new, 💾 save as a preset, 📂 open a project file, ⬇️ save it to
   a file, ↩ undo, ↪ redo; then 🌐 the language. The arrows are written
   with U+FE0E (`↩&#xFE0E;`), the text form: without it a phone may draw

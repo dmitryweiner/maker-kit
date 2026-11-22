@@ -177,10 +177,11 @@
     }
 
     /* as wide whatever the name (or "changed"), so the tools after it never move;
-       narrower only when the bar itself has no room */
+       narrower only when the bar itself has no room, and then before anything
+       else: its name ends in "…", the language picker's would be cut */
     .preset-button {
       order: 1;
-      flex: 0 1 240px;
+      flex: 0 100 240px;
     }
 
     .topbar-tools {

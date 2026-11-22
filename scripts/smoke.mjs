@@ -72,6 +72,21 @@ await app.run(
       check(await desktop.page.locator('#sheetOpen').isHidden(), 'a desktop shows the settings button');
       // the project's name: the same width whatever the name, so the tools after it never move
       check((await nameButtonWidth(desktop.page)) === 240, `the name button is ${await nameButtonWidth(desktop.page)} px wide, not 240`);
+      // on a narrow desktop the name gives way (it ends in "…"), not the language picker
+      const narrow = await app.open({ viewport: { width: 760, height: 700 }, path: '?lang=uk' });
+      const squeezed = await narrow.page.locator('.lang-field').evaluate((field) => {
+        const now = field.getBoundingClientRect().width;
+        field.style.flex = 'none';
+        const full = field.getBoundingClientRect().width;
+        field.style.flex = '';
+        return Math.round(full - now);
+      });
+      check(squeezed === 0, `at 760 px the language picker is squeezed by ${squeezed} px`);
+      check(
+        (await nameButtonWidth(narrow.page)) < 240,
+        `at 760 px the name button did not give way: ${await nameButtonWidth(narrow.page)} px`,
+      );
+      await narrow.context.close();
       await desktop.context.close();
       const rtl = await state('desktop', 'lang=he', 'desktop-panel-he');
       const rtlPanel = await rtl.page.locator('#panel').boundingBox();
