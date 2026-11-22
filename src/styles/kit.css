@@ -176,9 +176,11 @@
       font-size: 17px;
     }
 
+    /* as wide whatever the name (or "changed"), so the tools after it never move;
+       narrower only when the bar itself has no room */
     .preset-button {
       order: 1;
-      flex: 0 1 auto;
+      flex: 0 1 240px;
     }
 
     .topbar-tools {

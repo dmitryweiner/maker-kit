@@ -27,7 +27,7 @@ status.
 ## Install
 
 ```json
-"dependencies": { "maker-kit": "github:dmitryweiner/maker-kit#v0.5.2" }
+"dependencies": { "maker-kit": "github:dmitryweiner/maker-kit#v0.5.3" }
 ```
 
 Each module is its own entry point, so an app imports only what it uses:
