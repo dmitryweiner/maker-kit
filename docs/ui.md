@@ -226,3 +226,52 @@ appends `label.lang-field` (🌐 and the languages by their own names);
 - `Timers` (`set`, `clear`) and `browserTimers`.
 - `download(name, textOrBytes, type)`; `pickFile(accept)` — the chosen
   file or null.
+
+## ui/fonts — the app's bundled fonts
+
+```ts
+const FONTS: Record<FontId, FontFile> = {
+  rubik: { family: 'app-rubik', label: 'Rubik', file: 'rubik', weight: '700', subsets: ['latin', 'cyrillic', 'hebrew'] },
+};
+const fonts = createFontLoader(FONTS, `${import.meta.env.BASE_URL}fonts/`);
+fonts.ready('rubik');                 // can a text be drawn with it now
+await fonts.load('rubik');            // once a session; a failure is not for good
+if (!fonts.ensure(id, rebuild)) return null;   // not yet: loading, `rebuild` when it is in
+```
+
+- woff2 subsets `<file>-<subset>.woff2` with the OFL licence beside them, in
+  the app's `public/fonts`: never a CDN, the letters of a mesh must not drift.
+- Every subset loads at once (`SUBSET_RANGES`: latin, cyrillic, hebrew):
+  the browser would fetch Cyrillic only at the first Cyrillic letter drawn.
+- `ensure` calls back only the call that started the load, so a redraw per
+  frame asks once. A text waits for its font: never drawn in a stand-in.
+- `env` (`make`, `add`) is the browser's `FontFace` API, a parameter for tests.
+
+## ui/textRaster — a text block drawn for a worker
+
+```ts
+const raster = rasterizeText({ lines: ['Ivan', 'Kyiv'], capMm: 6, font: FONTS.rubik, align: 'center' });
+// TextRaster (core/raster) or null: no canvas, or only blank lines
+```
+
+- The size is the capital height, measured from the font (`H`); 10 px/mm
+  (`PX_PER_MM`), fewer when a side would pass `MAX_RASTER_PX`.
+- Lines: `align` (center), `lineSpacing` in capitals (1.6), Hebrew lines
+  right to left. `origin`: `middle` (between the first cap top and the
+  last baseline) or `baseline` (a strip bent onto an arc).
+- `padPx` is the room around the ink, a third of the font size by default;
+  a glyph's overhang widens it.
+- Pure parts, tested: `blockGeometry`, `lineOffsets`, `rasterScale`, `hasRtl`.
+
+## ui/imageImport — a picture file in gray and alpha
+
+```ts
+const picture = await importImage(file, 256);   // GrayAlpha, the long side ≤ 256; throws past 20 MB or on garbage
+flattenGray(picture, 255);                      // gray over white, one byte a pixel
+```
+
+Decoded through an `<img>` (an SVG's scripts never run; one without a size
+is drawn at `max`), drawn at most at twice the size, then box-averaged
+down (`downscaleGrayAlpha`): a thin stroke turns gray rather than vanishing
+between samples, and a transparent pixel lends no colour (gray weighted by
+alpha). `fitPixels(w, h, max)` keeps the proportions.

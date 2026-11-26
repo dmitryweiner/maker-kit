@@ -125,3 +125,24 @@ with a project file), `kit.topbar.*`, `kit.sheet.*`, `kit.modal.close`,
 `kit.preset.*` (the presets dialog), `kit.list.*` (a list card's buttons),
 `kit.progress.building`, `kit.mesh.*` (the export gate). Components take
 the app's translate function, whose keys include the kit's (`docs/ui.md`).
+
+## core/raster — masks and fields a worker gets
+
+A text drawn by the main thread (`ui/textRaster`) reaches a worker as a
+`TextRaster`: a coverage `Mask` (0–255, row 0 at the top) with its scale and
+origin. No DOM: workers import it.
+
+```ts
+isTextRaster(message.text);          // the worker boundary: the shape must add up (sides ≤ MAX_RASTER_PX)
+traceContours(mask, 0.25);           // marching squares at 50 %, simplified within ¼ px: Ring[], px, y up
+simplifyRing(ring, tolerance);       // Ramer–Douglas–Peucker on a closed ring
+ringArea(ring);                      // signed: > 0 counter-clockwise
+sampleField(field, pw, ph, w, h, x, y);   // bilinear between pixel centres, the picture w × h mm around 0, y up
+```
+
+- Outer rings come out counter-clockwise and holes clockwise, so a
+  `CrossSection` takes them with the nonzero rule (`'Positive'`).
+- Contour coordinates are pixels with y up: pixel (i, j) has its centre at
+  (i + 0.5, height − j − 0.5); an app scales by `pxPerMm` around its origin.
+- `sampleField` holds the edge pixel out to the picture's border and is 0
+  outside it; it takes floats or bytes.

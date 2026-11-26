@@ -7,7 +7,7 @@ presets, the mobile sheet, the progress bar, the worker queue, STL, the 3D
 view, booleans on manifold and the printed thread, the smoke harness and
 the design code. A source-only TypeScript
 package (no build step), installed by git tag:
-`"maker-kit": "github:dmitryweiner/maker-kit#v0.5.3"`. The showcase:
+`"maker-kit": "github:dmitryweiner/maker-kit#v0.6.0"`. The showcase:
 <https://dmitryweiner.github.io/maker-kit/>.
 
 The shared conventions are in `~/projects/CLAUDE.md` and
@@ -93,18 +93,20 @@ needs a real browser → a step in `scripts/smoke.mjs` over the showcase.
 
 - `src/core/` — no DOM: `message` (the i18n contract's types, `Message`),
   `format`, `history`, `storage`, `projectFile`, `presets`, `progress`
-  (the `JobProgress` type) (`docs/core.md`).
+  (the `JobProgress` type), `raster` (a text raster's check, contours of a
+  mask, a field's bilinear sample) (`docs/core.md`).
 - `src/i18n/` — the kit's own strings, `kit.*` keys, en ru uk he; `en.ts`
   defines `KitKey`.
 - `src/ui/` — DOM, no three: `controls` (the panel), `stepper` (−/+ held),
   `card`, `listCard`, `messageList`, `sheet`, `progress`, `banner`, `modal`,
-  `presetList`, `historyKeys`, `languagePicker`, `dom`, `timers`, `files`
-  (`docs/ui.md`).
+  `presetList`, `historyKeys`, `languagePicker`, `dom`, `timers`, `files`,
+  `fonts` (bundled woff2 subsets), `textRaster` (a text block for a
+  worker), `imageImport` (a picture file in gray and alpha) (`docs/ui.md`).
 - `src/styles/` — `tokens.css` (palette, accents, density) and `kit.css`
   (everything in `@layer kit`, imports the tokens); the rules CSS cannot
   say are in `docs/design.md`.
-- `src/3d/` — `mesh`, `validate`, `stl` (no three, workers use them) and
-  `viewer` (three) (`docs/3d.md`).
+- `src/3d/` — `mesh`, `validate`, `stl`, `heightfield` (no three, workers
+  use them) and `viewer` (three) (`docs/3d.md`).
 - `src/worker/` — `protocol`, `client` (`WorkerClient`, `moduleWorker`),
   `serve` (`serveJobs`) (`docs/worker.md`).
 - `src/csg/` — a worker's, on manifold-3d (an optional peer): `manifold`

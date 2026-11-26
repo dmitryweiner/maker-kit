@@ -3,8 +3,9 @@
 The shared pieces of the 3D-printing tools — the apps below and the ones to
 come: the controls panel, undo, storage, presets, the mobile sheet, the
 progress bar, the worker queue, STL, the 3D view, the list card and the
-message list, booleans on manifold and the printed thread, the smoke
-harness and the design code they share.
+message list, booleans on manifold and the printed thread, fonts, text
+rasters and picture import, the smoke harness and the design code they
+share.
 
 A source-only TypeScript package: no build step, installed by a git tag.
 Every component in every state: the showcase,
@@ -27,7 +28,7 @@ status.
 ## Install
 
 ```json
-"dependencies": { "maker-kit": "github:dmitryweiner/maker-kit#v0.5.3" }
+"dependencies": { "maker-kit": "github:dmitryweiner/maker-kit#v0.6.0" }
 ```
 
 Each module is its own entry point, so an app imports only what it uses:
