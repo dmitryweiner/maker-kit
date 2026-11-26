@@ -54,7 +54,7 @@ None at the moment.
 
 None at the moment.
 
-## Status (2026-11-22)
+## Status (2026-11-26)
 
 | Milestone | State |
 |---|---|
@@ -74,6 +74,7 @@ None at the moment.
 | M5 — MathSculpt on the kit | done (2026-11-19): the plan is mathsculpt's `plans/PLAN-MAKER-KIT.md` (Russian, as its plans are); mathsculpt PRs #1 plan + toolchain (TS 7, oxlint, Vite 8, Vitest 4, Node 24, Pages by Actions), #2 core, #3 controls, #4 ui, #5 i18n (en, ru, uk, he — it had English only), #6 3d, #7 harness (its own ports 5287 / 4287), #8 docs, #9 📄 New, #10 the project file, #11 the model kept in the browser, #12 PWA, #13 onto `v0.5.2` (its own race around `offline()` gone), #14 comments in English; the kit's `v0.5.2` (#30: `offline()` fails instead of hanging, met again in its PWA's smoke); on `v0.5.2` |
 | Apps on `v0.5.2` | done (2026-11-20): plate-builder #25 (from `v0.4.0`), cast-builder #21 (from `v0.4.1`), case-constructor #24 and clayform #15 (from `v0.5.1`); no app code changed, each one's `check` and `smoke --preview` pass; MathSculpt is on it since mathsculpt #13. In the same round undo and redo became ↩ ↪ in their text form (#31, the design code): plate-builder #26, mathsculpt #15, and in the three bump PRs; no kit tag, as nothing an app imports changed |
 | `v0.5.3` — the name button's width | (2026-11-22, asked in Plate Builder's `plans/PLAN-TEXT-MAGNETS.md`): on a desktop the project's name button is 240 px whatever the name or the `●`, the first to give way on a narrow bar; the tag also carries #31's ↩ ↪. Plate Builder moves to it; the other apps when they next move |
+| K8 — text, fonts and pictures | (2026-11-26, "K8 in detail" below): `ui/fonts`, `ui/textRaster`, `ui/imageImport`, `core/raster`, `3d/heightfield`, from Plate Builder's code and what ClayForm and Case Constructor repeat; tag `v0.6.0`. ClayForm moves to it with its side text and picture (clayform's `plans/PLAN-DECOR.md`), then Plate Builder and Case Constructor drop their copies |
 
 Where a module's API below differs from what was built, the deviation at
 the end of this file and `docs/` are right.
@@ -885,6 +886,45 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
 2. **PWA after M3**, a PR of its own after 📄 New (PR 8 above): it has no
    service worker, though nothing in it calls out.
 3. **📄 New is `plain-box`'s state** (PR 7 above).
+
+## K8 in detail (2026-11-26)
+
+ClayForm puts a text and a picture on a vessel's side as booleans in its
+worker, as Plate Builder does on a plate. Three apps load the same woff2 subsets
+the same way, two draw a text block for a worker, two box-average a
+picture file, two trace a mask into polygons and two make a heightfield
+solid: by the kit's rule ("an option goes in when two apps need it") they
+come into the kit. Decided with the user: the kit, ClayForm now, then
+Plate Builder and Case Constructor move onto the tag in PRs of their own.
+
+| Module | From | Who uses it |
+|---|---|---|
+| `ui/fonts` — `createFontLoader(files, base, env?)`: `ready`, `load`, `ensure(id, onReady)` | the same code in all three | ClayForm (mark, side text), Plate Builder, Case Constructor |
+| `ui/textRaster` — `rasterizeText(block)`; `blockGeometry`, `lineOffsets`, `rasterScale`, `hasRtl` | Plate Builder's `textRaster`; ClayForm's one-line mark raster | ClayForm (mark, side text), Plate Builder |
+| `ui/imageImport` — `importImage(file, max)`, `downscaleGrayAlpha`, `fitPixels`, `flattenGray` | Plate Builder's `imageImport`, ClayForm's `ornament` | Plate Builder, ClayForm |
+| `core/raster` — `TextRaster`, `isTextRaster`, `traceContours`, `simplifyRing`, `ringArea`, `sampleField` | Plate Builder's `contour`, `textShape`, `heightmap` | Plate Builder, ClayForm (workers) |
+| `3d/heightfield` — `heightfieldMesh`, `gridSize` | Plate Builder's `grid` | Plate Builder, ClayForm (workers) |
+
+What stays an app's: Plate Builder's levels and blur, its arc bending and
+its PNG data URLs; ClayForm's ornament bytes in base64 and its bending
+onto a wall; Case Constructor's labels — one line drawn with Rubik as the
+fallback in the CSS font list (Oswald has no Hebrew; `rasterizeText` takes
+one family, and a fallback is wanted by one app only), as unions of row
+runs; its loader wraps the kit's so that Oswald brings Rubik along.
+
+The changes against the copies: a family name is quoted in `ctx.font`; the
+room around the ink (`padPx`) is the app's choice, a third of the font size
+by default (ClayForm and Case Constructor draw with 2 px), and a glyph's
+own overhang widens it; `origin` (`middle` or `baseline`) in place of Plate
+Builder's `arc` flag; `heightfieldMesh`'s `avoid` is optional;
+`importImage` returns gray and alpha, an app encodes it as it keeps it.
+The drawing needs a canvas: vitest checks it on a stand-in context, the
+apps' smokes in Chromium.
+
+In the same tag, a missing case of `ui/card` that ClayForm's wave card
+meets: a card folding inside another (its second wave, its mark's logo).
+The kit's rules for an on or folded card reached every card inside it; they
+now take the card's own head and body only (child combinators).
 
 ## Risks
 

@@ -52,6 +52,19 @@ describe('createCard', () => {
   });
 });
 
+describe('a card inside another', () => {
+  it('folds on its own, and its head folds only it', () => {
+    const outer = createCard(root, { id: 'lid', title: 'lid', enabled: true, t });
+    createCard(outer.body, { id: 'vents', title: 'vents', enabled: false, t });
+    expect([folded('lid'), folded('vents')]).toEqual([false, true]);
+    root.querySelector<HTMLButtonElement>('#card_vents > .fcard-head')?.click();
+    expect([folded('lid'), folded('vents')]).toEqual([false, false]);
+    root.querySelector<HTMLButtonElement>('#card_lid > .fcard-head')?.click();
+    expect([folded('lid'), folded('vents')]).toEqual([true, false]);
+    expect(root.querySelector('#card_vents > .fcard-head')?.getAttribute('aria-expanded')).toBe('true');
+  });
+});
+
 describe('snapshotCards and restoreCards', () => {
   it('keep what was folded by hand across a re-render', () => {
     createCard(root, { id: 'lid', title: 'lid', enabled: true, t });

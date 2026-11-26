@@ -4,11 +4,11 @@
   bar, cards, the slider row, numbers and units, severity, actions,
   progress, ids, RTL, density.
 - `core.md` — `core/*` (the i18n contract, templates, undo, storage, the
-  project file, presets, job progress) and the kit's strings.
+  project file, presets, job progress, rasters) and the kit's strings.
 - `ui.md` — `ui/*`: the panel and its rows, −/+ held, folding cards, the
   sheet, the bar over the view, the banner, dialogs, the presets list, undo
-  keys, the language picker, files.
-- `3d.md` — meshes, the export gate, STL, the 3D viewer.
+  keys, the language picker, files, fonts, text rasters, picture import.
+- `3d.md` — meshes, the export gate, STL, heightfields, the 3D viewer.
 - `worker.md` — the job worker: client, serveJobs, protocol.
 - `csg.md` — booleans on manifold-3d in a worker: the WASM, the scope,
   meshes in and out, outlines, the printed thread.
