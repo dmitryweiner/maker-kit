@@ -890,8 +890,7 @@ PR that needs them, as `v0.3.1` and `v0.4.1` did.
 ## K8 in detail (2026-11-26)
 
 ClayForm puts a text and a picture on a vessel's side as booleans in its
-worker, as Plate Builder does on a plate, and draws its mark's text as
-Case Constructor draws its labels. Three apps load the same woff2 subsets
+worker, as Plate Builder does on a plate. Three apps load the same woff2 subsets
 the same way, two draw a text block for a worker, two box-average a
 picture file, two trace a mask into polygons and two make a heightfield
 solid: by the kit's rule ("an option goes in when two apps need it") they
@@ -901,16 +900,17 @@ Plate Builder and Case Constructor move onto the tag in PRs of their own.
 | Module | From | Who uses it |
 |---|---|---|
 | `ui/fonts` — `createFontLoader(files, base, env?)`: `ready`, `load`, `ensure(id, onReady)` | the same code in all three | ClayForm (mark, side text), Plate Builder, Case Constructor |
-| `ui/textRaster` — `rasterizeText(block)`; `blockGeometry`, `lineOffsets`, `rasterScale`, `hasRtl` | Plate Builder's `textRaster`; Case Constructor's and ClayForm's one-line rasters | the same three |
+| `ui/textRaster` — `rasterizeText(block)`; `blockGeometry`, `lineOffsets`, `rasterScale`, `hasRtl` | Plate Builder's `textRaster`; ClayForm's one-line mark raster | ClayForm (mark, side text), Plate Builder |
 | `ui/imageImport` — `importImage(file, max)`, `downscaleGrayAlpha`, `fitPixels`, `flattenGray` | Plate Builder's `imageImport`, ClayForm's `ornament` | Plate Builder, ClayForm |
 | `core/raster` — `TextRaster`, `isTextRaster`, `traceContours`, `simplifyRing`, `ringArea`, `sampleField` | Plate Builder's `contour`, `textShape`, `heightmap` | Plate Builder, ClayForm (workers) |
 | `3d/heightfield` — `heightfieldMesh`, `gridSize` | Plate Builder's `grid` | Plate Builder, ClayForm (workers) |
 
 What stays an app's: Plate Builder's levels and blur, its arc bending and
 its PNG data URLs; ClayForm's ornament bytes in base64 and its bending
-onto a wall; Case Constructor's labels as unions of row runs (Case
-Constructor's FontFace fallback — Oswald brings Rubik for Hebrew — wraps
-the loader).
+onto a wall; Case Constructor's labels — one line drawn with Rubik as the
+fallback in the CSS font list (Oswald has no Hebrew; `rasterizeText` takes
+one family, and a fallback is wanted by one app only), as unions of row
+runs; its loader wraps the kit's so that Oswald brings Rubik along.
 
 The changes against the copies: a family name is quoted in `ctx.font`; the
 room around the ink (`padPx`) is the app's choice, a third of the font size
