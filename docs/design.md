@@ -77,7 +77,9 @@ import 'maker-kit/styles/kit.css';   // tokens included
 - A foldable card (`.fcard`) has a head button: title, an optional tag
   (`M3`), a caret. It **unfolds when its feature turns on** and **never folds
   under the hand** — turning a feature off happens inside the open card.
-  Folding survives a re-render (a language switch).
+  Folding survives a re-render (a language switch). A card may fold inside
+  another (a sub-block: ClayForm's second wave in its wave card); the outer
+  card's state (on, folded) styles only its own head and body.
 - A **list card** is a group of items of one kind ("Labels 3 / 4", `+ Add
   a label` under them): a bordered row per item, its head the name in bold,
   a muted hint after it (a text's first line), then the visibility switch,

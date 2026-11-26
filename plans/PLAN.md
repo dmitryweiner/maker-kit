@@ -921,6 +921,11 @@ Builder's `arc` flag; `heightfieldMesh`'s `avoid` is optional;
 The drawing needs a canvas: vitest checks it on a stand-in context, the
 apps' smokes in Chromium.
 
+In the same tag, a missing case of `ui/card` that ClayForm's wave card
+meets: a card folding inside another (its second wave, its mark's logo).
+The kit's rules for an on or folded card reached every card inside it; they
+now take the card's own head and body only (child combinators).
+
 ## Risks
 
 - **Source-only package**: if Vite's dependency pre-bundling or vitest

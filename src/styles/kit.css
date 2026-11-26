@@ -417,7 +417,9 @@
     font-weight: 600;
   }
 
-  .fcard.on .fcard-title {
+  /* child combinators: a card may fold inside another (a sub-block), and the
+     outer card's state must not reach into it */
+  .fcard.on > .fcard-head .fcard-title {
     color: var(--accent-strong);
   }
 
@@ -436,15 +438,15 @@
   }
 
   /* folded, the caret points along the line: towards the end, so leftwards in RTL */
-  .fcard.collapsed .fcard-caret {
+  .fcard.collapsed > .fcard-head .fcard-caret {
     rotate: -90deg;
   }
 
-  [dir='rtl'] .fcard.collapsed .fcard-caret {
+  [dir='rtl'] .fcard.collapsed > .fcard-head .fcard-caret {
     rotate: 90deg;
   }
 
-  .fcard.collapsed .fcard-body {
+  .fcard.collapsed > .fcard-body {
     display: none;
   }
 
